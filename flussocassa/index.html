@@ -1,0 +1,3320 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <script type="application/javascript">
+        if (!sessionStorage['token'])
+            window.location.replace("../");
+    </script>
+    <meta charset="UTF-8">
+    <meta http-equiv="cache-control" content="max-age=0"/>
+    <meta http-equiv="cache-control" content="no-cache"/>
+    <meta http-equiv="expires" content="0"/>
+    <meta http-equiv="expires" content="Tue, 01 Jan 1980 1:00:00 GMT"/>
+    <meta http-equiv="pragma" content="no-cache"/>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+
+    <title>Prima Nota</title>
+    <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
+    <link href="../assets/css/bootstrap.css" rel="stylesheet" type="text/css"/>
+    <link href="../assets/css/paceFlash.css" rel="stylesheet" type="text/css">
+    <link href="../plugins/datatables_1_10_19/css/jquery.dataTables.min.css" rel="stylesheet" type="text/css">
+    <link href="../plugins/datatables_1_10_19/extensions/FixedHeader/css/dataTables.fixedHeader.min.css"
+          rel="stylesheet" type="text/css">
+
+    <link href="../assets/css/font-awesome.min.css" rel="stylesheet" type="text/css"/>
+    <link href="../assets/css/AdminLTE.min.css" rel="stylesheet" type="text/css"/>
+    <link href="../assets/css/skins/skin-blue.min.css" rel="stylesheet" type="text/css"/>
+    <link href="../assets/css/animate.css" rel="stylesheet" type="text/css">
+    <link href="../assets/css/sweetalert.css" rel="stylesheet" type="text/css">
+    <link href="../assets/css/select2.css" rel="stylesheet" type="text/css">
+    <link href="../assets/css/waves.min.css" rel="stylesheet" type="text/css">
+    <link href="../assets/css/bootstrap-dialog.css" rel="stylesheet" type="text/css">
+    <link href="../assets/default-dark/style.min.css" rel="stylesheet" type="text/css">
+    <link href="../assets/default/style.min.css" rel="stylesheet" type="text/css">
+    <link href="../assets/css/handsontable.full.min.css" media="screen" rel="stylesheet" type="text/css">
+    <link href="../assets/css/google.css" media="screen" rel="stylesheet" type="text/css">
+    <link href="../assets/css/classic.css" media="screen" rel="stylesheet" type="text/css">
+    <link href="../assets/css/classic.date.css" media="screen" rel="stylesheet" type="text/css">
+    <style>
+        .select2-container .select2-selection--single {
+            height: 30px !important;
+            border-color: #d2d6de !important;
+        }
+
+        .handsontable table th, .handsontable table td {
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .modal-dialog {
+            -webkit-animation-duration: 0.4s;
+            -moz-animation-duration: 0.4s;
+            -ms-animation-duration: 0.4s;
+        }
+
+        .modal-dialog, .modal-content {
+            /* 80% of window height */
+            height: 95%;
+        }
+
+        .modal-body {
+            /* 100% = dialog height, 120px = header + footer */
+            max-height: calc(100% - 180px);
+            overflow-y: scroll;
+
+        }
+
+        .centerImage {
+			text-align: center;
+		}
+
+		.rowPointer{
+			cursor: pointer;
+			cursor: hand;
+		}
+
+		.rowPointerDef{
+			cursor: default;
+		}
+
+        .glyphicon.spinning {
+            animation: spin 1s infinite linear;
+            -webkit-animation: spin2 1s infinite linear;
+        }
+
+        @keyframes spin {
+            from { transform: scale(1) rotate(0deg); }
+            to { transform: scale(1) rotate(360deg); }
+        }
+
+        @-webkit-keyframes spin2 {
+            from { -webkit-transform: rotate(0deg); }
+            to { -webkit-transform: rotate(360deg); }
+        }
+
+        .riga-duplicata {
+            background-color: #f8d7da;
+        }
+
+        :root {
+            --header-height: 50px;
+            --footer-height: 50px;
+        }
+
+        html, body {
+            height: 100%;
+        }
+
+        .main-header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1030;
+        }
+
+        .main-sidebar {
+            position: fixed;
+            top: var(--header-height);
+            bottom: var(--footer-height);
+            overflow-y: auto;
+        }
+
+        .content-wrapper {
+            margin-top: var(--header-height);
+            margin-bottom: var(--footer-height);
+            height: calc(100vh - (var(--header-height) + var(--footer-height)));
+            overflow-y: auto;
+        }
+
+        .main-footer {
+            position: fixed;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            z-index: 1020;
+        }
+
+    </style>
+    <script src="https://code.jquery.com/jquery-2.2.4.min.js"
+            integrity="sha256-BbhdlvQf/xTY9gja0Dq3HiwQF8LaCRTXxZKRutelT44=" crossorigin="anonymous"></script>
+    <script src="../assets/js/bootstrap.min.js" type="text/javascript"></script>
+    <script src="../assets/js/pace.min.js" type="text/javascript"></script>
+    <script src="../assets/js/jquery.blockUI.js" type="text/javascript"></script>
+    <script src="../assets/js/app.min.js" type="text/javascript"></script>
+    <script src="../assets/js/sweetalert.min.js" type="text/javascript"></script>
+    <script src="../assets/js/select2.full.min.js" type="text/javascript"></script>
+    <script src="../assets/js/waves.min.js" type="text/javascript"></script>
+    <script src="../assets/js/jquery.noty.packaged.min.js" type="text/javascript"></script>
+    <script src="../assets/js/mustache.js" type="text/javascript"></script>
+    <script src="../assets/js/moment.js" type="text/javascript"></script>
+    <script src="../assets/js/bootstrap-dialog.js" type="text/javascript"></script>
+    <script src="../assets/js/jquery.slimscroll.min.js" type="text/javascript"></script>
+    <script src="../assets/js/numeral.min.js" type="text/javascript"></script>
+    <script src="../assets/js/languages.min.js" type="text/javascript"></script>
+    <script src="../assets/js/handsontable.full.min.js" type="text/javascript"></script>
+    <script src="../assets/js/wow.min.js" type="text/javascript"></script>
+    <script src="../assets/js/vfs_fonts.js" type="text/javascript"></script>
+    <script src="../assets/js/preaut.js" type="text/javascript"></script>
+    <script src="../plugins/datatables_1_10_19/js/jquery.dataTables.js"></script>
+    <script src="../plugins/datatables_1_10_19/extensions/FixedHeader/js/dataTables.fixedHeader.js"></script>
+</head>
+
+<body class="skin-blue sidebar-mini">
+<div class="wrapper">
+
+    <header class="main-header">
+        <a href="#" class="logo">
+            <span class="logo-lg"><img style="max-height: 45px;margin-bottom:5px;" src="../assets/img/logo.png"></span>
+            <span class="logo-mini">CRM</span>
+        </a>
+        <nav class="navbar navbar-static-top" role="navigation">
+            <a href="#" class="sidebar-toggle" data-toggle="offcanvas" role="button">
+                <span class="sr-only">Toggle navigation</span>
+            </a>
+            <div class="navbar-custom-menu">
+                <ul class="nav navbar-nav">
+                    <li><a href="../"> Logout <i class="fa fa-sign-out"></i>
+                    </a></li>
+                </ul>
+            </div>
+        </nav>
+    </header>
+
+    <aside id="themenu" class="main-sidebar"></aside>
+    <script language="javascript">
+
+        $.get("../templates/menu.mst?_"+(new Date()).getTime(), function (template) {
+            $('#themenu').html(Mustache.render(template, {
+
+                admins: sessionStorage['admins']=='true'?true:false,
+                vv: sessionStorage['vv'],active:{gc02: true},
+                    pme: sessionStorage['pme']=='true'?true:false
+            }));
+            eventMenu();
+        });
+    </script>
+
+    <div class="content-wrapper">
+        <section class="content animated fadeIn">
+            <div class="row elencoPreventivi">
+                <div class="col-md-12">
+                    <div class="nav-tabs-custom">
+                        <ul class="nav nav-tabs pull-right">
+                            <li><a href="#tab_1" onclick="tab1()" data-toggle="tab">FLUSSO PREVISIONALE</a></li>
+                            <li class="active"><a href="#tab_3" onclick="loadRiconciliazioniCockpit()"
+                                                  data-toggle="tab">PRIMA NOTA</a></li>
+                            <!--li><a href="#tab_2" onclick="tab2()" data-toggle="tab">MOVIMENTI</a></li-->
+
+                            <!--li><a href="#tab_0"  data-toggle="tab">FLUSSO DI CASSA</a></li-->
+                        </ul>
+                        <div class="tab-content ">
+                            <!--FLUSSO DI CASSA-->
+                            <div class="tab-pane" id="tab_0">
+                                <div class="row">
+                                    <div class="col-xs-12">
+                                        <div class="box">
+                                            <div class="box-header">
+                                                <table id="tabella_tab0"
+                                                       class="table table-hover table-striped dataTable444 display compact"
+                                                       style="width:100%">
+                                                    <thead id="elencoTab0Header">
+                                                    <tr>
+                                                        <th style="text-align:left;">Mese</th>
+                                                        <th style="text-align:left;">Data</th>
+                                                        <th style="text-align:left;">ID BILANCIO-TIPOLOGIA</th>
+                                                        <th style="text-align:left;"></th>
+                                                        <th style="text-align:left;"></th>
+                                                        <th style="text-align:left;">IMPONIBILE</th>
+                                                        <th style="text-align:left;">PREVIDENZA</th>
+                                                        <th style="text-align:left;">RA</th>
+                                                        <th style="text-align:left;">IVA</th>
+                                                        <th style="text-align:left;"></th>
+                                                        <th style="text-align:left;">Ingressi</th>
+                                                        <th style="text-align:left;">Uscite</th>
+                                                        <th style="text-align:left;">Sì/No</th>
+                                                        <th style="text-align:left;">Saldo</th>
+
+                                                    </tr>
+                                                    </thead>
+                                                    <tbody id="elencoPreventivi">
+                                                    </tbody>
+                                                </table>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <!--PREVISIONALE-->
+                            <div class="tab-pane " id="tab_1"></div>
+                            <!-- MOVIMENTI -->
+                            <div class="tab-pane" id="tab_2">
+                                <div class="row">
+                                    <div class="col-xs-12">
+
+                                        <div class="box">
+                                            <div class="box-header with-border">
+                                                <h3 class="box-title">Elenco Movimenti</h3>
+
+                                                <!-- <button class="btn btn-primary pull-right" data-toggle="modal" data-target="#modalCsv">
+                                                    <i class="fa fa-upload"></i> Movimenti Bancari formato Unicredit
+                                                </button> -->
+                                                <!--button class="btn btn-primary pull-right" data-toggle="modal" data-target="#modalSaldo" style="margin-right:10px;">
+                                                    <i class="fa fa-money"></i> Ripresa Saldo
+                                                </button-->
+                                            </div>
+
+                                            <div class="box-body">
+                                                <table id="tabella_tab2"
+                                                       class="table table-hover table-striped display compact"
+                                                       style="width:100%">
+                                                    <thead>
+                                                    <tr>
+                                                        <th>Data</th>
+                                                        <th>Valuta</th>
+                                                        <th>Causale</th>
+                                                        <th>Descrizione</th>
+                                                        <th>Importo</th>
+                                                        <th>Note</th>
+                                                        <th>Conto</th>
+                                                    </tr>
+                                                    </thead>
+                                                    <tbody id="elencoMovimenti">
+                                                    </tbody>
+                                                </table>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- /PARTITARIO -->
+                            <div id="tab_3" class="tab-pane active">
+
+                                <div class="row"
+                                     style="margin-top:10px; display:flex; align-items:flex-end; flex-wrap:wrap;">
+                                    <div class="col-md-2">
+                                        <label>Dal</label>
+                                        <input type="date" id="rc_from" class="form-control">
+                                    </div>
+                                    <div class="col-md-2">
+                                        <label>Al</label>
+                                        <input type="date" id="rc_to" class="form-control">
+                                    </div>
+
+                                    <div class="col-md-2" style="padding-top:25px;">
+                                        <button class="btn btn-primary" onclick="loadRiconciliazioniCockpit()">Applica
+                                        </button>
+                                    </div>
+
+                                    <div id="azioni_tab_3" class="col-md-6">
+                                        <div id="btnMovimenti" style="width: auto;"></div>
+                                        <button id="btnNuovoMov" class="btn btn-primary pull-right"
+                                                style="margin-right:10px;" onclick="riconciliazione1(-1,null)">
+                                            <i class="fa fa-plus"></i> Nuovo Movimento
+                                        </button>
+                                    </div>
+                                </div>
+
+                                <div class="row" style="margin-top:15px;">
+                                    <div class="col-md-3">
+                                        <div class="small-box bg-aqua">
+                                            <div class="inner">
+                                                <h3 id="rc_kpi_in">-</h3>
+                                                <p>Entrate (movimenti)</p></div>
+                                        </div>
+                                    </div>
+
+                                    <div class="col-md-3">
+                                        <div class="small-box bg-red">
+                                            <div class="inner">
+                                                <h3 id="rc_kpi_out">-</h3>
+                                                <p>Uscite (movimenti)</p></div>
+                                        </div>
+                                    </div>
+
+                                    <div class="col-md-3">
+                                        <div class="small-box bg-yellow">
+                                            <div class="inner">
+                                                <h3 id="rc_kpi_net">-</h3>
+                                                <p>Netto (movimenti)</p></div>
+                                        </div>
+                                    </div>
+
+                                    <div class="col-md-3">
+                                        <div class="small-box bg-green">
+                                            <div class="inner">
+                                                <h3 id="rc_kpi_ec">-</h3>
+                                                <p>Netto (ricavi-costi)</p></div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!--h4>Movimenti riconciliati</h4-->
+                                <table class="table table-striped" id="rc_table_mov">
+                                    <thead>
+                                    <tr>
+                                        <th style="text-align:left;">Data</th>
+                                        <th style="text-align:left;">Valuta</th>
+                                        <th style="text-align:left;">
+                                            <div>Conto</div>
+                                            <select id="rc_filter_conto" class="form-control input-sm"></select>
+                                        </th>
+                                        <th style="text-align:left;">
+                                            <div>Causale</div>
+                                            <select id="rc_filter_causale" class="form-control input-sm"></select>
+                                        </th>
+                                        <th style="text-align:left;">Importo</th>
+                                        <th></th>
+                                    </tr>
+                                    </thead>
+                                    <tbody></tbody>
+                                </table>
+
+                                <!--div id="rc_detail_box" style="display:none;">
+                                    <h4>Dettaglio partitario</h4>
+                                    <table class="table table-bordered" id="rc_table_part">
+                                    <thead>
+                                        <tr>
+                                        <th>Data</th>
+                                        <th>Partita</th>
+                                        <th>Descrizione</th>
+                                        <th>Dare (costo)</th>
+                                        <th>Avere (ricavo)</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody></tbody>
+                                    </table>
+                                </div-->
+
+
+                                <!--div class="box box-primary">
+                                    <div class="box-header with-border">
+                                    <h3 class="box-title">Riconciliazioni - Cockpit</h3>
+                                    </div>
+
+                                    <div class="box-body">
+                                    < !-- Filtri -- >
+                                    <div class="row">
+                                        <div class="col-md-2">
+                                        <label>Da</label>
+                                        <input type="date" id="rc_from" class="form-control">
+                                        </div>
+                                        <div class="col-md-2">
+                                        <label>A</label>
+                                        <input type="date" id="rc_to" class="form-control">
+                                        </div>
+
+                                        <div class="col-md-3">
+                                        <label>Conti</label>
+                                        <select id="rc_conti" class="form-control" multiple></select>
+                                        </div>
+
+                                        <div class="col-md-3">
+                                        <label>Partite</label>
+                                        <select id="rc_partite" class="form-control" multiple></select>
+                                        </div>
+
+                                        <div class="col-md-2" style="padding-top: 25px;">
+                                        <button class="btn btn-primary" onclick="loadRiconciliazioniCockpit(0)">Carica</button>
+                                        </div>
+                                    </div>
+
+                                    <hr/>
+
+                                    < !-- KPI -- >
+                                    <div class="row">
+                                        <div class="col-md-2"><div class="small-box bg-aqua"><div class="inner"><h3 id="rc_kpi_num">0</h3><p>Movimenti</p></div></div></div>
+                                        <div class="col-md-3"><div class="small-box bg-green"><div class="inner"><h3 id="rc_kpi_flusso">0</h3><p>Totale flusso (movimenti)</p></div></div></div>
+                                        <div class="col-md-2"><div class="small-box bg-yellow"><div class="inner"><h3 id="rc_kpi_costi">0</h3><p>Costi</p></div></div></div>
+                                        <div class="col-md-2"><div class="small-box bg-yellow"><div class="inner"><h3 id="rc_kpi_ricavi">0</h3><p>Ricavi</p></div></div></div>
+                                        <div class="col-md-3"><div class="small-box bg-purple"><div class="inner"><h3 id="rc_kpi_saldo">0</h3><p>Saldo contabile</p></div></div></div>
+                                    </div>
+
+                                    < !-- Tabelle -- >
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                        <h4>Riepilogo per conto</h4>
+                                        <table class="table table-bordered table-striped" id="rc_table_conto">
+                                            <thead><tr><th>Conto</th><th># Mov</th><th>Tot Flusso</th></tr></thead>
+                                            <tbody></tbody>
+                                        </table>
+                                        </div>
+
+                                        <div class="col-md-6">
+                                        <h4>Riepilogo per partita (centro)</h4>
+                                        <table class="table table-bordered table-striped" id="rc_table_partita">
+                                            <thead><tr><th>Partita</th><th>Descrizione</th><th>Costi</th><th>Ricavi</th><th>Saldo</th></tr></thead>
+                                            <tbody></tbody>
+                                        </table>
+                                        </div>
+                                    </div>
+
+                                    <hr/>
+
+                                    <h4>Movimenti riconciliati</h4>
+                                    <div id="rc_paging" style="margin: 10px 0;"></div>
+
+                                    <table class="table table-bordered table-hover" id="rc_table_mov">
+                                        <thead>
+                                        <tr>
+                                            <th>Data</th><th>Conto</th><th>Importo</th><th>Causale</th><th>Descrizione</th><th>Dettaglio</th>
+                                        </tr>
+                                        </thead>
+                                        <tbody></tbody>
+                                    </table>
+
+                                    </div>
+                                </div-->
+                            </div>
+
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+
+        </section>
+
+    </div>
+
+    <footer id="thefooter" class="main-footer"></footer>
+
+    <!--TUTTI I MODAL-->
+    <!-- MODALE IMPORT CSV -->
+    <div class="modal fade" id="modalCsv" tabindex="-1" role="dialog" aria-labelledby="modalCsvLabel">
+        <div class="modal-dialog modal-lg" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title" id="modalCsvLabel">Importa Movimenti da CSV</h4>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Chiudi">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+
+                <div class="modal-body">
+                    <input type="file" id="fileCsv" accept=".csv" class="form-control">
+
+                    <!-- TABELLA ANTEPRIMA -->
+                    <div id="previewContainer" style="margin-top:20px; display:none;">
+                        <h5>Anteprima dati:</h5>
+                        <table id="previewTable" class="table table-bordered">
+                            <thead>
+                            <tr>
+                                <th>Data</th>
+                                <th>Valuta</th>
+                                <th>Causale</th>
+                                <th>Descrizione</th>
+                                <th>Importo</th>
+                                <th>Note</th>
+                            </tr>
+                            </thead>
+                            <tbody></tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Annulla</button>
+                    <button type="button" class="btn btn-success" id="btnConfermaImport" disabled
+                            onclick="confermaImport()">Conferma Salvataggio
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODALE RICONCILIAZIONE INCASSO FATTURA-->
+    <div class="modal fade " id="modalRic1" tabindex="-1" role="dialog" aria-labelledby="modalRic1Label"
+         data-keyboard="false" data-backdrop="static">
+        <div class="modal-dialog modal-lg" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title" id="modalRic1Label">Contropartite di Riconciliazione Movimento</h4>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Chiudi">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+
+                <div class="modal-header">
+                    <div class="row" style="margin: 10px 3% 0 1%">
+                        <div class="col-md-3">
+                            <label style="width:100%;">Data</label>
+                            <br><span id="ric1-data"></span>
+                            <input type="date" id="ric1-data-input" class="form-control input-sm" style="width: 110px;">
+                        </div>
+                        <div class="col-md-3">
+                            <label style="width:100%;">Valuta</label>
+                            <br><span id="ric1-valuta"></span>
+                        </div>
+                        <div class="col-md-3">
+                            <label style="width:100%;">Importo</label>
+                            <br><span id="ric1-importo"></span>
+                        </div>
+                        <div class="col-md-3">
+                            <label style="width:100%;">Conto</label>
+                            <br><span id="ric1-conto"></span>
+                            <select id="ric1-conto-combo" style="width: 100%" class="form-control input-sm">
+                                <option value="-">-</option>
+                                <option value="BANCA">BANCA</option>
+                                <option value="CASSA">CASSA</option>
+                                <option value="PREPAGATA">PREPAGATA</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="row" style="margin: 10px 3% 0 1%">
+                        <div class="col-md-6">
+                            <label style="width:100%;">Causale</label>
+                            <br><span id="ric1-causale"></span>
+                            <input type="text" id="ric1-causale-input" class="form-control input-sm"
+                                   style="width:100%;">
+                        </div>
+                        <div class="col-md-6">
+                            <label style="width:100%;">Note</label>
+                            <br><span id="ric1-note"></span>
+                            <input type="text" id="ric1-note-input" class="form-control input-sm" style="width:100%;">
+                        </div>
+                    </div>
+                    <div class="row" style="margin: 10px 3% 0 1%">
+                        <div class="col-md-6">
+                            <label style="width:100%;">Descrizione</label>
+                            <br><span id="ric1-descrizione"></span>
+                            <input type="text" id="ric1-descrizione-input" class="form-control input-sm"
+                                   style="width:100%;">
+                        </div>
+                        <div class="col-md-6">
+                            <button type="button" class="btn btn-success pull-right" id="btnSalvaRic"
+                                    onclick="salvaRiconciliazione()">Registra Riconciliazione
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="modal-header">
+                    <div class="row" style="margin: 10px 3% 0 1%">
+                        <div class="col-md-6">
+                            <input type="text" id="importoRiga" class="form-control">
+                        </div>
+                        <div class="col-md-6">
+                            <select id="comboAvere" style="width: 100%" class="form-control input-sm">
+                                <option value="" disabled selected>Seleziona la tipologia di riconciliazione</option>
+                                <option value="0">Incasso Fattura</option>
+                                <option value="8">Incasso Fattura Privato con ritenuta 8% Banca</option>
+                                <option value="11">Incasso Fattura Privato con ritenuta 11% Banca</option>
+                                <option value="1">Incasso Anticipato su Fatture da Emettere Vs Cliente</option>
+                                <option value="2">Movimento Finanziario</option>
+                                <option value="X">Nessuna operazione - Forzatura</option>
+                            </select>
+                            <select id="comboDare" style="width: 100%" class="form-control input-sm">
+                                <option value="" disabled selected>Seleziona la tipologia di riconciliazione</option>
+                                <option value="0">Centro di Costo</option>
+                                <option value="1">Pagamento Documento Fornitore</option>
+                                <option value="2">Fatture da Ricevere Fornitore</option>
+                                <option value="X">Nessuna operazione - Forzatura</option>
+                            </select>
+                            <!--button type="button" class="btn btn-success pull-right" id="btnSalvaRic" onclick="salvaRiconciliazione()">Registra Riconciliazione</button-->
+                        </div>
+                    </div>
+                    <div class="row" style="margin: 10px 3% 0 1%">
+                        <div class="col-md-6">
+                            <select id="comboClienti1" style="width: 100%" class="form-control input-sm"></select>
+                            <select id="comboClienti2" style="width: 100%" class="form-control input-sm"></select>
+                            <select id="comboEntrata1" style="width: 100%" class="form-control input-sm">
+                                <option value="">Seleziona la tipologia di entrata finanziaria</option>
+                                <option value="0">Finanziamento Soci</option>
+                                <option value="1">Finanziamento Banca</option>
+                                <option value="2">Rimborso statale</option>
+                            </select>
+                            <select id="comboFattureR8" style="width: 100%" class="form-control input-sm"></select>
+                            <select id="comboFattureR11" style="width: 100%" class="form-control input-sm"></select>
+                            <select id="comboUscita1" style="width: 100%" class="form-control input-sm"></select>
+                            <select id="comboFornitori1" style="width: 100%" class="form-control input-sm"></select>
+                            <select id="comboFornitori2" style="width: 100%" class="form-control input-sm"></select>
+                        </div>
+                        <div class="col-md-6">
+                            <select id="comboFatture1" style="width: 100%;margin-bottom:10px;"
+                                    class="form-control input-sm"></select>
+                            <select id="comboPassivi1" style="width: 100%;margin-bottom:10px;"
+                                    class="form-control input-sm"></select>
+                            <input type="text" id="noteRic1" class="form-control"
+                                   style="width: 100%;margin-bottom:10px;">
+                            <button type="button" class="btn btn-info" id="btnAddRiga" onclick="aggiungiRiga()">Aggiungi
+                                Contropartita
+                            </button>
+
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-body">
+                    <div class="row">
+                        <div id="grigliaReg" style="margin-left:15px;margin-top:15px; margin-right: 0;"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Documento (placeholder) -->
+    <div class="modal fade" id="rcDocModal" tabindex="-1" role="dialog" aria-labelledby="rcDocModalTitle"
+         aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Chiudi">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                    <h4 class="modal-title" id="rcDocModalTitle">Documento collegato</h4>
+                </div>
+
+                <div class="modal-body">
+                    <div id="rcDocModalBody">
+                        <p><b>Funzionalità non ancora disponibile</b></p>
+                    </div>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Chiudi</button>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+
+    <script language="javascript">
+        $.get("../templates/footer.mst?_"+(new Date()).getTime(), function (template) {
+            $('#thefooter').html(Mustache.render(template, {vv:sessionStorage['vv']}));
+        });
+    </script>
+</div>
+</body>
+
+<script>document.write("<script type='text/javascript' src='../server.js?v=" + Date.now() + "'><\/script>");</script>
+<script src="../setupajax.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+    var tabella;
+
+    $(document).ready(function () {
+
+        moment.locale('it');
+        numeral.language('it', {
+            delimiters: {
+                thousands: '.',
+                decimal: ','
+            },
+            abbreviations: {
+                thousand: 'mila',
+                million: 'mil',
+                billion: 'b',
+                trillion: 't'
+            },
+            ordinal: function (number) {
+                return 'º';
+            },
+            currency: {
+                symbol: '€'
+            }
+        });
+        numeral.language('it');
+
+        tabella = $('#tabella_tab0').DataTable({
+            "createdRow": function(row, data, dataIndex) {
+                    $(row).addClass("rowPointer");
+                },
+            "language": {url: 'https://cdn.datatables.net/plug-ins/1.10.12/i18n/Italian.json'},
+            /*
+            "columnDefs" : [{
+                "searchable": false,
+                "orderable": false,
+                "targets" : [6,7,10]  ,
+                "visible": false
+            }],
+            */
+           "autoWidth": true,
+            ordering: false,
+            paging: false,
+            fixedHeader: {
+                header: true,
+                footer: true
+            },
+            scrollCollapse: true,
+            scrollX: true,
+            scrollY: 500
+        });
+        tabella.on( 'page.dt', function () {
+            fillNewPage();
+        } );
+        tabella.on( 'length.dt', function ( e, settings, len ) {
+            fillNewPage();
+        } );
+        $('#tabella th').click(function(e) {
+                fillNewPageFromSorting();
+        });
+
+
+        $('#comboDare').select2({
+            dropdownParent: $('#modalRic1')
+        });
+        $('#comboAvere').select2({
+            dropdownParent: $('#modalRic1')
+        });
+        $('#comboClienti1').select2({
+            dropdownParent: $('#modalRic1')
+        });
+        $('#comboClienti2').select2({
+            dropdownParent: $('#modalRic1')
+        });
+        $('#comboFatture1').select2({
+            dropdownParent: $('#modalRic1')
+        });
+        $('#comboFattureR8').select2({
+            dropdownParent: $('#modalRic1')
+        });
+        $('#comboFattureR11').select2({
+            dropdownParent: $('#modalRic1')
+        });
+        $('#comboUscita1').select2({
+            dropdownParent: $('#modalRic1')
+        });
+        $('#comboFornitori1').select2({
+            dropdownParent: $('#modalRic1')
+        });
+        $('#comboFornitori2').select2({
+            dropdownParent: $('#modalRic1')
+        });
+        $('#comboPassivi1').select2({
+            dropdownParent: $('#modalRic1')
+        });
+        $('#comboFatture2').select2({
+            dropdownParent: $('#modalRic1')
+        });
+        $('#comboEntrata1').select2({
+            dropdownParent: $('#modalRic1')
+        });
+
+        $('#rc_filter_conto').select2({
+            width: '100%',
+            placeholder: 'Tutti i conti',
+            allowClear: true
+        });
+        $('#rc_filter_causale').select2({
+            width: '100%',
+            placeholder: 'Tutte le causali',
+            allowClear: true
+        });
+        $('#rc_filter_conto').on('change', function () {
+            applyRcMovimentiFilters();
+        });
+        $('#rc_filter_causale').on('change', function () {
+            applyRcMovimentiFilters();
+        });
+
+        var richiestaCombo = $.getJSON(server + 'secure/service/comboFlussoCassa');
+        richiestaCombo.success(function (r) {
+            sessionStorage.setItem('comboFlussoCassa',JSON.stringify(r));
+
+            popolaCombo();
+
+            ////refreshElenco();
+            loadRiconciliazioniCockpit();
+
+            caricaPulsantiMovimenti();
+
+            // default date: mese corrente (se vuoi)
+            var d = new Date();
+            var y = d.getFullYear(), m = String(d.getMonth()+1).padStart(2,'0');
+            $("#rc_from").val(y + "-" + m + "-01");
+            $("#rc_to").val(moment(d).format('YYYY-MM-DD'));
+
+            handleReturnFromCommessa();
+
+        });
+
+        //Effetto onda sui tasti, stile material design
+        Waves.attach('.btn', ['waves-float']);
+        Waves.init();
+        new WOW().init();
+    });
+
+
+
+    var movimentiCaricati = false;
+    var movimenti = [];
+    var idMovimento = -1;
+    var selMov;
+    var tabReg;
+    var grigliaReg;
+    var dataReg = [];
+    var colReg;
+    var totaleGriglia = 0.0;
+
+    let movimentiDb = new Set();
+    var mappatura = [];
+    let movimentiCsv = [];
+
+    var rcMovimentiAll = [];
+    var rcMovimentiFilters = {
+        conto: '',
+        causale: ''
+    };
+
+    var comboClienti = [];
+    var comboFornitori = [];
+    var comboCcosto = [];
+    var comboFatture = [];
+    var comboPassivi = [];
+    var comboCommesse = [];
+
+
+    function popolaCombo(){
+
+        var r = JSON.parse(sessionStorage.getItem('comboFlussoCassa'));
+        decodifiche = r;
+        clienti = r.clienti;
+
+        var dati = {};
+        var select;
+        var length;
+
+        //CLIENTI
+        comboClienti = r.clienti;
+        comboClienti.sort(function(a, b) {
+            //ascending
+            if (a.societa < b.societa) return -1;
+            if (a.societa > b.societa) return 1;
+            return 0;
+        });
+
+        //FORNITORI
+        comboFornitori = r.fornitori;
+        comboFornitori.sort(function(a, b) {
+            //ascending
+            if (a.societa < b.societa) return -1;
+            if (a.societa > b.societa) return 1;
+            return 0;
+        });
+
+        //FATTURE APERTE
+        comboFatture = r.fatture;
+        for (i = 0; i < comboFatture.length; i++){
+            var cliente = "";
+            for (x = 0; x < comboClienti.length; x++){
+                if(comboClienti[x].id == comboFatture[i].clifoId){
+                    cliente = ""+comboClienti[x].societa;
+                }
+                comboFatture[i].cliente = cliente;
+            }
+        }
+        comboFatture.sort(function(a, b) {
+            //ascending
+            if (a.codice < b.codice) return -1;
+            if (a.codice > b.codice) return 1;
+            return 0;
+        });
+        console.log(comboFatture);
+        select = '';
+        length = comboFatture.length;
+        for (i = 0; i < length; i++)
+            select += '<option value="' + comboFatture[i].id + '">Nr. ' + comboFatture[i].numeroFattura + ' del ' + comboFatture[i].dataFattura.dayOfMonth+'/'+comboFatture[i].dataFattura.monthValue+'/'+comboFatture[i].dataFattura.year +'('+numeral((comboFatture[i].totalePagare - comboFatture[i].importoPagato)).format('$ 0,0.00')+')' + ' - ' + comboFatture[i].cliente + '</option>';
+        $('#comboFatture1').empty().append(select);
+
+        select = '';
+        length = comboFatture.length;
+        for (i = 0; i < length; i++){
+            if(comboFatture[i].ritenuta!=0){
+                select += '<option value="' + comboFatture[i].id + '">Nr. ' + comboFatture[i].numeroFattura + ' del ' + comboFatture[i].dataFattura.dayOfMonth+'/'+comboFatture[i].dataFattura.monthValue+'/'+comboFatture[i].dataFattura.year +'('+numeral(((comboFatture[i].totalePagare - comboFatture[i].importoPagato) - (((comboFatture[i].totalePagare - comboFatture[i].importoPagato)/122*100)*8/100))).format('$ 0,0.00')+')' + ' - ' + comboFatture[i].cliente + '</option>';
+            }
+        }
+        $('#comboFattureR8').empty().append(select);
+
+        select = '';
+        length = comboFatture.length;
+        for (i = 0; i < length; i++){
+            if(comboFatture[i].ritenuta!=0){
+                select += '<option value="' + comboFatture[i].id + '">Nr. ' + comboFatture[i].numeroFattura + ' del ' + comboFatture[i].dataFattura.dayOfMonth+'/'+comboFatture[i].dataFattura.monthValue+'/'+comboFatture[i].dataFattura.year +'('+numeral(((comboFatture[i].totalePagare - comboFatture[i].importoPagato) - (((comboFatture[i].totalePagare - comboFatture[i].importoPagato)/122*100)*11/100))).format('$ 0,0.00')+')' + ' - ' + comboFatture[i].cliente + '</option>';
+            }
+        }
+        $('#comboFattureR11').empty().append(select);
+
+        //CLIENTI
+        select = '';
+        length = comboClienti.length;
+        for (i = 0; i < length; i++){
+            for(x=0;x<comboFatture.length;x++){
+                if(comboClienti[i].id == comboFatture[x].clifoId){
+                    select += '<option value="' + comboClienti[i].id + '">' + comboClienti[i].societa + '</option>';
+                    break;
+                }
+            }
+        }
+        $('#comboClienti1').empty().append('<option value="">Seleziona il Cliente</option>'+select);
+
+        select = '';
+        length = comboClienti.length;
+        for (i = 0; i < length; i++){
+            select += '<option value="' + comboClienti[i].id + '">' + comboClienti[i].societa + '</option>';
+        }
+        $('#comboClienti2').empty().append('<option value="" disabled selected>Seleziona il Cliente</option>'+select);
+
+        //PASSIVI APERTI
+        comboPassivi = r.passivi;
+        for (i = 0; i < comboPassivi.length; i++){
+            var fornitore = "";
+            for (x = 0; x < comboFornitori.length; x++){
+                if(comboFornitori[x].id == comboPassivi[i].clifoId){
+                    fornitore = ""+comboFornitori[x].societa;
+                }
+                comboPassivi[i].fornitore = fornitore;
+            }
+        }
+        comboPassivi.sort(function(a, b) {
+            //ascending
+            if (a.codice < b.codice) return -1;
+            if (a.codice > b.codice) return 1;
+            return 0;
+        });
+        select = '';
+        length = comboPassivi.length;
+        for (i = 0; i < length; i++)
+            select += '<option value="' + comboPassivi[i].id + '">' + comboPassivi[i].tipoDoc + ' ' + comboPassivi[i].numeroDoc + ' del ' + comboPassivi[i].dataDoc.dayOfMonth+'/'+comboPassivi[i].dataDoc.monthValue+'/'+comboPassivi[i].dataDoc.year +'('+numeral((comboPassivi[i].totalePagare - comboPassivi[i].importoPagato)).format('$ 0,0.00')+')' + ' - ' + comboPassivi[i].fornitore + '</option>';
+        $('#comboPassivi1').empty().append(select);
+
+        //FORNITORI
+        select = '';
+        length = comboFornitori.length;
+        for (i = 0; i < length; i++){
+            for(x=0;x<comboPassivi.length;x++){
+                if(comboFornitori[i].id == comboPassivi[x].clifoId){
+                    select += '<option value="' + comboFornitori[i].id + '">' + comboFornitori[i].societa + '</option>';
+                    break;
+                }
+            }
+        }
+        $('#comboFornitori1').empty().append('<option value="">Seleziona il Fornitore</option>'+select);
+
+        select = '';
+        length = comboFornitori.length;
+        for (i = 0; i < length; i++){
+            select += '<option value="' + comboFornitori[i].id + '">' + comboFornitori[i].societa + '</option>';
+        }
+        $('#comboFornitori2').empty().append('<option value="" disabled selected>Seleziona il Fornitore</option>'+select);
+
+        //COMMESSE
+        select = '';
+        comboCommesse = r.commesse;
+        comboCommesse.sort(function(a, b) {
+            //ascending
+            if (a.codice < b.codice) return -1;
+            if (a.codice > b.codice) return 1;
+            return 0;
+        });
+        length = comboCommesse.length;
+        select += '<option value="">Costo Generale</option>';
+        for (i = 0; i < length; i++)
+            select += '<option value="' + comboCommesse[i].id + '">' + comboCommesse[i].codeCommessa + '</option>';
+
+        $('#comboUscita1').empty().append(select);
+
+
+
+
+    }
+
+    function refreshElenco() {
+
+        Pace.restart();
+        Pace.track(function () {
+            var elencoCall = $.get(server + 'secure/coge/partitario');
+            elencoCall.success(function (response) {
+                tabella.clear().draw();
+                //tabellaCommesseAcquisite.clear().draw();
+                rowsToLoad = [];
+
+
+                var elencoLength = response.length;
+
+                //carica riga tabella con i dati dell'elenco commesse letto
+                for (i = 0; i < elencoLength; i++){
+                    toLoadRigaTabella(response[i]);
+                }
+                tabella.draw();
+
+                //completa i dati dei SAL per ciascuna riga in elenco con i colori guida
+                for (i = 0; i < rowsToLoad.length; i++){
+                    //toFillRigaTabella(rowsToLoad[i].index, rowsToLoad[i].jRiga);
+                }
+
+            });
+        });
+    }
+    function toLoadRigaTabella(jRiga){
+
+        var newRow;
+        newRow = tabella.row.add( [
+            '', //jRiga.TipoDoc,
+            dataFromSql(jRiga.data).format('DD MMM YY'),
+            jRiga.causale,
+            jRiga.descrizione,
+            '',
+            0,
+            0,
+            0,
+            0,
+            0,
+            numeral(jRiga.avere).format('$ 0,0.00'),
+            numeral(jRiga.dare).format('$ 0,0.00'),
+
+
+        //] ).draw();
+        ] );
+
+        var loadableRow = {
+            "jRiga" : jRiga,
+            "index" : newRow.index()
+        }
+
+        rowsToLoad.push(loadableRow);
+
+
+    }
+
+    function toFillRigaTabella(index,jRiga) {
+
+
+        if(jRiga.idRiferimento>0){
+            tabella.cell( index, 0 ).data('<span class="glyphicon glyphicon-refresh spinning"></span>').draw(false);
+
+            switch (jRiga.partita) {
+                case 'PAGDOC':
+                    Pace.ignore(function () {
+                        var idDoc = jRiga.idRiferimento;
+                        var importo = jRiga.dare;
+                        var ajCall = $.ajax({
+                            url: server + 'secure/coge/docpassivo/' + idDoc,
+                            method: "GET",
+                            timeout: 5000,
+                            error : function(jqXHR, textStatus, errorThrown) {
+                                if(textStatus==="timeout") {
+                                    errore = true;
+                                    tabella.cell( index, 0 ).data('').draw(false);
+                                }
+                            }
+                        });
+                        ajCall.success(function (response) {
+                            tabella.cell( index, 0 ).data('').draw(false);
+                            if(response.totalePagare!=importo){
+                                //frazionato
+                            }else{
+
+                            }
+
+                        });
+                    });
+                    break;
+
+                default:
+                    tabella.cell( index, 0 ).data('').draw(false);
+                    break;
+            }
+
+        }
+
+
+    }
+
+    async function caricaMovimentiDb() {
+        try {
+            const res = await fetch(`${server}movimenti/esistenti`, {
+                headers: { 'Authorization': 'Bearer ' + sessionStorage['token'] }
+            });
+            if (!res.ok) throw new Error('Errore caricamento movimenti dal DB: ' + res.status);
+
+            const data = await res.json();
+            // Creo una stringa chiave per ogni movimento: data|valuta|causale|importo
+            movimentiDb = new Set(data.map(m => `${m.DataMov}|${m.ValutaMov}|${m.CausaleMov}|${m.ImportoMov}`));
+            console.log('Movimenti caricati dal DB:', movimentiDb);
+
+        } catch (err) {
+            console.error(err);
+        }
+    }
+
+    function elaboraCsv(text) {
+        movimentiCsv = [];
+        const rows = text.split('\n').map(r => r.trim()).filter(r => r !== '');
+        const previewBody = document.querySelector('#previewTable tbody');
+        previewBody.innerHTML = '';
+
+        //const intestazione = rows[0].split(';').map(h => h.trim());
+        const intestazione = parseCsvLine(rows[0]);
+        const intestazioneAttesa = mappatura;
+        if (
+            (intestazione.length < 6) ||
+            !intestazioneAttesa.every((col, idx) => intestazione[idx] === col)
+        ) {
+            swal("Errore CSV", "Errore del file CSV: intestazione non valida", "error");
+            document.getElementById('previewContainer').style.display = 'none';
+            document.getElementById('btnConfermaImport').disabled = true;
+            return;
+        }
+
+        function parseCsvLine(line) {
+            let cols = [];
+            let current = '';
+            let inQuotes = false;
+
+            for (let i = 0; i < line.length; i++) {
+                const char = line[i];
+                if (char === '"' && line[i + 1] === '"') {
+                    current += '"';
+                    i++;
+                } else if (char === '"') {
+                    inQuotes = !inQuotes;
+                } else if (char === ';' && !inQuotes) {
+                    cols.push(current);
+                    current = '';
+                } else {
+                    current += char;
+                }
+            }
+            cols.push(current);
+            return cols;
+        }
+
+        for (let i = 1; i < rows.length; i++) {
+            let cols = parseCsvLine(rows[i]);
+
+            // Assicurarsi che esistano tutte le colonne richieste
+            while (cols.length < 7) cols.push('');
+
+            // Parsing importo italiano
+            let importo = 0;
+            if (cols[4]) {
+                importo = parseFloat(cols[4].replace(/\./g, '').replace(',', '.')) || 0;
+            }
+
+            const movimento = {
+                Data: cols[0] || '',
+                Valuta: cols[1] || '',
+                Causale: cols[2] || '',
+                Descrizione: cols[3] || '',
+                Importo: importo,
+                Note: cols[6] || ''
+            };
+
+            const key = `${formattaDataTime(movimento.Data)}|${formattaDataTime(movimento.Valuta)}|${movimento.Causale}|${movimento.Importo}`;
+            movimento.duplicato = movimentiDb.has(key);
+
+            movimentiCsv.push(movimento);
+
+            const tr = document.createElement('tr');
+            tr.dataset.key = key;
+            tr.className = movimento.duplicato ? 'riga-duplicata' : '';
+
+            tr.innerHTML = `
+                <td>${movimento.Data}</td>
+                <td>${movimento.Valuta}</td>
+                <td>${movimento.Causale}</td>
+                <td>${movimento.Descrizione}</td>
+                <td>${movimento.Importo.toLocaleString('it-IT', {minimumFractionDigits:2, maximumFractionDigits:2})} €</td>
+                <td>${movimento.Note}</td>
+                <td>${movimento.duplicato ? '<button class="btn btn-sm btn-danger btn-rimuovi">Rimuovi</button>' : ''}</td>
+            `;
+            previewBody.appendChild(tr);
+        }
+
+        document.getElementById('previewContainer').style.display = 'block';
+        aggiornaConfermaImport();
+        aggiungiListenerCestino();
+    }
+
+    function aggiornaConfermaImport() {
+        const previewBody = document.querySelector('#previewTable tbody');
+        const ciSonoRigheRosse = previewBody.querySelectorAll('.riga-duplicata').length > 0;
+        const btn = document.getElementById('btnConfermaImport');
+        btn.disabled = ciSonoRigheRosse;
+    }
+
+    function aggiungiListenerCestino() {
+        const buttons = document.querySelectorAll('.btn-rimuovi');
+        buttons.forEach(btn => {
+            btn.onclick = function() {
+                const tr = btn.closest('tr');
+                const key = tr.dataset.key;
+                // Rimuovo dalla tabella e dall'array movimentiCsv
+                tr.remove();
+                movimentiCsv = movimentiCsv.filter(m => {
+                    const k = `${formattaDataTime(m.Data)}|${formattaDataTime(m.Valuta)}|${m.Causale}|${m.Importo}`;
+                    return k !== key;
+                });
+                aggiornaConfermaImport();
+            };
+        });
+    }
+
+    function analizzaCsv() {
+        const fileInput = document.getElementById('fileCsv');
+        const file = fileInput.files[0];
+        if (!file) {
+            alert("Seleziona un file CSV");
+            return;
+        }
+
+        caricaMovimentiDb().then(() => {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const text = e.target.result;
+                elaboraCsv(text);
+            };
+            reader.readAsText(file, 'UTF-8');
+        });
+    }
+
+    // Conferma import solo righe non duplicate
+    async function confermaImport() {
+        const daSalvare = movimentiCsv.filter(m => !m.duplicato);
+
+        if (daSalvare.length === 0) {
+            swal("Nessun nuovo movimento", "Tutti i movimenti sono già presenti.", "info");
+            return;
+        }
+
+        const payload = daSalvare.map(m => ({
+            DataMov: formattaDataTime(m.Data),
+            ValutaMov: formattaDataTime(m.Valuta),
+            CausaleMov: m.Causale || '',
+            DescrizioneMov: m.Descrizione || '',
+            ImportoMov: parseFloat(m.Importo) || 0,
+            NoteMov: m.Note || '',
+            checksum: m.checksum
+        }));
+
+        try {
+            const res = await fetch(`${server}movimenti/import?banca=BANCA`, {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify(payload)
+            });
+
+            if (!res.ok) {
+                swal("Errore", "Impossibile importare i movimenti. Riprova!", "error");
+                return;
+            }
+
+            //refresh elenco mmovimenti
+            caricaTabellaMovimenti();
+
+            /*
+            // Aggiorna tabella principale con le righe salvate
+            const tbody = document.getElementById('elencoMovimenti');
+            daSalvare.forEach(mov => {
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td>${mov.Data}</td>
+                    <td>${mov.Valuta}</td>
+                    <td>${mov.Causale || ''}</td>
+                    <td>${mov.Descrizione || ''}</td>
+                    <td>${mov.Importo || ''}</td>
+                    <td>${mov.Note || ''}</td>
+                    <td>${mov.Conto || ''}</td>
+                `;
+                tbody.appendChild(tr);
+            });
+            */
+
+            swal({
+                title: "Importazione completata",
+                text : "Movimenti Caricati",
+                //text: `${daSalvare.length} movimenti salvati con successo!`,
+                type: "success"
+            }, function() {
+                $('#modalCsv').modal('hide');
+                movimentiCsv = [];
+                $('#btnConfermaImport').prop('disabled', true);
+                $('#previewContainer').hide();
+                $('#previewTable tbody').empty();
+                $('#fileCsv').val('');
+
+                //ricarica movimenti prima nota
+                loadRiconciliazioniCockpit();
+            });
+
+        } catch (err) {
+            swal("Errore", "Impossibile importare i movimenti. Riprova!", "error");
+        }
+    }
+
+    function formattaDataTime(data) {
+        data = data.trim();
+        if (!data) return null;
+        const parts = data.split('/');
+        if (parts.length === 3) {
+            return `${parts[2]}-${parts[1].padStart(2,'0')}-${parts[0].padStart(2,'0')}`;
+        }
+        return data;
+    }
+
+    // Aggiungo listener cambio file appena il DOM è pronto
+    document.addEventListener('DOMContentLoaded', function() {
+        document.getElementById('fileCsv').addEventListener('change', function() {
+            analizzaCsv();
+        });
+    });
+
+    // Funzione per popolare l'elenco dei movimenti
+    function tab2() {
+        //caricaPulsantiMovimenti();
+        if(!movimentiCaricati){
+            caricaTabellaMovimenti();
+        }
+
+    }
+
+    async function caricaPulsantiMovimenti() {
+        try {
+            var res = await fetch(`${server}movimenti/tipipulsanti`, {
+                headers: {
+                    'Authorization': 'Bearer ' + sessionStorage['token']
+                }
+            });
+
+            if (!res.ok) throw new Error(`HTTP ${res.status}`);
+            var response = await res.json();
+            //console.log(response);
+            $('#btnMovimenti').empty();
+            $.each(response, function () {
+                var btn = $('<button>', {
+                    class: 'btn btn-primary pull-right',
+                    'data-toggle': 'modal',
+                    'data-target': '#modalCsv',
+                    html: `<i class="fa fa-upload"></i> Movimenti Bancari ${this.note}`
+                });
+                btn.on('click', () => caricaMappatura(this.valore));
+                $('#btnMovimenti').append(btn);
+            });
+        } catch (err) {
+            console.error('Errore:', err);
+        }
+    }
+
+    function caricaMappatura(newValore) {
+        var jsonValido = newValore.replace(/'/g, '"');
+        var obj = JSON.parse(jsonValido);
+        mappatura = Object.keys(obj)
+            .sort((a, b) => obj[a] - obj[b]);
+    }
+
+    async function caricaTabellaMovimenti() {
+        try {
+            const res = await fetch(`${server}movimenti/all`, {
+                headers: { 'Authorization': 'Bearer ' + sessionStorage['token'] }
+            });
+            movimenti = await res.json();
+            const tbody = document.getElementById('elencoMovimenti');
+            tbody.innerHTML = '';
+            movimenti.forEach(m => {
+                const tr = document.createElement('tr');
+                if(m.idRiconciliazione!=null){
+
+                }else{
+                    tr.style.color = "red";
+                    tr.addEventListener("click", function(){ riconciliazione1(m.IDmov,m); });
+                }
+                tr.innerHTML = `
+                    <td>${m.DataMov}</td>
+                    <td>${m.ValutaMov}</td>
+                    <td>${m.CausaleMov}</td>
+                    <td>${m.DescrizioneMov || ''}</td>
+                    <td>${numeral(m.ImportoMov).format('$ 0,0.00')}</td>
+                    <td>${m.NoteMov || ''}</td>
+                    <td>${m.Conto || ''}</td>
+                `;
+                tbody.appendChild(tr);
+            });
+            movimentiCaricati = true;
+        } catch (err) {
+            console.error(err);
+            Swal.fire('Errore', 'Impossibile caricare movimenti', 'error');
+        }
+    }
+
+    function riconciliazione1(id,tr_mov){
+        idMovimento = id;
+        colReg = [{
+            data: 'importo',
+            type: 'numeric',
+            format: '$ 0,0.00',
+            language: 'it',
+            readOnly: true
+        }, {
+            data: 'causale',
+            readOnly: true
+        }, {
+            data: 'contropartita',
+            readOnly: true
+        }, {
+            data: 'buttons',
+            renderer: function(instance, td, row, col, prop, value, cellProperties) {
+                td.innerHTML = '';
+                td.className = 'htCenter htMiddle';
+                td.innerHTML =
+                        '<button class="btn btn-danger btn-xs btn-block btn-flat waves-effect waves-float delReg" ' +
+                        'data-row="' + row + '" ' +
+                        'style="width: 22px; height:22px; border-radius:3px">' +
+                        '<i class="fa fa-minus"></i></button>';
+            },
+            readOnly: true
+        }];
+        dataReg = [];
+
+        $('#ric1-data-input').on('change', function () {
+            //selMov.DataMov = moment($('#ric1-data-input').val(), 'DD MMMM, YYYY').format('YYYY-MM-DD');
+            selMov.DataMov = $('#ric1-data-input').val();
+            $("#ric1-data").text(selMov.DataMov);
+        });
+
+        //recupera movimento
+        if(id<0){
+            selMov = {
+                DataMov:'',
+                ValutaMov:'',
+                CausaleMov:'',
+                DescrizioneMov:'',
+                ImportoMov:0.0,
+                NoteMov:'',
+                Conto:''
+            };
+
+            $("#ric1-data").hide();
+            $("#ric1-data-input").show();
+            $('#ric1-data-input').val(moment().format('YYYY-MM-DD')).trigger('change');
+
+            $("#ric1-conto").hide();
+            $("#ric1-conto-combo").show();
+
+            $("#ric1-causale").hide();
+            $("#ric1-causale-input").show();
+            $("#ric1-causale-input").prop("disabled",true);
+
+            $("#ric1-note").hide();
+            $("#ric1-note-input").show();
+            $("#ric1-note-input").prop("disabled",true);
+
+            $("#ric1-descrizione").hide();
+            $("#ric1-descrizione-input").show();
+            $("#ric1-descrizione-input").prop("disabled",true);
+
+
+
+        }else{
+            selMov = {
+                DataMov:tr_mov.DataMov || tr_mov.dataMov,
+                ValutaMov:tr_mov.ValutaMov || tr_mov.valutaMov,
+                CausaleMov:tr_mov.CausaleMov || tr_mov.causaleMov,
+                DescrizioneMov:tr_mov.DescrizioneMov || tr_mov.descrizioneMov,
+                ImportoMov:tr_mov.ImportoMov || tr_mov.importoMov,
+                NoteMov:tr_mov.NoteMov || tr_mov.noteMov,
+                Conto:tr_mov.Conto || tr_mov.conto
+            };
+            /*
+            for(i=0;i<movimenti.length;i++){
+                if(movimenti[i].IDmov==id){
+                    selMov = movimenti[i];
+                }
+            }
+            */
+
+            $("#ric1-data").show();
+            $("#ric1-data-input").hide();
+
+            $("#ric1-conto").show();
+            $("#ric1-conto-combo").hide();
+
+            $("#ric1-causale").show();
+            $("#ric1-causale-input").hide();
+
+            $("#ric1-note").show();
+            $("#ric1-note-input").hide();
+
+            $("#ric1-descrizione").show();
+            $("#ric1-descrizione-input").hide();
+        }
+        //for(i=0;i<movimenti.length;i++){
+            //if(movimenti[i].IDmov==id){
+                //selMov = movimenti[i];
+                $("#ric1-data").text(selMov.DataMov);
+                $("#ric1-valuta").text(selMov.ValutaMov);
+                $("#ric1-causale").text(selMov.CausaleMov);
+                $("#ric1-descrizione").text(selMov.DescrizioneMov);
+                $("#ric1-importo").text(numeral(selMov.ImportoMov).format('$ 0,0.00'));
+                $("#ric1-note").text(selMov.NoteMov);
+                $("#ric1-conto").text(selMov.Conto);
+
+                $("#btnAddRiga").hide();
+
+                $("#comboDare").next(".select2-container").hide();
+                $('#comboDare').on('change', function () {
+
+
+                    $("#comboUscita1").next(".select2-container").hide();
+                    $("#comboFornitori1").next(".select2-container").hide();
+                    $("#comboFornitori2").next(".select2-container").hide();
+                    $("#comboPassivi1").next(".select2-container").hide();
+                    $("#noteRic1").hide();
+
+                    $("#btnAddRiga").hide();
+
+                    if($("#comboDare").val()=="0"){
+                        $("#comboUscita1").next(".select2-container").show();
+                        $("#comboUscita1").val("").trigger("change");
+                        $("#noteRic1").val("").trigger("change").show();;
+                    }
+
+                    if($("#comboDare").val()=="1"){
+                        $("#comboFornitori1").next(".select2-container").show();
+                        $("#comboPassivi1").next(".select2-container").show();
+                        $("#comboFornitori1").val("").trigger("change");
+                        $("#comboPassivi1").val("").trigger("change");
+                    }
+
+                    if($("#comboDare").val()=="2"){
+                        $("#comboFornitori2").next(".select2-container").show();
+                        $("#comboFornitori2").val("").trigger("change");
+                    }
+
+                    if($("#comboDare").val()=="X"){
+                        $("#noteRic1").val("").trigger("change").show();
+                        setTimeout(function() { $("#noteRic1").focus(); }, 0);
+                        $("#btnAddRiga").show();
+                    }
+
+
+                });
+
+                $("#comboAvere").next(".select2-container").hide();
+                $('#comboAvere').on('change', function () {
+
+                    $("#comboClienti1").next(".select2-container").hide();
+                    $("#comboClienti2").next(".select2-container").hide();
+                    $("#comboFatture1").next(".select2-container").hide();
+                    $("#comboFattureR8").next(".select2-container").hide();
+                    $("#comboFattureR11").next(".select2-container").hide();
+                    $("#comboEntrata1").next(".select2-container").hide();
+                    $("#noteRic1").hide();
+
+                    $("#btnAddRiga").hide();
+
+                    if($("#comboAvere").val()=="0"){
+                        $("#comboClienti1").next(".select2-container").show();
+                        $("#comboFatture1").next(".select2-container").show();
+                        $("#comboClienti1").val("").trigger("change");
+                        $("#comboFatture1").val("").trigger("change");
+                    }
+                    if($("#comboAvere").val()=="8"){
+                        $("#comboFattureR8").next(".select2-container").show();
+                        $("#comboFattureR8").val("").trigger("change");
+                    }
+                    if($("#comboAvere").val()=="11"){
+                        $("#comboFattureR11").next(".select2-container").show();
+                        $("#comboFattureR11").val("").trigger("change");
+                    }
+                    if($("#comboAvere").val()=="1"){
+                        $("#comboClienti2").next(".select2-container").show();
+                        $("#comboClienti2").val("").trigger("change");
+                    }
+                    if($("#comboAvere").val()=="2"){
+                        $("#comboEntrata1").next(".select2-container").show();
+                        $("#comboEntrata1").val("").trigger("change");
+                        $("#noteRic1").val("").show();
+                    }
+                    if($("#comboAvere").val()=="X"){
+                        $("#noteRic1").val("").trigger("change").show();
+                        setTimeout(function() { $("#noteRic1").focus(); }, 0);
+                        $("#btnAddRiga").show();
+                    }
+
+                });
+
+                $("#comboClienti1").next(".select2-container").hide();
+                $('#comboClienti1').on('change', function () {
+                    $("#comboFatture1").val("").trigger("change");
+                    //$("#btnAddRiga").hide();
+                    if($("#comboClienti1").val()!=null && $("#comboClienti1").val()!=""){
+                        select = '';
+                        length = comboFatture.length;
+                        var count=0;
+                        var selected;
+                        for (i = 0; i < length; i++){
+                            if(comboFatture[i].clifoId==$("#comboClienti1").val()){
+                                selected = comboFatture[i].id;
+                                count++;
+                                select += '<option value="' + comboFatture[i].id + '">Nr. ' + comboFatture[i].numeroFattura + ' del ' + comboFatture[i].dataFattura.dayOfMonth+'/'+comboFatture[i].dataFattura.monthValue+'/'+comboFatture[i].dataFattura.year +'('+numeral((comboFatture[i].totalePagare - comboFatture[i].importoPagato)).format('$ 0,0.00')+')' + '</option>';
+                            }
+                        }
+                        $('#comboFatture1').empty().append(select);
+                        if(count==1){
+                            $("#comboFatture1").val(selected).trigger("change");
+                        }
+                    }else{
+                        select = '';
+                        length = comboFatture.length;
+                        for (i = 0; i < length; i++)
+                            select += '<option value="' + comboFatture[i].id + '">Nr. ' + comboFatture[i].numeroFattura + ' del ' + comboFatture[i].dataFattura.dayOfMonth+'/'+comboFatture[i].dataFattura.monthValue+'/'+comboFatture[i].dataFattura.year +'('+numeral((comboFatture[i].totalePagare - comboFatture[i].importoPagato)).format('$ 0,0.00')+')' + ' - ' + comboFatture[i].cliente + '</option>';
+
+                        $('#comboFatture1').empty().append(select);
+                    }
+
+
+                });
+
+                $("#comboClienti2").next(".select2-container").hide();
+                $('#comboClienti2').on('change', function () {
+                    $("#btnAddRiga").hide();
+                    if($("#comboClienti2").val()!=null && $("#comboClienti2").val()!=""){
+                        $("#btnAddRiga").show();
+                    }
+                });
+
+
+                $("#comboFatture1").next(".select2-container").hide();
+                $('#comboFatture1').on('change', function () {
+                    $("#btnAddRiga").hide();
+                    if($("#comboFatture1").val()!=null && $("#comboFatture1").val()!=""){
+                        $("#btnAddRiga").show();
+                    }
+                });
+
+                $("#comboFattureR8").next(".select2-container").hide();
+                $('#comboFattureR8').on('change', function () {
+                    $("#btnAddRiga").hide();
+                    if($("#comboFattureR8").val()!=null && $("#comboFattureR8").val()!=""){
+                        $("#btnAddRiga").show();
+                    }
+                });
+
+                $("#comboFattureR11").next(".select2-container").hide();
+                $('#comboFattureR11').on('change', function () {
+                    $("#btnAddRiga").hide();
+                    if($("#comboFattureR11").val()!=null && $("#comboFattureR11").val()!=""){
+                        $("#btnAddRiga").show();
+                    }
+                });
+
+                $("#comboEntrata1").next(".select2-container").hide();
+                $('#comboEntrata1').on('change', function () {
+                    $("#btnAddRiga").hide();
+                    if($('#comboEntrata1').val()!=null && $('#comboEntrata1').val()!=""){
+                        setTimeout(function() { $("#noteRic1").focus(); }, 0);
+                        $("#btnAddRiga").show();
+                    }
+                });
+
+                $("#comboUscita1").next(".select2-container").hide();
+                $('#comboUscita1').on('change', function () {
+                    $("#btnAddRiga").hide();
+                    if($('#comboUscita1').val()!=null){
+                        setTimeout(function() { $("#noteRic1").focus(); }, 0);
+                        $("#btnAddRiga").show();
+                    }
+                });
+
+                $("#comboFornitori1").next(".select2-container").hide();
+                $('#comboFornitori1').on('change', function () {
+                    $("#comboPassivi1").val("").trigger("change");
+                    if($("#comboFornitori1").val()!=null && $("#comboFornitori1").val()!=""){
+                        select = '';
+                        length = comboPassivi.length;
+                        var count=0;
+                        var selected;
+                        for (i = 0; i < length; i++){
+                            if(comboPassivi[i].clifoId==$("#comboFornitori1").val()){
+                                selected = comboPassivi[i].id;
+                                count++;
+                                select += '<option value="' + comboPassivi[i].id + '">' + comboPassivi[i].tipoDoc + ' ' + comboPassivi[i].numeroDoc + ' del ' + comboPassivi[i].dataDoc.dayOfMonth+'/'+comboPassivi[i].dataDoc.monthValue+'/'+comboPassivi[i].dataDoc.year +'('+numeral((comboPassivi[i].totalePagare - comboPassivi[i].importoPagato)).format('$ 0,0.00')+')' + ' - ' + comboPassivi[i].fornitore + '</option>';
+                            }
+                        }
+                        $('#comboPassivi1').empty().append(select);
+                        if(count==1){
+                            $("#comboPassivi1").val(selected).trigger("change");
+                        }
+                    }else{
+                        select = '';
+                        length = comboPassivi.length;
+                        for (i = 0; i < length; i++)
+                            select += '<option value="' + comboPassivi[i].id + '">' + comboPassivi[i].tipoDoc + ' ' + comboPassivi[i].numeroDoc + ' del ' + comboPassivi[i].dataDoc.dayOfMonth+'/'+comboPassivi[i].dataDoc.monthValue+'/'+comboPassivi[i].dataDoc.year +'('+numeral((comboPassivi[i].totalePagare - comboPassivi[i].importoPagato)).format('$ 0,0.00')+')' + ' - ' + comboPassivi[i].fornitore + '</option>';
+
+                        $('#comboPassivi1').empty().append(select);
+                    }
+
+
+                });
+
+                $("#comboFornitori2").next(".select2-container").hide();
+                $('#comboFornitori2').on('change', function () {
+                    $("#btnAddRiga").hide();
+                    if($("#comboFornitori2").val()!=null && $("#comboFornitori2").val()!=""){
+                        $("#btnAddRiga").show();
+                    }
+                });
+
+                $("#comboPassivi1").next(".select2-container").hide();
+                $('#comboPassivi1').on('change', function () {
+                    $("#btnAddRiga").hide();
+                    if($("#comboPassivi1").val()!=null && $("#comboPassivi1").val()!=""){
+                        $("#btnAddRiga").show();
+                    }
+                });
+
+
+                $("#comboAvere").val("").trigger("change");
+                    $("#comboClienti1").val("").trigger("change");
+                    $("#comboClienti2").val("").trigger("change");
+                    $("#comboFatture1").val("").trigger("change");
+                    $("#comboFattureR8").val("").trigger("change");
+                    $("#comboFattureR11").val("").trigger("change");
+                    $("#comboEntrata1").val("").trigger("change");
+                    $("#noteRic1").val("");
+
+                $("#comboDare").val("").trigger("change");
+                    $("#comboUscita1").val("").trigger("change");
+                    $("#comboFornitori1").val("").trigger("change");
+                    $("#comboFornitori2").val("").trigger("change");
+                    $("#comboPassivi1").val("").trigger("change");
+                    $("#noteRic1").val("");
+
+
+
+
+                $('#importoRiga').on('change', function () {
+                    $("#btnSalvaRic").hide();
+
+                    $("#comboAvere").next(".select2-container").hide();
+                    $("#comboFatture1").next(".select2-container").hide();
+                    $("#comboFattureR8").next(".select2-container").hide();
+                    $("#comboFattureR11").next(".select2-container").hide();
+                    $("#comboClienti1").next(".select2-container").hide();
+                    $("#comboClienti2").next(".select2-container").hide();
+                    $("#comboEntrata1").next(".select2-container").hide();
+
+                    $("#comboDare").next(".select2-container").hide();
+                    $("#comboUscita1").next(".select2-container").hide();
+                    $("#comboFornitori1").next(".select2-container").hide();
+                    $("#comboFornitori2").next(".select2-container").hide();
+                    $("#comboPassivi1").next(".select2-container").hide();
+
+
+                    var valore = $('#importoRiga').val() * 1.0;
+                    if(valore>0){
+                        $("#comboAvere").next(".select2-container").show();
+
+                    }
+                    if(valore<0){
+                        $("#comboDare").next(".select2-container").show();
+                    }
+                    if(valore==0){
+                        if(totaleGriglia!=0 && totaleGriglia == parseMoney($("#ric1-importo").text())){
+                            $("#btnSalvaRic").show();
+                        }
+                    }
+                });
+                $("#importoRiga").val(selMov.ImportoMov).trigger("change");
+
+                $('#modalRic1').modal('show');
+                rebuildGriglia();
+                recalcGriglia();
+                $('#grigliaReg').on('click', '.delReg', function () {
+                    var rowIndex = $(this).data('row');
+                    var impTemp = parseMoney($("#ric1-importo").text());
+                    impTemp = impTemp - dataReg[rowIndex].importo;
+                    $("#ric1-importo").text(numeral(impTemp).format('$ 0,0.00'));
+                    dataReg.splice(rowIndex, 1);
+                    if(dataReg.length == 1){
+                        $("#ric1-causale-input").val(dataReg[0].causale);
+                        $("#ric1-causale-input").prop("disabled",true);
+                        $("#ric1-descrizione-input").val(dataReg[0].contropartita);
+                        $("#ric1-descrizione-input").prop("disabled",true);
+                        $("#ric1-note-input").prop("disabled",false);
+                    }else{
+                        if(dataReg.length == 0){
+                            $("#ric1-causale-input").val("");
+                            $("#ric1-causale-input").prop("disabled",true);
+                            $("#ric1-descrizione-input").val("");
+                            $("#ric1-descrizione-input").prop("disabled",true);
+                            $("#ric1-note-input").val("");
+                            $("#ric1-note-input").prop("disabled",true);
+                        }
+                    }
+                    rebuildGriglia();
+                    recalcGriglia();
+                });
+                return;
+            //}
+        //}
+
+    }
+
+    function parseMoney(val) {
+        if(val!=null){
+            val = val.replace(/€/g, '')
+                .replace(/\s/g, '')
+                .replace(/\./g, '')
+                .replace(',', '.');
+            return (Math.round((parseFloat(val) || 0)*100)/100);
+        }
+        return 0;
+
+    }
+
+    function recalcGriglia(){
+
+        totaleGriglia = 0.0;
+
+        $("#comboAvere").val("").trigger("change");
+        $("#comboDare").val("").trigger("change");
+        var importoScalare = parseMoney($("#ric1-importo").text());
+        var fatture = false;
+        try{
+            var array = grigliaReg.getDataAtProp('importo');
+            var length = array.length;
+            if(length>0){
+                fatture = true;
+                for (i = 0; i < length; i++){
+                    importoScalare = importoScalare - array[i];
+                    totaleGriglia = totaleGriglia + array[i];
+                }
+            }
+        }catch(err){}
+        importoScalare = (Math.round((parseFloat(importoScalare) || 0)*100)/100);
+        totaleGriglia = (Math.round((parseFloat(totaleGriglia) || 0)*100)/100);
+        $("#importoRiga").val(importoScalare).trigger("change");
+        if(totaleGriglia>0 && importoScalare == 0.0 && totaleGriglia == parseMoney($("#ric1-importo").text())){
+            $("#btnSalvaRic").show();
+        }
+        //$("#importoRiga").focus();
+        setTimeout(function() { $("#importoRiga").focus(); }, 0);
+
+
+    }
+
+    function salvaRiconciliazione(){
+
+        if(idMovimento<0){
+            if($("#ric1-causale-input").val().trim() == '' && $("#ric1-note-input").val().trim() == '' && $("#ric1-descrizione-input").val().trim() == ''){
+                swal('Attenzione', "Obbligatotrio Inserire almeno uno tra Causale, Descrizione, Note", 'warning');
+                return;
+            }
+        }
+        var payload = {
+            dataReg:dataReg,
+            idMovimento: idMovimento,
+            importoMovimento:parseMoney($("#ric1-importo").text()),
+            causale:$("#ric1-causale-input").val().trim(),
+            note:$("#ric1-note-input").val().trim(),
+            descrizione:$("#ric1-descrizione-input").val().trim(),
+            conto:$("#ric1-conto-combo").val(),
+            data:$('#ric1-data-input').val()
+        }
+        $.ajax({
+            type: "POST",
+            url: server + "secure/coge/riconciliazione",
+            contentType: "application/json",
+            dataType: "text",
+            data: JSON.stringify(payload),
+            success: function (response) {
+                noty({
+                    text: 'registrazione avvenuta con successo',
+                    layout: 'topCenter',
+                    type: 'success',
+                    killer: true,
+                    timeout: 2000,
+                    animation: {
+                        open: 'animated bounceInDown',
+                        close: 'animated bounceOutUp',
+                        speed: 500
+                    }
+                });
+                var richiestaCombo = $.getJSON(server + 'secure/service/comboFlussoCassa');
+                richiestaCombo.success(function (r) {
+                    sessionStorage.setItem('comboFlussoCassa',JSON.stringify(r));
+
+                    popolaCombo();
+                    caricaTabellaMovimenti();
+                    ////refreshElenco();
+                    loadRiconciliazioniCockpit();
+                    $('#modalRic1').modal('hide');
+
+                });
+
+                /*
+                $('#modalRic1').hide();
+                $('body').removeClass('modal-open');
+                */
+            },
+            error: function (xhr) {
+                noty({
+                    text: 'Errore nel salvatagio',
+                    layout: 'bottomCenter',
+                    type: 'error',
+                    killer: true,
+                    timeout: 2000
+                });
+            }
+        });
+
+    }
+
+    function aggiungiRiga(){
+        var importo = $("#importoRiga").val() * 1.0;
+
+        //griglia pagamenti
+        var toAdd = false;
+
+        if(importo>0){
+
+            if($("#comboAvere").val()=="0"){
+                if($('#comboFatture1').val()!=null && $('#comboFatture1').val()!=""){
+                    //verifica che non sia un doppione
+                    for (x = 0; x < dataReg.length; x++){
+                        if(dataReg[x].id==$('#comboFatture1').val() && (dataReg[x].tipo=='PAGFT' || dataReg[x].tipo=='PAGFT8' || dataReg[x].tipo=='PAGFT11')){
+                            swal('Attenzione', "Esiste già una contropartita del movimento per questa Fattura", 'warning');
+                            return;
+                        }
+                    }
+                    for (y = 0; y < comboFatture.length; y++){
+                        if(comboFatture[y].id==$('#comboFatture1').val()){
+                            if(importo>(comboFatture[y].totalePagare - comboFatture[y].importoPagato)){
+                                //swal('Attenzione', "Importo indicato è superiore all'incasso atteso per la fattura selezionata", 'warning');
+                                //return;
+                                importo = (comboFatture[y].totalePagare - comboFatture[y].importoPagato);
+                            }
+                            let obj = {
+                                importo: importo,
+                                causale: 'Incasso Fattura',
+                                contropartita: 'Nr. ' + comboFatture[y].numeroFattura + ' del ' + comboFatture[y].dataFattura.dayOfMonth+'/'+comboFatture[y].dataFattura.monthValue+'/'+comboFatture[y].dataFattura.year+ ' - '+comboFatture[y].cliente,
+                                id: comboFatture[y].id,
+                                tipo: 'PAGFT'
+                            }
+                            dataReg.push(obj);
+                            toAdd = true;
+                        }
+                    }
+                }
+            }
+            if($("#comboAvere").val()=="8"){
+                if($('#comboFattureR8').val()!=null && $('#comboFattureR8').val()!=""){
+                    //verifica che non sia un doppione
+                    for (x = 0; x < dataReg.length; x++){
+                        if(dataReg[x].id==$('#comboFattureR8').val() && (dataReg[x].tipo=='PAGFT' || dataReg[x].tipo=='PAGFT8' || dataReg[x].tipo=='PAGFT11')){
+                            swal('Attenzione', "Esiste già una contropartita del movimento per questa Fattura", 'warning');
+                            return;
+                        }
+                    }
+                    for (y = 0; y < comboFatture.length; y++){
+                        if(comboFatture[y].id==$('#comboFattureR8').val()){
+                            var importoFatt = ((comboFatture[y].totalePagare - comboFatture[y].importoPagato) - (((comboFatture[y].totalePagare - comboFatture[y].importoPagato)*122/100)*8/100));
+                            if(importo>importoFatt){
+                                //swal('Attenzione', "Importo indicato è superiore all'incasso atteso per la fattura selezionata", 'warning');
+                                //return;
+                                importo = importoFatt;
+                            }
+                            let obj = {
+                                importo: importo,
+                                causale: 'Incasso Fattura con trattenuta Banca 8% R.acc',
+                                contropartita: 'Nr. ' + comboFatture[y].numeroFattura + ' del ' + comboFatture[y].dataFattura.dayOfMonth+'/'+comboFatture[y].dataFattura.monthValue+'/'+comboFatture[y].dataFattura.year+ ' - '+comboFatture[y].cliente,
+                                id: comboFatture[y].id,
+                                tipo: 'PAGFT8'
+                            }
+                            dataReg.push(obj);
+                            toAdd = true;
+                        }
+                    }
+                }
+            }
+            if($("#comboAvere").val()=="11"){
+                if($('#comboFattureR11').val()!=null && $('#comboFattureR11').val()!=""){
+                    //verifica che non sia un doppione
+                    for (x = 0; x < dataReg.length; x++){
+                        if(dataReg[x].id==$('#comboFattureR11').val() && (dataReg[x].tipo=='PAGFT' || dataReg[x].tipo=='PAGFT8' || dataReg[x].tipo=='PAGFT11')){
+                            swal('Attenzione', "Esiste già una contropartita del movimento per questa Fattura", 'warning');
+                            return;
+                        }
+                    }
+                    for (y = 0; y < comboFatture.length; y++){
+                        if(comboFatture[y].id==$('#comboFattureR11').val()){
+                            var importoFatt = ((comboFatture[y].totalePagare - comboFatture[y].importoPagato) - (((comboFatture[y].totalePagare - comboFatture[y].importoPagato)*122/100)*11/100));
+                            if(importo>importoFatt){
+                                //swal('Attenzione', "Importo indicato è superiore all'incasso atteso per la fattura selezionata", 'warning');
+                                //return;
+                                importo = importoFatt;
+                            }
+                            let obj = {
+                                importo: importo,
+                                causale: 'Incasso Fattura con trattenuta Banca 11% R.acc',
+                                contropartita: 'Nr. ' + comboFatture[y].numeroFattura + ' del ' + comboFatture[y].dataFattura.dayOfMonth+'/'+comboFatture[y].dataFattura.monthValue+'/'+comboFatture[y].dataFattura.year+ ' - '+comboFatture[y].cliente,
+                                id: comboFatture[y].id,
+                                tipo: 'PAGFT11'
+                            }
+                            dataReg.push(obj);
+                            toAdd = true;
+                        }
+                    }
+                }
+            }
+            if($("#comboAvere").val()=="1"){
+                if($('#comboClienti2').val()!=null && $('#comboClienti2').val()!=""){
+                    for (y = 0; y < comboClienti.length; y++){
+                        if(comboClienti[y].id==$('#comboClienti2').val()){
+                            //verifica che il cliente non ha già un movimento uguale nella griglia
+                            for (x = 0; x < dataReg.length; x++){
+                                if(dataReg[x].id==comboClienti[y].id && dataReg[x].tipo=='DAEMETTERECLI'){
+                                    swal('Attenzione', "Esiste già una contropartita della stessa natura per il Cliente selezionato", 'warning');
+                                    return;
+                                }
+                            }
+                            let obj = {
+                                importo: importo,
+                                causale: 'Fattura da Emettere',
+                                contropartita: 'Cliente: ' + comboClienti[y].societa,
+                                id: comboClienti[y].id,
+                                tipo: 'DAEMETTERECLI'
+                            }
+                            dataReg.push(obj);
+                            toAdd = true;
+                        }
+                    }
+                }
+            }
+            if($("#comboAvere").val()=="2"){
+                if($('#comboEntrata1').val()=="0"){
+                    let obj = {
+                        importo: importo,
+                        causale: 'Finanziamento Soci',
+                        contropartita: $("#noteRic1").val(),
+                        id: -1,
+                        tipo: 'FINANZIAMENTOSOCI'
+                    }
+                    dataReg.push(obj);
+                    toAdd = true;
+                }
+                if($('#comboEntrata1').val()=="1"){
+                    let obj = {
+                        importo: importo,
+                        causale: 'Finanziamento Banca',
+                        contropartita: $("#noteRic1").val(),
+                        id: -1,
+                        tipo: 'FINANZIAMENTOBANCA'
+                    }
+                    dataReg.push(obj);
+                    toAdd = true;
+                }
+                if($('#comboEntrata1').val()=="2"){
+                    let obj = {
+                        importo: importo,
+                        causale: 'Rimborso statale',
+                        contropartita: $("#noteRic1").val(),
+                        id: -1,
+                        tipo: 'RIMBORSOSTATO'
+                    }
+                    dataReg.push(obj);
+                    toAdd = true;
+                }
+            }
+            if($("#comboAvere").val()=="X"){
+                let obj = {
+                    importo: importo,
+                    causale: 'Forzatura',
+                    contropartita: $("#noteRic1").val(),
+                    id: -1,
+                    tipo: 'FORZATURAAVERE'
+                }
+                dataReg.push(obj);
+                toAdd = true;
+            }
+        }
+
+        if(importo<0){
+
+            if($("#comboDare").val()=="0"){
+                if($('#comboUscita1').val()==""){
+                    let obj = {
+                        importo: importo,
+                        causale: 'Centro di Costo',
+                        contropartita: $("#noteRic1").val(),
+                        id: -1,
+                        tipo: 'CCOSTO'
+                    }
+                    dataReg.push(obj);
+                    toAdd = true;
+                }
+                if($('#comboUscita1').val()!=""){
+                    for (y = 0; y < comboCommesse.length; y++){
+                        if(comboCommesse[y].id==$('#comboUscita1').val()){
+                            let obj = {
+                                importo: importo,
+                                causale: 'Centro di Costo COMMESSA',
+                                contropartita: $("#noteRic1").val() + " *** " +comboCommesse[y].codeCommessa,
+                                id: comboCommesse[y].id,
+                                tipo: 'COMMCOSTO'
+                            }
+                            dataReg.push(obj);
+                            toAdd = true;
+                        }
+                    }
+                }
+            }
+            if($("#comboDare").val()=="1"){
+                if($('#comboPassivi1').val()!=null && $('#comboPassivi1').val()!=""){
+                    //verifica che non sia un doppione
+                    for (x = 0; x < dataReg.length; x++){
+                        if(dataReg[x].id==$('#comboPassivi1').val() && (dataReg[x].tipo=='PAGDOC')){
+                            swal('Attenzione', "Esiste già una contropartita del movimento per questo Documento", 'warning');
+                            return;
+                        }
+                    }
+                    for (y = 0; y < comboPassivi.length; y++){
+                        if(comboPassivi[y].id==$('#comboPassivi1').val()){
+                            if((importo * -1)>(comboPassivi[y].totalePagare - comboPassivi[y].importoPagato)){
+                                //swal('Attenzione', "Importo indicato è superiore all'incasso atteso per la fattura selezionata", 'warning');
+                                //return;
+                                importo = ((comboPassivi[y].totalePagare - comboPassivi[y].importoPagato) * -1);
+                            }
+                            let obj = {
+                                importo: importo,
+                                causale: 'Pagamento Documento',
+                                contropartita: comboPassivi[y].tipoDoc + ' ' + comboPassivi[y].numeroDoc + ' del ' + comboPassivi[y].dataDoc.dayOfMonth+'/'+comboPassivi[y].dataDoc.monthValue+'/'+comboPassivi[y].dataDoc.year+ ' - '+comboPassivi[y].fornitore,
+                                id: comboPassivi[y].id,
+                                tipo: 'PAGDOC'
+                            }
+                            dataReg.push(obj);
+                            toAdd = true;
+                        }
+                    }
+                }
+            }
+            if($("#comboDare").val()=="2"){
+                if($('#comboFornitori2').val()!=null && $('#comboFornitori2').val()!=""){
+                    for (y = 0; y < comboFornitori.length; y++){
+                        if(comboFornitori[y].id==$('#comboFornitori2').val()){
+                            //verifica che il cliente non ha già un movimento uguale nella griglia
+                            for (x = 0; x < dataReg.length; x++){
+                                if(dataReg[x].id==comboFornitori[y].id && dataReg[x].tipo=='DARICEVEREFOR'){
+                                    swal('Attenzione', "Esiste già una contropartita della stessa natura per il Fornitore selezionato", 'warning');
+                                    return;
+                                }
+                            }
+                            let obj = {
+                                importo: importo,
+                                causale: 'Fattura da Ricevere',
+                                contropartita: 'Fornitore: ' + comboFornitori[y].societa,
+                                id: comboFornitori[y].id,
+                                tipo: 'DARICEVEREFOR'
+                            }
+                            dataReg.push(obj);
+                            toAdd = true;
+                        }
+                    }
+                }
+            }
+            if($("#comboDare").val()=="X"){
+                let obj = {
+                    importo: importo,
+                    causale: 'Forzatura',
+                    contropartita: $("#noteRic1").val(),
+                    id: -1,
+                    tipo: 'FORZATURADARE'
+                }
+                dataReg.push(obj);
+                toAdd = true;
+            }
+
+        }
+
+        if(toAdd){
+            if(idMovimento<0){
+                var importoScalare = parseMoney($("#ric1-importo").text());
+                importoScalare = importoScalare + importo;
+                $("#ric1-importo").text(numeral(importoScalare).format('$ 0,0.00'));
+                if(dataReg.length == 1){
+                    $("#ric1-causale-input").val(dataReg[0].causale);
+                    $("#ric1-descrizione-input").val(dataReg[0].contropartita);
+                    $("#ric1-note-input").prop("disabled",false);
+                }else{
+                    if(dataReg.length == 2){
+                        $("#ric1-causale-input").val("");
+                        $("#ric1-causale-input").prop("disabled",false);
+                        $("#ric1-descrizione-input").val("");
+                        $("#ric1-descrizione-input").prop("disabled",false);
+                    }
+                }
+            }
+            rebuildGriglia();
+            recalcGriglia();
+        }
+    }
+    function rebuildGriglia(){
+        tabReg = {
+            data: dataReg,
+            columns: colReg,
+            rowHeaders: false,
+            colHeaders: [
+                "Importo",
+                "Causale",
+                "Contropartita",
+                ""
+            ],
+            colWidths: [100,200,400,30],
+            fillHandle: false,
+            //stretchH: 'all',
+            //stretchH: 'none',
+            overflow:'hidden',
+            stretchH:'none',
+            autoRowSize: true,
+
+            manualColumnResize: true,
+            contextMenu: false,
+            minRows: dataReg.length,
+            cells: function(row, col) {
+                return {
+                    className: 'htCenter htMiddle custom-cell-style'
+                };
+            }
+        };
+        try {
+            grigliaReg.destroy();
+        } catch (err) {}
+        grigliaReg = new Handsontable(document.getElementById('grigliaReg'), tabReg);
+
+    }
+
+
+
+
+
+    function dataFromSql(dataObj) {
+        if (!dataObj || typeof dataObj !== 'object') return null;
+        return moment([dataObj.year, dataObj.monthValue - 1, dataObj.dayOfMonth]);
+    }
+
+
+    /* AI - GPT generated code */
+    var cashflowLoaded = false;
+
+    function tab1() {
+        if (cashflowLoaded) return;
+        function cfLoadSaldoCc() {
+            // Carica data (id=200)
+            $.getJSON(server + 'secure/parametri/getById', { id: 200 }, function(obj) {
+                if (obj && obj.valore && obj.valore.trim() !== '') {
+                    var m = moment(obj.valore, 'YYYY-MM-DD', true);
+                    if (m.isValid()) {
+                        $('#cf_manual_data').val(m.format('DD/MM/YYYY'));
+                    }
+                }
+            });
+            // Carica importo (id=201)
+            $.getJSON(server + 'secure/parametri/getById', { id: 201 }, function(obj) {
+                if (obj && obj.valore !== null && obj.valore !== undefined) {
+                    var n = parseFloat(obj.valore);
+                    if (!isNaN(n)) {
+                        $('#cf_manual_importo').val(numeral(n).format('0,0.00'));
+                    }
+                }
+            });
+        }
+        // Skeleton UI dentro #tab_1
+        $('#tab_1').html(`
+            <div class="row" style="padding:15px;">
+              <div class="col-md-3">
+                <div class="small-box bg-red">
+                  <div class="inner">
+                    <h3 id="cf_scaduti_net">0</h3>
+                    <p>Residuo scaduto (net)</p>
+                  </div>
+                  <div class="icon"><i class="fa fa-warning"></i></div>
+                </div>
+              </div>
+              <div class="col-md-3">
+                <div class="small-box bg-green">
+                  <div class="inner">
+                    <h3 id="cf_futuri_net">0</h3>
+                    <p>Residuo futuro (net)</p>
+                  </div>
+                  <div class="icon"><i class="fa fa-line-chart"></i></div>
+                </div>
+              </div>
+              <div class="col-md-3">
+                <div class="small-box bg-yellow">
+                  <div class="inner">
+                    <h3 id="cf_indeterminato_net">0</h3>
+                    <p>Indeterminato (net)</p>
+                  </div>
+                  <div class="icon"><i class="fa fa-question"></i></div>
+                </div>
+              </div>
+              <div class="col-md-3">
+                <button class="btn btn-primary pull-right" onclick="loadCashflowPrevisionale(180)">
+                  <i class="fa fa-refresh"></i> Aggiorna
+                </button>
+              </div>
+            </div>
+            <div class="box-header with-border" style="display:flex; align-items:center; flex-wrap:wrap;">
+                <h3 class="box-title" style="margin:0; white-space:nowrap;">Timeline (prossimi giorni)</h3>
+                    <!-- BLOCCO DESTRA -->
+                    <div style="margin-left:auto; display:flex; align-items:center; gap:20px; flex-wrap:wrap;">
+                      <!-- DATA -->
+                        <div style="display:flex; align-items:center; gap:8px;">
+                          <span style="white-space:nowrap;">Data</span>
+                          <div class="input-group input-group-sm" style="width:auto;">
+                            <input type="text" id="cf_manual_data"
+                                   class="form-control"
+                                   style="width:120px;"
+                                   readonly
+                                   placeholder="GG/MM/AAAA">
+                            <!-- input date nativo nascosto, usato solo per aprire il picker -->
+                            <input type="date" id="cf_manual_data_native"
+                                   style="position:absolute; opacity:0; width:1px; height:1px; pointer-events:none;">
+                            <span class="input-group-btn">
+                              <button type="button" class="btn btn-default btn-flat"
+                                      id="btnEdit_cf_manual_data"
+                                      onclick="cfManualFieldEdit('cf_manual_data')">
+                                <i class="fa fa-pencil"></i>
+                              </button>
+                              <button type="button" class="btn btn-info btn-flat"
+                                      id="btnCal_cf_manual_data"
+                                      style="display:none;"
+                                      onclick="cfManualOpenCalendar(event)">
+                                <i class="fa fa-calendar"></i>
+                              </button>
+                              <button type="button" class="btn btn-success btn-flat"
+                                      id="btnOk_cf_manual_data"
+                                      style="display:none;"
+                                      onclick="cfManualFieldConfirm('cf_manual_data')">
+                                <i class="fa fa-check"></i>
+                              </button>
+                              <button type="button" class="btn btn-danger btn-flat"
+                                      id="btnCancel_cf_manual_data"
+                                      style="display:none;"
+                                      onclick="cfManualFieldCancel('cf_manual_data')">
+                                <i class="fa fa-times"></i>
+                              </button>
+                            </span>
+                          </div>
+                        </div>
+                      <!-- IMPORTO -->
+                      <div style="display:flex; align-items:center; gap:8px;">
+                        <span style="white-space:nowrap;">Importo</span>
+                        <div class="input-group input-group-sm" style="width:auto;">
+                          <input type="text"
+                                 id="cf_manual_importo"
+                                 class="form-control"
+                                 style="width:140px;"
+                                 disabled
+                                 placeholder="0,00">
+                          <span class="input-group-btn">
+                            <button type="button" class="btn btn-default btn-flat"
+                                    id="btnEdit_cf_manual_importo"
+                                    onclick="cfManualFieldEdit('cf_manual_importo')">
+                              <i class="fa fa-pencil"></i>
+                            </button>
+                            <button type="button" class="btn btn-success btn-flat"
+                                    id="btnOk_cf_manual_importo"
+                                    style="display:none;"
+                                    onclick="cfManualFieldConfirm('cf_manual_importo')">
+                              <i class="fa fa-check"></i>
+                            </button>
+                            <button type="button" class="btn btn-danger btn-flat"
+                                    id="btnCancel_cf_manual_importo"
+                                   style="display:none;"
+                                    onclick="cfManualFieldCancel('cf_manual_importo')">
+                              <i class="fa fa-times"></i>
+                            </button>
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="box-body">
+                    <div id="cf_timeline_note" class="text-muted" style="margin-bottom:10px;"></div>
+                    <div style="overflow:auto;">
+                      <table class="table table-condensed table-striped" id="cf_table_timeline">
+                        <thead>
+                          <tr>
+                            <th style="text-align:left;">Data</th>
+                            <th style="text-align:left;">Entrate</th>
+                            <th style="text-align:left;">Uscite</th>
+                            <th style="text-align:left;">Saldo progressivo</th>
+                            <th style="text-align:left;">Saldo virtuale</th>
+                            <th style="text-align:left;">Descrizione</th>
+                          </tr>
+                        </thead>
+                        <tbody></tbody>
+                      </table>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="row" style="padding:0 15px 15px 15px;">
+              <div class="col-md-6">
+                <div class="box box-danger">
+                  <div class="box-header with-border">
+                    <h3 class="box-title">Scaduti non incassati / non pagati</h3>
+                  </div>
+                  <div class="box-body" style="overflow:auto; max-height:320px;">
+                    <table class="table table-hover table-striped" id="cf_table_scaduti">
+                      <thead><tr><th style="text-align:left;">Data</th><th style="text-align:left;">Tipo</th><th style="text-align:left;">Direzione</th><th style="text-align:left;">Residuo</th></tr></thead>
+                      <tbody></tbody>
+                    </table>
+                  </div>
+                </div>
+              </div>
+
+              <div class="col-md-6">
+                <div class="box box-success">
+                  <div class="box-header with-border">
+                    <h3 class="box-title">Futuri non incassati / non pagati</h3>
+                  </div>
+                  <div class="box-body" style="overflow:auto; max-height:320px;">
+                    <table class="table table-hover table-striped" id="cf_table_futuri">
+                      <thead><tr><th style="text-align:left;">Data</th><th style="text-align:left;">Tipo</th><th style="text-align:left;">Direzione</th><th style="text-align:left;">Residuo</th></tr></thead>
+                      <tbody></tbody>
+                    </table>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="row" style="padding:0 15px 15px 15px;">
+              <div class="col-md-12">
+                <div class="box box-warning">
+                  <div class="box-header with-border">
+                    <h3 class="box-title">Senza data (indeterminati)</h3>
+                  </div>
+                  <div class="box-body" style="overflow:auto; max-height:260px;">
+                    <table class="table table-hover table-striped" id="cf_table_nodata">
+                      <thead><tr><th style="text-align:left;">Tipo</th><th style="text-align:left;">Direzione</th><th style="text-align:left;">Residuo</th></tr></thead>
+                      <tbody></tbody>
+                    </table>
+                  </div>
+                </div>
+              </div>
+            </div>
+        `);
+
+        cashflowLoaded = true;
+        loadCashflowPrevisionale(180);
+        // carica valori salvati saldo cc
+        setTimeout(function() { cfLoadSaldoCc(); }, 100);
+    }
+
+    function fmtMoney(x) {
+      const n = Number(x);
+      if (!Number.isFinite(n)) return numeral('0').format('$ 0,0.00');
+
+      return numeral(n).format('$ 0,0.00');
+    }
+
+    function buildDescrizioneTimeline(tipoScadenza, rifTipo, societa) {
+        var tipo;
+        if (tipoScadenza === "INCASSO-FE") {
+            tipo = "Incasso Fattura";
+        } else {
+            tipo = (tipoScadenza || "") + (rifTipo ? " " + rifTipo : "");
+        }
+        var soggetto = (societa || "").trim();
+        if (soggetto) {
+            return tipo + " - " + soggetto;
+        }
+        return tipo;
+    }
+
+    function buildScadclifoIndex(scadenze) {
+        var idx = {};
+        (scadenze || []).forEach(function (s) {
+            // dataScadenza è un oggetto Java {year, monthValue, dayOfMonth}, non una stringa
+            var dataObj = s.dataScadenza;
+            var data = "";
+            if (dataObj && typeof dataObj === "object" && dataObj.year) {
+                data = moment([dataObj.year, dataObj.monthValue - 1, dataObj.dayOfMonth]).format("YYYY-MM-DD");
+            } else if (typeof dataObj === "string") {
+                data = dataObj.substring(0, 10);
+            }
+            var tipo = s.tipoScadenza || "";
+            var residuo = Math.round((Number(s.importoScadenza || 0) - Number(s.importoTotaleEseguito || 0)) * 100);
+            var key = data + "|" + tipo + "|" + residuo;
+            if (!idx[key]) {
+                idx[key] = { societa: s.societa || "", rifTipo: s.rifTipo || "" };
+            }
+        });
+        return idx;
+    }
+
+    function lookupSocieta(scadclifoIdx, item) {
+        var data = (item.data || "").substring(0, 10);
+        var tipo = item.tipoScadenza || "";
+        var residuo = Math.round(Number(item.residuo || 0) * 100);
+        var key = data + "|" + tipo + "|" + residuo;
+        return scadclifoIdx[key] || null;
+    }
+
+    function loadCashflowPrevisionale(days) {
+        Pace.restart();
+        Pace.track(function () {
+            // Chiamate parallele: cashflow previsionale + scadenzario completo (per i nomi societa)
+            var reqPrevisionale = $.ajax({
+                url: server + "secure/coge/cashflow/previsionale?days=" + days,
+                method: "GET",
+                dataType: "json",
+                headers: { 'Authorization': 'Bearer ' + sessionStorage['token'] }
+            });
+            var reqScadclifo = $.ajax({
+                url: server + "secure/coge/scadclifo",
+                method: "GET",
+                dataType: "json",
+                headers: { 'Authorization': 'Bearer ' + sessionStorage['token'] }
+            });
+
+            $.when(reqPrevisionale, reqScadclifo)
+                .done(function (resPrevisionale, resScadclifo) {
+                    var r = resPrevisionale[0];
+                    var scadenze = resScadclifo[0];
+                    console.log("cashflow previsionale:", r);
+                    console.log("scadclifo:", scadenze);
+
+                    // Costruisco l'indice di lookup: data|tipoScadenza|residuo → {societa, rifTipo}
+                    var scadclifoIdx = buildScadclifoIndex(scadenze);
+
+                    // KPI net
+                    var scadutiNet = (r.totaleScadutiIn - r.totaleScadutiOut);
+                    var futuriNet = (r.totaleFuturiIn - r.totaleFuturiOut);
+                    var indNet = (r.totaleSenzaDataIn - r.totaleSenzaDataOut);
+
+                    $("#cf_scaduti_net").text(fmtMoney(scadutiNet));
+                    $("#cf_futuri_net").text(fmtMoney(futuriNet));
+                    $("#cf_indeterminato_net").text(fmtMoney(indNet));
+
+                    $("#cf_timeline_note").text("Orizzonte: " + days + " giorni. (Entrate/Uscite/Netto)");
+
+                    // Raggruppo per data + descrizione + direction e sommo i residui
+                    var aggregatoPerData = {};
+                    var tutteLeScadenze = (r.scadutiNonIncassati || []).concat(r.futuriNonIncassati || []);
+                    tutteLeScadenze.forEach(function (x) {
+                        var dataKey = (x.data || "").substring(0, 10);
+                        var match = lookupSocieta(scadclifoIdx, x);
+                        var societa  = match ? match.societa  : "";
+                        var rifTipo  = match ? match.rifTipo  : (x.source || "");
+                        var descr = buildDescrizioneTimeline(x.tipoScadenza, rifTipo, societa);
+                        var direction = (x.direction || "").toUpperCase(); // "IN" o "OUT"
+                        var residuo = Number(x.residuo || 0);
+
+                        if (!aggregatoPerData[dataKey]) {
+                            aggregatoPerData[dataKey] = {};
+                        }
+                        // Chiave univoca: descrizione + direzione → somma residui
+                        var aggrKey = descr + "|" + direction;
+                        if (!aggregatoPerData[dataKey][aggrKey]) {
+                            aggregatoPerData[dataKey][aggrKey] = { descr: descr, direction: direction, totale: 0 };
+                        }
+                        aggregatoPerData[dataKey][aggrKey].totale += residuo;
+                    });
+
+                    // Timeline table
+                    var tb = $("#cf_table_timeline tbody");
+                    tb.empty();
+                    // Ordino le date esplicitamente YYYY-MM-DD per garantire il cumulativo corretto
+                    var dateOrdinate = Object.keys(r.timelineDaily || {}).sort();
+                    var saldoProgressivo = 0;
+
+                        // Calcolo entrate e uscite scaduti
+                        var totScadutiIn = 0;
+                        var totScadutiOut = 0;
+                        (r.scadutiNonIncassati || []).forEach(function (x) {
+                            var dir = (x.direction || "").toUpperCase();
+                            if (dir === "IN") {
+                                totScadutiIn += Number(x.residuo || 0);
+                            } else {
+                                totScadutiOut += Number(x.residuo || 0);
+                            }
+                        });
+
+                        // Saldo virtuale: parte dalla somma netta degli scaduti (IN - OUT)
+                        var baseScaduti = totScadutiIn - totScadutiOut;
+                        var saldoVirtuale = baseScaduti;
+
+                        // Prima riga: oggi con i totali scaduti
+                        var oggiStr = moment().format("DD MMM YYYY").toLowerCase();
+                        tb.append(`
+                          <tr style="background:#fff3cd; font-weight:bold;">
+                            <td></td>
+                            <td>${fmtMoney(totScadutiIn)}</td>
+                            <td>${fmtMoney(totScadutiOut)}</td>
+                            <td></td>
+                            <td><b>${fmtMoney(baseScaduti)}</b></td>
+                            <td><i>Saldi scaduti non incassati / non pagati</i></td>
+                          </tr>
+                        `);
+
+                       // Seconda riga: Saldo Partenza
+                        var spSaldoProg = r.saldoOggi || 0;
+                        var spSaldoVirt = baseScaduti + (r.saldoOggi || 0);
+
+                        var $rigaSaldoPartenza = $(`
+                          <tr style="font-weight:bold;" id="cf_row_saldo_partenza">
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td><b>${fmtMoney(spSaldoProg)}</b></td>
+                            <td><b>${fmtMoney(spSaldoVirt)}</b></td>
+                            <td><i>Saldo Partenza</i></td>
+                          </tr>
+                        `);
+                        tb.append($rigaSaldoPartenza);
+
+                        // aggiorno saldoVirtuale per le righe successive della timeline
+                        saldoVirtuale = spSaldoVirt;
+
+                        dateOrdinate.forEach(function (d) {
+                        var row = r.timelineDaily[d];
+                        var netGiorno = (row.in || 0) - (row.out || 0);
+                        // Saldo progressivo: somma cumulativa di (entrate - uscite) giorno per giorno
+                        saldoProgressivo += netGiorno;
+                        // Saldo virtuale: stessa logica ma parte dal netto degli scaduti
+                        saldoVirtuale += netGiorno;
+
+                        // Costruisco le righe descrizione con segno, importo totale e nome soggetto
+                        var vociAggr = aggregatoPerData[d] ? Object.values(aggregatoPerData[d]) : [];
+                        var descrizioneHtml = "";
+                        if (vociAggr.length > 0) {
+                            descrizioneHtml = vociAggr.map(function (v) {
+                                var segno = (v.direction === "IN") ? "+" : "-";
+                                return '<span style="font-weight:bold;">' + segno + ' ' + fmtMoney(v.totale) + '</span> ' + escapeHtml(v.descr);
+                            }).join("<br>");
+                        }
+
+                        tb.append(`
+                          <tr>
+                            <td>${moment(d).format("DD MMM YYYY").toLowerCase()}</td>
+                            <td>${fmtMoney(row.in || 0)}</td>
+                            <td>${fmtMoney(row.out || 0)}</td>
+                            <td><b>${fmtMoney(saldoProgressivo)}</b></td>
+                            <td><b>${fmtMoney(saldoVirtuale)}</b></td>
+                            <td>${descrizioneHtml}</td>
+                          </tr>
+                        `);
+                    });
+
+                    // Scaduti
+                    var t1 = $("#cf_table_scaduti tbody");
+                    t1.empty();
+                    (r.scadutiNonIncassati || []).forEach(function (x) {
+                        t1.append(`
+                          <tr>
+                            <td>${moment(x.data).format("DD MMM YYYY").toLowerCase()}</td>
+                            <td>${x.tipoScadenza} (${x.source})</td>
+                            <td>${x.direction}</td>
+                            <td>${fmtMoney(x.residuo)}</td>
+                          </tr>
+                        `);
+                    });
+
+                    // Futuri
+                    var t2 = $("#cf_table_futuri tbody");
+                    t2.empty();
+                    (r.futuriNonIncassati || []).forEach(function (x) {
+                        t2.append(`
+                          <tr>
+                            <td>${moment(x.data).format("DD MMM YYYY").toLowerCase()}</td>
+                            <td>${x.tipoScadenza} (${x.source})</td>
+                            <td>${x.direction}</td>
+                            <td>${fmtMoney(x.residuo)}</td>
+                          </tr>
+                        `);
+                    });
+
+                    // No data
+                    var t3 = $("#cf_table_nodata tbody");
+                    t3.empty();
+                    (r.senzaData || []).forEach(function (x) {
+                        t3.append(`
+                          <tr>
+                            <td>${x.tipoScadenza} (${x.source})</td>
+                            <td>${x.direction}</td>
+                            <td>${fmtMoney(x.residuo)}</td>
+                          </tr>
+                        `);
+                    });
+                })
+                .fail(function () {
+                    swal("Errore", "Impossibile caricare il flusso previsionale", "error");
+                });
+        });
+    }
+
+    function escapeHtml(str) {
+      if (str === null || str === undefined) return '';
+      return String(str)
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+    }
+
+    function openRcDocModal(idRiferimento) {
+      // placeholder: in futuro qui farai la chiamata per recuperare i dati doc
+      $("#rcDocModalTitle").text("Documento collegato (rif: " + idRiferimento + ")");
+      $("#rcDocModalBody").html(`
+        <p><b>Funzionalità non ancora disponibile</b></p>
+        <p>Riferimento documento: <b>${idRiferimento}</b></p>
+      `);
+      $("#rcDocModal").modal("show");
+    }
+
+
+    // cache in memoria delle allocazioni per riga (evita JSON dentro onclick)
+    window.__rc_alloc_cache = [];
+
+    function loadRiconciliazioniCockpit(afterLoad) {
+      // salva sempre lo stato corrente (così rientri con gli stessi filtri)
+      saveRcCockpitState();
+
+      var from = $("#rc_from").val() || "";
+      var to = $("#rc_to").val() || "";
+
+      var url = server + "secure/coge/riconciliazioni/cockpit"
+        + "?from=" + encodeURIComponent(from)
+        + "&to=" + encodeURIComponent(to);
+
+      $.ajax({
+        url: url,
+        method: "GET",
+        headers: { 'Authorization': 'Bearer ' + sessionStorage['token'] },
+        dataType: "json",
+        success: function (r) {
+
+          $("#rc_kpi_in").text(fmtMoney(r?.kpi?.totEntrate || 0));
+          $("#rc_kpi_out").text(fmtMoney(r?.kpi?.totUscite || 0));
+          $("#rc_kpi_net").text(fmtMoney(r?.kpi?.netto || 0));
+          $("#rc_kpi_ec").text(fmtMoney(r?.kpi?.nettoEconomico || 0));
+
+          rcMovimentiAll = r.movimenti || [];
+          populateRcMovimentiFilters(rcMovimentiAll);
+          applyRcMovimentiFilters();
+
+          if (!window.__rc_detail_handler_bound) {
+            $("#rc_table_mov").on("click", ".js-rc-detail", function () {
+              var detId = $(this).data("detid");
+              var idx = Number($(this).data("idx"));
+
+              $("#rc_table_mov tbody tr.rc-det-row").not("#" + detId)
+                .hide()
+                .find(".rc-detail-wrap").empty();
+
+              var $row = $("#" + detId);
+              if ($row.is(":visible")) {
+                $row.hide().find(".rc-detail-wrap").empty();
+                return;
+              }
+
+              var allocazioni = (window.__rc_alloc_cache[idx] || []);
+              showRcDetail(detId, allocazioni);
+            });
+
+            $("#rc_table_mov").on("click", ".js-rc-riconciliazione1", function () {
+              var detidmov = $(this).data("idmov");
+              var detId = $(this).data("detid");
+              var idx = Number($(this).data("idx"));
+
+              $("#rc_table_mov tbody tr.rc-det-row").not("#" + detId)
+                .hide()
+                .find(".rc-detail-wrap").empty();
+
+              var $row = $("#" + detId);
+              if ($row.is(":visible")) {
+                $row.hide().find(".rc-detail-wrap").empty();
+                return;
+              }
+
+              var mov = (window.__rc_mov_cache[idx] || null);
+              if(mov!=null){
+                riconciliazione1(detidmov,mov);
+              }
+
+            });
+
+            window.__rc_detail_handler_bound = true;
+          }
+
+          // callback post-load (serve per “rientro da commessa”)
+          if (typeof afterLoad === "function") {
+            afterLoad(r);
+          }
+        },
+        error: function () {
+          swal("Errore", "Impossibile caricare il cockpit riconciliazioni", "error");
+        }
+      });
+    }
+
+
+    function populateRcMovimentiFilters(movimentiList) {
+      var conti = new Set();
+      var causali = new Set();
+
+      (movimentiList || []).forEach(function (m) {
+        if (m.conto) {
+          conti.add(m.conto);
+        }
+        if (m.causaleMov) {
+          causali.add(m.causaleMov);
+        }
+      });
+
+      var contiArr = Array.from(conti).sort();
+      var causaliArr = Array.from(causali).sort();
+
+      var $conto = $("#rc_filter_conto");
+      var $causale = $("#rc_filter_causale");
+      var selectedConto = $conto.val();
+      var selectedCausale = $causale.val();
+
+      $conto.empty().append('<option value=""></option>');
+      $causale.empty().append('<option value=""></option>');
+
+      contiArr.forEach(function (c) {
+        $conto.append(`<option value="${escapeHtml(c)}">${escapeHtml(c)}</option>`);
+      });
+      causaliArr.forEach(function (c) {
+        $causale.append(`<option value="${escapeHtml(c)}">${escapeHtml(c)}</option>`);
+      });
+
+      if (selectedConto && contiArr.includes(selectedConto)) {
+        $conto.val(selectedConto);
+      } else {
+        $conto.val('');
+      }
+      if (selectedCausale && causaliArr.includes(selectedCausale)) {
+        $causale.val(selectedCausale);
+      } else {
+        $causale.val('');
+      }
+
+      $conto.trigger('change.select2');
+      $causale.trigger('change.select2');
+    }
+
+    function applyRcMovimentiFilters() {
+      rcMovimentiFilters.conto = $("#rc_filter_conto").val() || '';
+      rcMovimentiFilters.causale = $("#rc_filter_causale").val() || '';
+
+      var filtrati = (rcMovimentiAll || []).filter(function (m) {
+        var matchConto = !rcMovimentiFilters.conto || m.conto === rcMovimentiFilters.conto;
+        var matchCausale = !rcMovimentiFilters.causale || m.causaleMov === rcMovimentiFilters.causale;
+        return matchConto && matchCausale;
+      });
+
+      renderRcMovimentiTable(filtrati);
+    }
+
+    function renderRcMovimentiTable(movimentiList) {
+      window.__rc_alloc_cache = [];
+      window.__rc_mov_cache = [];
+
+
+      var tb = $("#rc_table_mov tbody");
+      tb.empty();
+
+      (movimentiList || []).forEach(function (m, idx) {
+        var detId = "rc_det_" + idx;
+        var allocazioni = (m.allocazioni || []);
+        window.__rc_alloc_cache[idx] = allocazioni;
+        window.__rc_mov_cache[idx] = m;
+        var hasAllocazioni = Array.isArray(allocazioni) && allocazioni.length > 0;
+
+        tb.append(`
+          <tr>
+            <td>${m.dataMov ? moment(m.dataMov.substring(0,10)).format('DD MMM YYYY').toLowerCase() : ''}</td>
+            <td>${m.valutaMov ? moment(m.valutaMov.substring(0,10)).format('DD MMM YYYY').toLowerCase() : ''}</td>
+            <td>${escapeHtml(m.conto || '')}</td>
+            <td>${escapeHtml(m.causaleMov || '')}</td>
+            <td><b>${fmtMoney(m.importoMov)}</b></td>
+            <td>
+              ${hasAllocazioni
+                ? `<button type="button"
+                          class="btn btn-xs btn-info js-rc-detail"
+                          data-detid="${detId}"
+                          data-idx="${idx}"
+                          data-idmov="${m.idMov}">
+                    Dettaglio
+                  </button>`
+                : `<button type="button"
+                          class="btn btn-xs btn-warning js-rc-riconciliazione1"
+                          data-detid="${detId}"
+                          data-idx="${idx}"
+                          data-idmov="${m.idMov}">
+                    Riconcilia
+                  </button>`}
+            </td>
+          </tr>
+        `);
+
+        tb.append(`
+          <tr id="${detId}" class="rc-det-row" style="display:none; background:#fafafa;">
+            <td colspan="6">
+              <div class="rc-detail-wrap"></div>
+            </td>
+          </tr>
+        `);
+      });
+    }
+
+    function showRcDetail(detId, allocazioni) {
+
+      // micro-fix: chiudi automaticamente gli altri dettagli aperti
+      $("#rc_table_mov tbody tr[id^='rc_det_']").not("#" + detId).hide();
+      $("#rcDocModal").modal("hide");
+
+      var $detRow = $("#" + detId);
+      var $wrap = $detRow.find(".rc-detail-wrap");
+
+      // toggle se clicchi di nuovo sullo stesso
+      if ($detRow.is(":visible")) {
+        $detRow.hide();
+        return;
+      }
+
+      // render tabellina dettagli
+      var html = `
+        <div style="padding:8px 0;">
+          <table class="table table-condensed table-bordered" style="margin:0;">
+            <thead>
+              <tr>
+                <th style="width:80px;">Dare</th>
+                <th style="width:80px;">Avere</th>
+                <th>Tipo</th>
+                <th>Descrizione</th>
+                <th style="width:90px;">Rif</th>
+              </tr>
+            </thead>
+            <tbody>
+      `;
+
+      (allocazioni || []).forEach(function (a) {
+        var dare = Number(a.dare || 0);
+        var avere = Number(a.avere || 0);
+
+        var tipo = (a.causale || "");
+        var descr = (a.descrizione || "");
+
+        var idrif = Number(a.idRiferimento); // attenzione: può essere -1, 0, >0
+        if (isNaN(idrif)) idrif = 0;
+
+        var partita = (a.partita || "").toUpperCase();
+
+        var rifCell = "";
+
+        // 1) idRiferimento = -1 => "-"
+        if (idrif === -1) {
+          rifCell = `<span>-</span>`;
+        }
+        // 2) idRiferimento > 0 e partita != COMMCOSTO => pulsante Apri -> openRcDocModal(idrif)
+        else if (idrif > 0 && partita !== "COMMCOSTO") {
+          rifCell = `
+            <button type="button" class="btn btn-xs btn-default" onclick="openRcDocModal(${idrif})">
+              Apri
+            </button>
+          `;
+        }
+        // 3) idRiferimento > 0 e partita == COMMCOSTO => pulsante commessa -> redirect
+        else if (idrif > 0 && partita === "COMMCOSTO") {
+          rifCell = `
+            <button type="button" class="btn btn-xs btn-default" onclick="openRcCommessa(${idrif})">
+              commessa
+            </button>
+          `;
+        }
+        // else (0 o null) => lascia vuoto
+        else {
+          rifCell = ``;
+        }
+
+        html += `
+          <tr>
+            <td>${fmtMoney(dare)}</td>
+            <td>${fmtMoney(avere)}</td>
+            <td>${escapeHtml(tipo)}</td>
+            <td>${escapeHtml(descr)}</td>
+            <td>${rifCell}</td>
+          </tr>
+        `;
+      });
+
+      if (!allocazioni || allocazioni.length === 0) {
+        html += `
+          <tr>
+            <td colspan="5"><i>Nessun dettaglio disponibile</i></td>
+          </tr>
+        `;
+      }
+
+      html += `
+            </tbody>
+          </table>
+        </div>
+      `;
+
+      $wrap.html(html);
+      $detRow.show();
+    }
+
+    // Redirect alla commessa (richiesto). * Separata per evitare di infilare codice lungo dentro onclick.
+    function openRcCommessa(idCommessa) {
+      // 1) salva filtri applicati prima di uscire
+      saveRcCockpitState();
+
+      // 2) salvo il “target” così al rientro posso riaprire il movimento giusto
+      sessionStorage.setItem('rc_return_commessa_id', idCommessa);
+
+      // logiche che mi hai indicato
+      sessionStorage.setItem('idCommessa', idCommessa);
+      sessionStorage.setItem('fromPrimanotaRiconciliati', true);
+
+      location.href = "../gestionecommesse/";
+    }
+
+
+
+    function saveRcCockpitState() {
+      // salva filtri
+      sessionStorage.setItem('rc_from', $("#rc_from").val() || "");
+      sessionStorage.setItem('rc_to', $("#rc_to").val() || "");
+    }
+
+    function restoreRcCockpitState() {
+      $("#rc_from").val(sessionStorage.getItem('rc_from') || "");
+      $("#rc_to").val(sessionStorage.getItem('rc_to') || "");
+    }
+
+    /**
+     * Se arrivo da gestionecommesse con:
+     *   sessionStorage.toPrimanotaRiconciliati = true
+     * allora:
+     *  1) mostra tab_3
+     *  2) ripristina filtri
+     *  3) ricarica cockpit
+     *  4) apre il dettaglio del movimento che contiene la COMMCOSTO con idRiferimento = target
+     */
+    function handleReturnFromCommessa() {
+      var back = sessionStorage.getItem('toPrimanotaRiconciliati') === 'true';
+      if (!back) return;
+
+      // consumo il flag (così non lo rifà ad ogni refresh)
+      sessionStorage.removeItem('toPrimanotaRiconciliati');
+
+      // mostra tab_3
+      $('a[href="#tab_3"]').tab('show');
+
+      // ripristina filtri (serve che select2 sia già inizializzato)
+      restoreRcCockpitState();
+
+      // target commessa da riaprire
+      var targetCommId = Number(sessionStorage.getItem('rc_return_commessa_id') || 0);
+
+      // ricarica e poi apri il collapse giusto
+      loadRiconciliazioniCockpit(function (r) {
+        if (!targetCommId || !r || !r.movimenti) return;
+
+        // trova il movimento che contiene l'allocazione COMMCOSTO con quel riferimento
+        var foundIdx = -1;
+        (r.movimenti || []).some(function (m, idx) {
+          var alloc = (m.allocazioni || []);
+          var hit = alloc.some(function (a) {
+            var partita = String(a.partita || "").toUpperCase();
+            var idrif = Number(a.idRiferimento);
+            return partita === "COMMCOSTO" && idrif === targetCommId;
+          });
+          if (hit) { foundIdx = idx; return true; }
+          return false;
+        });
+
+        if (foundIdx >= 0) {
+          var detId = "rc_det_" + foundIdx;
+          var allocazioni = (window.__rc_alloc_cache[foundIdx] || []);
+          showRcDetail(detId, allocazioni);
+
+          // scroll morbido sulla riga (opzionale ma utile)
+          var $row = $("#" + detId);
+          if ($row.length) {
+            $('html, body').animate({ scrollTop: $row.offset().top - 120 }, 200);
+          }
+        }
+      });
+
+
+    }
+
+        var cfManualBackup = {};
+
+        function cfManualOpenCalendar(evt) {
+            if (evt) { try { evt.preventDefault(); evt.stopPropagation(); } catch(e){} }
+
+            var $native = $('#cf_manual_data_native');
+
+            // Precarica il valore corrente nel picker nativo
+            var cur = ($('#cf_manual_data').val() || '').trim();
+            if (cur) {
+                var m = moment(cur, ['DD/MM/YYYY', 'YYYY-MM-DD'], true);
+                if (m.isValid()) {
+                    $native.val(m.format('YYYY-MM-DD'));
+                }
+            }
+
+            // Listener che scatta quando l'utente sceglie una data
+            $native.off('change.cfpicker').on('change.cfpicker', function() {
+                var val = $(this).val(); // formato YYYY-MM-DD
+                if (val) {
+                    var m = moment(val, 'YYYY-MM-DD', true);
+                    if (m.isValid()) {
+                        $('#cf_manual_data').val(m.format('DD/MM/YYYY'));
+                    }
+                }
+                $native.off('change.cfpicker');
+            });
+
+            // Posiziona il native input sotto il bottone e aprilo
+            var $btn = $('#btnCal_cf_manual_data');
+            var offset = $btn.offset();
+            $native.css({
+                position: 'fixed',
+                top: (offset.top + $btn.outerHeight()) + 'px',
+                left: offset.left + 'px',
+                opacity: 0,
+                width: '1px',
+                height: '1px',
+                'pointer-events': 'none'
+            });
+
+            // Temporaneamente rendilo visibile quel tanto che basta per showPicker
+            $native.css({ 'pointer-events': 'auto' });
+            var nativeEl = $native[0];
+            if (nativeEl.showPicker) {
+                try { nativeEl.showPicker(); } catch(e) {}
+            } else {
+                // fallback: click diretto
+                nativeEl.click();
+            }
+            $native.css({ 'pointer-events': 'none' });
+
+            return false;
+        }
+
+        function cfManualFieldEdit(fieldId) {
+            var $input = $('#' + fieldId);
+            cfManualBackup[fieldId] = $input.val();
+
+            if (fieldId === 'cf_manual_data') {
+                $('#btnEdit_cf_manual_data').hide();
+                $('#btnCal_cf_manual_data').show();
+                $('#btnOk_cf_manual_data').show();
+                $('#btnCancel_cf_manual_data').show();
+                return;
+            }
+
+            $input.prop('disabled', false).focus().select();
+            $('#btnEdit_' + fieldId).hide();
+            $('#btnOk_' + fieldId).show();
+            $('#btnCancel_' + fieldId).show();
+        }
+
+        function cfManualFieldConfirm(fieldId) {
+            var $input = $('#' + fieldId);
+            var newVal = ($input.val() || '').trim();
+
+            if (fieldId === 'cf_manual_data') {
+                if (newVal !== '') {
+                    var m = moment(newVal, ['DD/MM/YYYY','YYYY-MM-DD','DD-MM-YYYY'], true);
+                    if (!m.isValid()) {
+                        noty({ text: 'Data non valida (usa GG/MM/AAAA)', layout: 'topCenter', type: 'error', killer: true, timeout: 2500 });
+                        return;
+                    }
+                    var fmtVal = m.format('DD/MM/YYYY');
+                    $input.val(fmtVal);
+
+                    // Salva su DB: id=200, formato YYYY-MM-DD
+                    $.ajax({
+                        url: server + 'secure/parametri/update',
+                        type: 'POST',
+                        contentType: 'application/json',
+                        data: JSON.stringify({ id: 200, valore: m.format('YYYY-MM-DD') }),
+                        success: function() {
+                            loadCashflowPrevisionale(180);
+                        },
+                        error: function() {
+                            noty({ text: 'Errore salvataggio data saldo', layout: 'topCenter', type: 'error', killer: true, timeout: 2500 });
+                        }
+                    });
+                }
+                $('#btnEdit_cf_manual_data').show();
+                $('#btnCal_cf_manual_data').hide();
+                $('#btnOk_cf_manual_data').hide();
+                $('#btnCancel_cf_manual_data').hide();
+                return;
+            }
+
+            if (fieldId === 'cf_manual_importo') {
+                if (newVal !== '') {
+                    var n = parseFloat(newVal.replace(/\./g, '').replace(',', '.'));
+                    if (isNaN(n)) {
+                        noty({ text: 'Importo non valido', layout: 'topCenter', type: 'error', killer: true, timeout: 2500 });
+                        return;
+                    }
+                    $input.val(numeral(n).format('0,0.00'));
+
+                    // Salva su DB: id=201
+                    $.ajax({
+                        url: server + 'secure/parametri/update',
+                        type: 'POST',
+                        contentType: 'application/json',
+                        data: JSON.stringify({ id: 201, valore: String(n) }),
+                        success: function() {
+                            loadCashflowPrevisionale(180);
+                        },
+                        error: function() {
+                            noty({ text: 'Errore salvataggio importo saldo', layout: 'topCenter', type: 'error', killer: true, timeout: 2500 });
+                        }
+                    });
+                }
+            }
+
+            $input.prop('disabled', true);
+            $('#btnEdit_' + fieldId).show();
+            $('#btnOk_' + fieldId).hide();
+            $('#btnCancel_' + fieldId).hide();
+        }
+
+        function cfManualFieldCancel(fieldId) {
+            var $input = $('#' + fieldId);
+            $input.val(cfManualBackup[fieldId] || '');
+
+            if (fieldId === 'cf_manual_data') {
+                $('#btnCal_cf_manual_data').hide();
+                $('#btnEdit_cf_manual_data').show();
+                $('#btnOk_cf_manual_data').hide();
+                $('#btnCancel_cf_manual_data').hide();
+                return;
+            }
+
+            $input.prop('disabled', true);
+            $('#btnEdit_' + fieldId).show();
+            $('#btnOk_' + fieldId).hide();
+            $('#btnCancel_' + fieldId).hide();
+        }
+
+</script>
+
+</html>

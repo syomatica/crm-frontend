@@ -1,0 +1,2365 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <script type="application/javascript">
+        if (!sessionStorage['token'])
+            window.location.replace("../");
+    </script>
+    <meta charset="UTF-8"> 
+    <meta http-equiv="cache-control" content="max-age=0"/>
+    <meta http-equiv="cache-control" content="no-cache"/>
+    <meta http-equiv="expires" content="0"/>
+    <meta http-equiv="expires" content="Tue, 01 Jan 1980 1:00:00 GMT"/>
+    <meta http-equiv="pragma" content="no-cache"/>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+
+    <title>Scadenzario</title>
+    <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
+    <link href="../assets/css/bootstrap.css" rel="stylesheet" type="text/css"/>
+    <link href="../assets/css/paceFlash.css" rel="stylesheet" type="text/css">
+    <!-- link href="//cdn.datatables.net/1.10.19/css/jquery.dataTables.min.css" rel="stylesheet" type="text/css"/ -->
+    <link href="../plugins/datatables_1_10_19/css/jquery.dataTables.min.css" rel="stylesheet" type="text/css">
+    <link href="../plugins/datatables_1_10_19/extensions/FixedHeader/css/dataTables.fixedHeader.min.css" rel="stylesheet" type="text/css">
+
+    <link href="../assets/css/font-awesome.min.css" rel="stylesheet" type="text/css"/>
+    <link href="../assets/css/AdminLTE.min.css" rel="stylesheet" type="text/css"/>
+    <link href="../assets/css/skins/skin-blue.min.css" rel="stylesheet" type="text/css"/>
+    <link href="../assets/css/animate.css" rel="stylesheet" type="text/css">
+    <link href="../assets/css/sweetalert.css" rel="stylesheet" type="text/css">
+    <link href="../assets/css/select2.css" rel="stylesheet" type="text/css">
+    <link href="../assets/css/waves.min.css" rel="stylesheet" type="text/css">
+    <link href="../assets/css/dropzone.css" rel="stylesheet" type="text/css">
+    <link href="../assets/css/dropzone-modified.css" rel="stylesheet" type="text/css">
+    <link href="../assets/css/bootstrap-dialog.css" rel="stylesheet" type="text/css">
+    <link href="../assets/default-dark/style.min.css" rel="stylesheet" type="text/css">
+    <link href="../assets/default/style.min.css" rel="stylesheet" type="text/css">
+    <link href="../assets/css/handsontable.full.min.css" media="screen" rel="stylesheet" type="text/css">
+    <link href="../assets/css/google.css" media="screen" rel="stylesheet" type="text/css">
+    <link href="../assets/css/classic.css" media="screen" rel="stylesheet" type="text/css">
+    <link href="../assets/css/classic.date.css" media="screen" rel="stylesheet" type="text/css">
+    <link href="../assets/css/datepicker.css" media="screen" rel="stylesheet" type="text/css">
+    <link href="../plugins/fullcalendar-2.2.7/fullcalendar.css" rel="stylesheet" type="text/css">
+    <link href="../plugins/iCheck/all.css" rel="stylesheet" type="text/css">
+    <style>
+        .select2-container .select2-selection--single {
+            height: 30px !important;
+            border-color: #d2d6de !important;
+        }
+
+        .handsontable table th, .handsontable table td {
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        #coefficientiPreventivo .table td, #coefficientiPreventivo .table th, .coefficienti .table td, .coefficienti .table th {
+            text-align: center;
+            width: 20%;
+        }
+
+        .modal-dialog {
+            -webkit-animation-duration: 0.4s;
+            -moz-animation-duration: 0.4s;
+            -ms-animation-duration: 0.4s;
+        }
+
+        .fc-event {
+            cursor: pointer;
+        }
+
+        .modal-dialog, .modal-content {
+            /* 80% of window height */
+            height: 95%;
+        }
+
+        .modal-body {
+            /* 100% = dialog height, 120px = header + footer */
+            max-height: calc(100% - 180px);
+            overflow-y: scroll;
+
+        }
+
+        .fc-more-popover {
+            max-height: 200px;
+            overflow-y: auto;
+        }
+
+        #tabellaSal thead th {
+            position: sticky;
+            top: 0;
+            background-color: #fff;
+            z-index: 10;
+        }
+
+        #tabellaRitardi {
+            width: 100% !important;
+            border-collapse: collapse;
+        }
+
+        #tabellaRitardi thead tr:first-child {
+            background-color: #fff;
+        }
+
+        #tabellaRitardi thead tr:first-child th {
+            position: sticky;
+            top: 0;
+            background-color: #fff;
+            z-index: 12;
+            padding: 8px;
+            text-align: left;
+        }
+
+        #tabellaRitardi tbody td {
+            padding: 8px;
+        }
+
+        .fModal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            background-color: rgba(0, 0, 0, 0.4);
+        }
+
+        .fModal-content {
+            background-color: #fff;
+            margin: 5% auto;
+            padding: 18px;
+            border-radius: 8px;
+            width: 70vw;
+            height: 80vh;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .fModal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .fModal-body {
+            flex: 1;
+            height: 100%;
+            overflow: hidden;
+        }
+
+        .fFormContainer {
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+            padding-right: 5px;
+            box-sizing: border-box;
+        }
+
+        .fForm-body {
+            flex: 1;
+            overflow-y: auto;
+            overflow-x: hidden;
+            margin-top: 10px;
+            margin-bottom: 10px;
+        }
+
+        .fForm-body .row {
+            margin-bottom: 10px;
+        }
+
+        .fForm-footer {
+            flex-shrink: 0;
+            margin-top: auto;
+        }
+
+        .rSorveglianzaContainer {
+            margin-top: 15px;
+        }
+
+        .rSorveglianzaCol {
+            width: 100%;
+        }
+
+        .rSorveglianzaCol h5 {
+            margin-top: 0;
+            font-weight: 600;
+        }
+
+        .rSorveglianzaTable {
+            width: 100%;
+            table-layout: fixed;
+            margin-bottom: 0;
+        }
+
+        .rSorveglianzaTable th,
+        .rSorveglianzaTable td {
+            vertical-align: middle !important;
+            overflow: visible;
+        }
+
+        .rSorveglianzaTable td {
+            word-break: break-word;
+        }
+
+        .rSorveglianzaTable .input-group .form-control {
+            height: 30px;
+        }
+
+        .rSorveglianzaTable .btn {
+            height: 30px;
+            padding: 4px 10px;
+        }
+
+        .datepicker-dropdown,
+        #rModal .select2-dropdown {
+            z-index: 1100 !important;
+        }
+
+        @media (max-width: 991px) {
+            .rSorveglianzaContainer {
+                overflow-x: auto;
+            }
+        }
+
+        #pdfFatturaContainer {
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            min-height: 0;
+        }
+        #pdfFatturaPreview {
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+        .pdf-container-fattura {
+            flex-grow: 1;
+            background-color: #333;
+            border: 2px solid #333;
+            overflow: hidden;
+        }
+
+        .dModal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            background-color: rgba(0, 0, 0, 0.4);
+        }
+
+        .dModal-content {
+            background-color: #fff;
+            margin: 5% auto;
+            padding: 18px;
+            border-radius: 8px;
+            width: 70vw;
+            height: 80vh;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .dModal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .dModal-body {
+            flex: 1;
+            height: 100%;
+            overflow: hidden;
+        }
+
+        .dFormContainer {
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+            padding-right: 5px;
+            box-sizing: border-box;
+        }
+
+        .dForm-body {
+            flex: 1;
+            overflow-y: auto;
+            overflow-x: hidden;
+            margin-top: 10px;
+            margin-bottom: 10px;
+        }
+
+        .dForm-body .row {
+            margin-bottom: 10px;
+        }
+
+        .dForm-footer {
+            flex-shrink: 0;
+            margin-top: auto;
+        }
+
+        #pdfDocumentoContainer {
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            min-height: 0;
+        }
+        #pdfDocumentoPreview {
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+        .pdf-container-documento {
+            flex-grow: 1;
+            background-color: #333;
+            border: 2px solid #333;
+            overflow: hidden;
+        }
+
+        .centerImage {
+			text-align: center;
+		}
+
+		.rowPointer{
+			cursor: pointer;
+			cursor: hand;
+		}
+
+		.rowPointerDef{
+			cursor: default;
+		}
+
+        .glyphicon.spinning {
+            animation: spin 1s infinite linear;
+            -webkit-animation: spin2 1s infinite linear;
+        }
+
+        @keyframes spin {
+            from { transform: scale(1) rotate(0deg); }
+            to { transform: scale(1) rotate(360deg); }
+        }
+
+        @-webkit-keyframes spin2 {
+            from { -webkit-transform: rotate(0deg); }
+            to { -webkit-transform: rotate(360deg); }
+        }
+
+        #tabellaRinnovi thead tr:first-child {
+            background-color: #fff;
+        }
+
+        #tabellaRinnovi thead tr:first-child th {
+            position: sticky;
+            top: 0;
+            background-color: #fff;
+            z-index: 12;
+        }
+
+        #filterRow th {
+            position: sticky;
+            top: 41px;
+            background-color: #f0f0f0;
+            z-index: 11;
+        }
+
+        #filterRowRitardi th {
+            position: sticky;
+            top: 41px;
+            background-color: #f0f0f0;
+            z-index: 11;
+            padding: 8px;
+        }
+
+    </style>
+    <!-- js -->
+<!--     <script src="../assets/js/jquery-2.1.4.min.js"></script> -->
+<script src="https://code.jquery.com/jquery-2.2.4.min.js" integrity="sha256-BbhdlvQf/xTY9gja0Dq3HiwQF8LaCRTXxZKRutelT44="
+  crossorigin="anonymous"></script>
+    <script src="../assets/js/bootstrap.min.js" type="text/javascript"></script>
+    <script src="../assets/js/pace.min.js" type="text/javascript"></script>
+    <script src="../assets/js/jquery.blockUI.js" type="text/javascript"></script>
+    <script src="../assets/js/app.min.js" type="text/javascript"></script>
+    <script src="../assets/js/sweetalert.min.js" type="text/javascript"></script>
+
+    <script src="../plugins/iCheck/icheck.min.js" type="text/javascript"></script>
+    <script src="../assets/js/select2.full.min.js" type="text/javascript"></script>
+    <script src="../assets/js/waves.min.js" type="text/javascript"></script>
+    <script src="../assets/js/jquery.noty.packaged.min.js" type="text/javascript"></script>
+    <script src="../assets/js/mustache.js" type="text/javascript"></script>
+    <script src="../assets/js/moment.js" type="text/javascript"></script>
+    <script src="../assets/js/dropzone.js" type="text/javascript"></script>
+    <script src="../assets/js/bootstrap-dialog.js" type="text/javascript"></script>
+    <script src="../assets/js/jquery.slimscroll.min.js" type="text/javascript"></script>
+    <script src="../assets/js/numeral.min.js" type="text/javascript"></script>
+    <script src="../assets/js/languages.min.js" type="text/javascript"></script>
+    <script src="../assets/js/handsontable.full.min.js" type="text/javascript"></script>
+    <script src="../assets/js/jstree.min.js" type="text/javascript"></script>
+    <script src="../assets/js/wow.min.js" type="text/javascript"></script>
+    <script src="../assets/js/pdfmake.min.js" type="text/javascript"></script>
+    <script src="../assets/js/vfs_fonts.js" type="text/javascript"></script>
+    <script src="../assets/js/autosize.min.js" type="text/javascript"></script>
+    <script src="../assets/js/picker.js" type="text/javascript"></script>
+    <script src="../assets/js/picker.date.js" type="text/javascript"></script>
+    <script src="../plugins/tinymce/js/tinymce/tinymce.min.js"></script>
+    <script src="../plugins/tinymce/js/tinymce/jquery.tinymce.min.js"></script>
+    <script src="../assets/js/preaut.js" type="text/javascript"></script>
+    <script src="../assets/js/bootstrap-datepicker.js" type="text/javascript"></script>
+    <!-- script src="//cdn.datatables.net/1.10.19/js/jquery.dataTables.min.js"></script -->
+    <script src="../plugins/datatables_1_10_19/js/jquery.dataTables.js"></script>
+    <script src="../plugins/datatables_1_10_19/extensions/FixedHeader/js/dataTables.fixedHeader.js"></script>
+    <script src="../plugins/fullcalendar-2.2.7/fullcalendar.min.js" type="text/javascript"></script>
+    <script src="../plugins/fullcalendar-2.2.7/lang-all.js" type="text/javascript"></script>
+</head>
+
+<body class="skin-blue sidebar-mini">
+<div class="wrapper">
+
+    <header class="main-header" id="theheader"></header>
+    <script language="javascript">
+        if (!(sessionStorage.getItem("pme") === 'true')) {
+            $.get("../templates/header.mst?_" + (new Date()).getTime(), function (template) {
+                $('#theheader').html(Mustache.render(template, {}));
+            });
+        }
+    </script>
+    <aside class="main-sidebar" id="themenu"></aside>
+    <script language="javascript">
+
+        $.get("../templates/menu.mst?_" + (new Date()).getTime(), function (template) {
+            $('#themenu').html(Mustache.render(template, {
+
+                admins: sessionStorage['admins'] == 'true' ? true : false,
+                vv: sessionStorage['vv'],
+                active: { cg00: true },
+                pme: sessionStorage['pme'] == 'true' ? true : false
+            }));
+            eventMenu();
+        });
+    </script>
+
+    <div class="content-wrapper">
+        <section class="content animated fadeIn" style="padding:0px;">
+            <div class="row elencoPreventivi">
+                <div class="col-md-12">
+                    <div class="nav-tabs-custom">
+                        <ul class="nav nav-tabs pull-right">
+                            <!--li><a href="#tab_sal" onclick="tabSal()" data-toggle="tab">SAL NON FATTURATI</a></li-->
+                            <!--li><a href="#tab_incassi" onclick="tabIncassi()" data-toggle="tab">SAL FATTURATI DA INCASSARE</a></li-->
+                            <!--li><a href="#tab_pagamenti" onclick="tabPagamenti()" data-toggle="tab">PAGAMENTI</a></li-->
+                            <li><a href="#tab_rinnovi" onclick="tabRinnovi()" data-toggle="tab">RINNOVI</a></li>
+                            <li ><a href="#tab_ritardi" data-toggle="tab">RITARDI</a></li>
+                            <li class="active"><a href="#tab_calendario" onclick="tabCalendario()" data-toggle="tab">CALENDARIO</a></li>
+                        </ul>
+                        <div class="tab-content no-padding">
+                            <!--DATI INPUT-->
+                            <div class="tab-pane active" id="tab_calendario">
+                                <div class="row">
+                                    <div class="col-xs-12">
+                                        <div class="box no-padding" style="margin-bottom:0px;">
+                                            <div class="box-body">
+                                                <div class="row">
+                                                    <div class="col-md-12">
+                                                        <div id="calendario" style="max-height: calc(100vh - 95px);overflow: scroll;"></div>
+                                                    </div>
+                                                </div>
+
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="tab-pane " id="tab_incassi">
+                                <div class="col-xs-12 no-padding">
+                                    <div class="box">
+                                        <div class="box-header" style="max-height : 73vh; overflow-y: auto; padding-top: 0px;">
+                                            <table id="tabellaIncassi" class="table table-hover table-striped dataTable444 display compact" style="width:100%;">
+                                                <thead id="elencoIncassiHeader">
+                                                    <tr>
+                                                        <th style="text-align:center;">Data SAL</th>
+                                                        <th style="text-align:right;">Importo Residuo</th>
+                                                        <th style="text-align:center;">% sul Totale</th>
+                                                        <th style="text-align:left;">Cliente</th>
+                                                        <th style="text-align:center;">Nr. SAL</th>
+                                                        <th style="text-align:left;">Commessa</th>
+                                                        <th style="text-align:right;">Totale Commessa</th>
+                                                        <th class="confCategoria1" style="text-align:left;"></th>
+                                                        <th class="confCategoria2" style="text-align:left;"></th>
+                                                        <th style="text-align:left;">Tipo Commessa</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody id="elencoIncassi">
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="tab-pane " id="tab_pagamenti">
+                                <div class="col-xs-12 no-padding">
+                                    <div class="box">
+                                        <div class="box-header" style="max-height : 73vh; overflow-y: auto; padding-top: 0px;">
+                                            <table id="tabellaPagamenti" class="table table-hover table-striped dataTable444 display compact" style="width:100%;">
+                                                <thead id="elencoPagamentiHeader">
+                                                    <tr>
+                                                        <th style="text-align:center;">Data Scadenza</th>
+                                                        <th style="text-align:right;">Importo Residuo</th>
+                                                        <th style="text-align:center;">% sul Totale</th>
+                                                        <th style="text-align:left;">Documento</th>
+                                                        <th style="text-align:center;">Data Documento</th>
+                                                        <th style="text-align:left;">Nr. Documento</th>
+                                                        <th style="text-align:left;">Fornitore</th>
+                                                        <th style="text-align:right;">Totale a Pagare</th>
+                                                        <th style="text-align:left;">Commessa</th>
+                                                        <th style="text-align:left;">Cliente</th>
+                                                        <th style="text-align:right;">Totale Commessa</th>
+                                                        <th class="confCategoria1" style="text-align:left;"></th>
+                                                        <th class="confCategoria2" style="text-align:left;"></th>
+                                                        <th style="text-align:left;">Tipo Commessa</th>
+                                                        <th style="text-align:left;"></th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody id="elencoPagamenti">
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="tab-pane " id="tab_ritardi">
+                                <div class="box no-padding" style="margin-bottom:0px;">
+                                    <div class="box-header" style="max-height : calc(100vh - 70px); overflow-y: auto; padding-top: 0px;">
+                                        <table id="tabellaRitardi" class="table table-hover table-striped" style="width:100%;">
+                                            <thead>
+                                                <tr>
+                                                    <th style="text-align:center;">gg</th>
+                                                    <th style="text-align:left;">Tipo</th>
+                                                    <th style="text-align:left;">Commessa</th>
+                                                    <th style="text-align:left;">Cliente</th>
+                                                    <th style="text-align:left;">Stato</th>
+                                                </tr>
+                                                <tr id="filterRowRitardi">
+                                                    <th></th>
+                                                    <th><input type="text" class="filter-input-ritardi" data-column="1" placeholder="Filtra tipo" style="width:100%; padding: 5px; font-size: 12px;"></th>
+                                                    <th><input type="text" class="filter-input-ritardi" data-column="2" placeholder="Filtra commessa" style="width:100%; padding: 5px; font-size: 12px;"></th>
+                                                    <th><input type="text" class="filter-input-ritardi" data-column="3" placeholder="Filtra cliente" style="width:100%; padding: 5px; font-size: 12px;"></th>
+                                                    <th><input type="text" class="filter-input-ritardi" data-column="4" placeholder="Filtra stato" style="width:100%; padding: 5px; font-size: 12px;"></th>
+                                                </tr>
+                                            </thead>
+                                            <tbody id="elencoRitardi"></tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="tab-pane " id="tab_rinnovi">
+                                <div class="col-xs-12 no-padding">
+                                    <div class="box no-padding" style="margin-bottom:0px;">
+                                        <div class="box-header" style="max-height : calc(100vh - 50px); overflow-y: auto; padding-top: 0px;">
+                                            <table id="tabellaRinnovi" class="table table-hover table-striped dataTable444 display compact" style="width:100%;">
+                                                <thead id="elencoRinnoviHeader">
+                                                    <tr>
+                                                        <th style="text-align:center;">Data</th>
+                                                        <th style="text-align:right;">Rinnovo €</th>
+                                                        <th style="text-align:right;">Sorv. €</th>
+                                                        <th style="text-align:left;">Commessa</th>
+                                                        <th style="text-align:left;">Cliente</th>
+                                                        <th style="text-align:left;">Partner</th>
+                                                        <th style="text-align:left;">Incaricato</th>
+                                                        <th style="text-align:left;">Stato</th>
+                                                    </tr>
+                                                    <tr id="filterRow" style="background-color: #f0f0f0;">
+                                                        <th><!--input type="text" class="filter-input" data-column="0" placeholder="Filtra data" style="width:100%; padding: 5px; font-size: 12px;"--></th>
+                                                        <th></th>
+                                                        <th></th>
+                                                        <th><input type="text" class="filter-input" data-column="3" placeholder="Filtra commessa" style="width:100%; padding: 5px; font-size: 12px;"></th>
+                                                        <th><input type="text" class="filter-input" data-column="4" placeholder="Filtra cliente" style="width:100%; padding: 5px; font-size: 12px;"></th>
+                                                        <th><input type="text" class="filter-input" data-column="5" placeholder="Filtra partner" style="width:100%; padding: 5px; font-size: 12px;"></th>
+                                                        <th><input type="text" class="filter-input" data-column="6" placeholder="Filtra incaricato" style="width:100%; padding: 5px; font-size: 12px;"></th>
+                                                        <th><input type="text" class="filter-input" data-column="7" placeholder="Filtra stato" style="width:100%; padding: 5px; font-size: 12px;"></th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody id="elencoRinnovi">
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="tab-pane " id="tab_sal">
+                                <div class="col-xs-12 no-padding">
+                                    <div class="box">
+                                        <div class="box-header" style="max-height : 73vh; overflow-y: auto; padding-top: 0px;">
+                                            <table id="tabellaSal" class="table table-hover table-striped dataTable444 display compact" style="width:100%;">
+                                                <thead id="elencoSalHeader">
+                                                    <tr>
+                                                        <th style="text-align:center;">Data SAL</th>
+                                                        <th style="text-align:right;">Importo SAL</th>
+                                                        <th style="text-align:left;">Cliente</th>
+                                                        <th style="text-align:center;">Nr. SAL</th>
+                                                        <th style="text-align:left;">Commessa</th>
+                                                        <th style="text-align:right;">Totale Commessa</th>
+                                                        <th class="confCategoria1" style="text-align:left;"></th>
+                                                        <th class="confCategoria2" style="text-align:left;"></th>
+                                                        <th style="text-align:left;">Tipo Commessa</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody id="elencoSal">
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+
+
+        </section>
+
+    </div>
+
+    <!--TUTTI I MODAL-->
+
+    <!-- Modal Dettagli Fattura -->
+    <div id="fModal" class="fModal">
+        <div class="fModal-content">
+            <div class="fModal-header">
+                <h4 style="margin:0;">Dettagli Fattura</h4>
+                <button class="closeFModal"
+                        style="background:none; border:none; font-size:20px; cursor:pointer;">&times;
+                </button>
+            </div>
+            <div class="fModal-body row">
+                <div class="fFormContainer col-md-5">
+                    <div class="fForm-body col-md-12">
+                        <div class="row g-2 align-items-center">
+                            <div class="col-md-5">
+                                <label>Cliente:</label>
+                            </div>
+                            <div class="col-md-7">
+                                <span id="nomeCliente"></span>
+                            </div>
+                        </div>
+                        <div class="row g-2 align-items-center">
+                            <div class="col-md-5">
+                                <label>Data fattura:</label>
+                            </div>
+                            <div class="col-md-7">
+                                <span id="dataFattura"></span>
+                            </div>
+                        </div>
+                        <div class="row g-2 align-items-center">
+                            <div class="col-md-5">
+                                <label>N° fattura:</label>
+                            </div>
+                            <div class="col-md-7">
+                                <span id="numeroFattura"></span>
+                            </div>
+                        </div>
+                        <div class="row g-2 align-items-center">
+                            <div class="col-md-5">
+                                <label>Imponibile:</label>
+                            </div>
+                            <div class="col-md-7">
+                                <span id="totImponibileFattura"></span>
+                            </div>
+                        </div>
+                        <div class="row g-2 align-items-center opt-cassa-fattura">
+                            <div class="col-md-5">
+                                <label>Cassa (INARCASSA):</label>
+                            </div>
+                            <div class="col-md-7">
+                                <span id="inarcassaFattura"></span>
+                            </div>
+                        </div>
+                        <div class="row g-2 align-items-center">
+                            <div class="col-md-5">
+                                <label>Totale IVA:</label>
+                            </div>
+                            <div class="col-md-7">
+                                <span id="totIvaFattura"></span>
+                            </div>
+                        </div>
+                        <div class="row g-2 align-items-center">
+                            <div class="col-md-5">
+                                <label>Totale Documento:</label>
+                            </div>
+                            <div class="col-md-7">
+                                <span id="totDocumentoFattura"></span>
+                            </div>
+                        </div>
+                        <div class="row g-2 align-items-center opt-ritenuta-fattura">
+                            <div class="col-md-5">
+                                <label>Ritenuta d'acconto:</label>
+                            </div>
+                            <div class="col-md-7">
+                                <span id="ritAccontoFattura"></span>
+                            </div>
+                        </div>
+                        <div class="row g-2 align-items-center">
+                            <div class="col-md-5">
+                                <label>Netto a pagare:</label>
+                            </div>
+                            <div class="col-md-7">
+                                <span id="totNettoFattura"></span>
+                            </div>
+                        </div>
+                        <div class="row g-2 align-items-center">
+                            <div class="col-md-5">
+                                <label>Totale Pagato:</label>
+                            </div>
+                            <div class="col-md-7">
+                                <span id="totPagatoFattura"></span>
+                            </div>
+                        </div>
+                        <div class="row g-2 align-items-center">
+                            <div class="col-md-5">
+                                <label>Residuo Pagamento:</label>
+                            </div>
+                            <div class="col-md-7">
+                                <span id="resPagamentoFattura"></span>
+                            </div>
+                        </div>
+                        <div class="col-12">
+                            <div id="elencoScadFattura" style="margin-left: 5%;"></div>
+                        </div>
+                    </div>
+                    <!-- <div class="rForm-footer col-md-12">
+                        <div class="row g-2 pt-2">
+                            <div class="col-md-12">
+                            </div>
+                        </div>
+                    </div> -->
+                </div>
+                <div id="pdfFatturaContainer" class="col-md-7" style="height: 100%;">
+                    <div class="row mb-2 align-items-center">
+                        <div class="col-md-12">
+                            <h4 id="statusFileFattura"></h4>
+                        </div>
+                    </div>
+                    <div class="pdf-container-fattura col-md-12 flex-grow-1" style="height: 100%;">
+                        <iframe id="pdfFatturaPreview" style="width:100%; border:none;"></iframe>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Dettagli Documento -->
+    <div id="dModal" class="dModal">
+        <div class="dModal-content">
+            <div class="dModal-header">
+                <h4 style="margin:0;">Dettagli Documento</h4>
+                <button class="closeDModal"
+                        style="background:none; border:none; font-size:20px; cursor:pointer;">&times;
+                </button>
+            </div>
+            <div class="dModal-body row">
+                <div class="dFormContainer col-md-5">
+                    <div class="dForm-body col-md-12">
+                        <div class="row g-2 align-items-center">
+                            <div class="col-md-5">
+                                <label>Tipo documento:</label>
+                            </div>
+                            <div class="col-md-7">
+                                <span id="tipoDocumento"></span>
+                            </div>
+                        </div>
+                        <div class="row g-2 align-items-center opt-fornitore">
+                            <div class="col-md-5">
+                                <label>Fornitore:</label>
+                            </div>
+                            <div class="col-md-7">
+                                <span id="nomeFornitore"></span>
+                            </div>
+                        </div>
+                        <div class="row g-2 align-items-center">
+                            <div class="col-md-5">
+                                <label>Data documento:</label>
+                            </div>
+                            <div class="col-md-7">
+                                <span id="dataDocumento"></span>
+                            </div>
+                        </div>
+                        <div class="row g-2 align-items-center">
+                            <div class="col-md-5">
+                                <label>N° documento:</label>
+                            </div>
+                            <div class="col-md-7">
+                                <span id="numeroDocumento"></span>
+                            </div>
+                        </div>
+                        <div class="row g-2 align-items-center">
+                            <div class="col-md-5">
+                                <label>Imponibile:</label>
+                            </div>
+                            <div class="col-md-7">
+                                <span id="totImponibileDocumento"></span>
+                            </div>
+                        </div>
+                        <div class="row g-2 align-items-center opt-iva-documento">
+                            <div class="col-md-5">
+                                <label>Totale IVA:</label>
+                            </div>
+                            <div class="col-md-7">
+                                <span id="totIvaDocumento"></span>
+                            </div>
+                        </div>
+                        <div class="row g-2 align-items-center opt-totale-documento">
+                            <div class="col-md-5">
+                                <label>Totale Documento:</label>
+                            </div>
+                            <div class="col-md-7">
+                                <span id="totDocumentoDocumento"></span>
+                            </div>
+                        </div>
+                        <div class="row g-2 align-items-center opt-ritenuta-documento">
+                            <div class="col-md-5">
+                                <label>Ritenuta d'acconto:</label>
+                            </div>
+                            <div class="col-md-7">
+                                <span id="ritAccontoDocumento"></span>
+                            </div>
+                        </div>
+                        <div class="row g-2 align-items-center">
+                            <div class="col-md-5">
+                                <label>Netto a pagare:</label>
+                            </div>
+                            <div class="col-md-7">
+                                <span id="totNettoDocumento"></span>
+                            </div>
+                        </div>
+                        <div class="row g-2 align-items-center">
+                            <div class="col-md-5">
+                                <label>Totale Pagato:</label>
+                            </div>
+                            <div class="col-md-7">
+                                <span id="totPagatoDocumento"></span>
+                            </div>
+                        </div>
+                        <div class="row g-2 align-items-center">
+                            <div class="col-md-5">
+                                <label>Residuo Pagamento:</label>
+                            </div>
+                            <div class="col-md-7">
+                                <span id="resPagamentoDocumento"></span>
+                            </div>
+                        </div>
+                        <div class="col-12">
+                            <div id="elencoScadDocumento" style="margin-left: 5%;"></div>
+                        </div>
+                    </div>
+                    <!-- <div class="rForm-footer col-md-12">
+                        <div class="row g-2 pt-2">
+                            <div class="col-md-12">
+                            </div>
+                        </div>
+                    </div> -->
+                </div>
+                <div id="pdfDocumentoContainer" class="col-md-7" style="height: 100%;">
+                    <div class="row mb-2 align-items-center">
+                        <div class="col-md-12">
+                            <h4 id="statusFileDocumento"></h4>
+                        </div>
+                    </div>
+                    <div class="pdf-container-documento col-md-12 flex-grow-1" style="height: 100%;">
+                        <iframe id="pdfDocumentoPreview" style="width:100%; border:none;"></iframe>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Rinnovo -->
+    <div id="rModal" class="fModal">
+        <div class="fModal-content">
+            <div class="fModal-header">
+                <h4 style="margin:0;">Gestione Rinnovo</h4>
+                <button class="closeRModal"
+                        style="background:none; border:none; font-size:20px; cursor:pointer;">&times;
+                </button>
+            </div>
+            <div class="fModal-body">
+                <div class="fFormContainer">
+                    <div class="fForm-body">
+                        <div class="row g-2 align-items-center mb-3">
+                            <div class="col-md-6">
+                                <span>Cliente:</span><br>
+                                <label id="rCliente" class="form-control-plaintext"></label>
+                            </div>
+                            <div class="col-md-6">
+                                <span>Partner:</span><br>
+                                <label id="rPartner" class="form-control-plaintext"></label>
+                            </div>
+                        </div>
+                        <div class="row g-2 align-items-center mb-2">
+                            <div class="col-md-4">
+                                <label>Protocollo Cliente:</label><br>
+                                <div class="input-group">
+                                    <input type="text" class="form-control" id="rCommessa1" placeholder="Rif Cliente" maxlength="3" disabled>
+                                    <span class="input-group-btn">
+                                        <button type="button" class="btn btn-default btn-flat" id="btnEdit_rCommessa1" title="Modifica" onclick="abilitaEditField('rCommessa1')">
+                                            <i class="fa fa-pencil"></i>
+                                        </button>
+                                        <button type="button" class="btn btn-success btn-flat" id="btnOk_rCommessa1" title="Conferma" style="display:none" onclick="confermaEditField('rCommessa1')">
+                                            <i class="fa fa-check"></i>
+                                        </button>
+                                        <button type="button" class="btn btn-danger btn-flat" id="btnCancel_rCommessa1" title="Annulla" style="display:none" onclick="annullaEditField('rCommessa1')">
+                                            <i class="fa fa-times"></i>
+                                        </button>
+                                    </span>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <label>Forma:</label><br>
+                                <div class="input-group">
+                                    <input type="text" class="form-control" id="rCommessa2" placeholder="Forma" maxlength="3" disabled>
+                                    <span class="input-group-btn">
+                                        <button type="button" class="btn btn-default btn-flat" id="btnEdit_rCommessa2" title="Modifica" onclick="abilitaEditField('rCommessa2')">
+                                            <i class="fa fa-pencil"></i>
+                                        </button>
+                                        <button type="button" class="btn btn-success btn-flat" id="btnOk_rCommessa2" title="Conferma" style="display:none" onclick="confermaEditField('rCommessa2')">
+                                            <i class="fa fa-check"></i>
+                                        </button>
+                                        <button type="button" class="btn btn-danger btn-flat" id="btnCancel_rCommessa2" title="Annulla" style="display:none" onclick="annullaEditField('rCommessa2')">
+                                            <i class="fa fa-times"></i>
+                                        </button>
+                                    </span>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <label>Anno Iniziale:</label><br>
+                                <div class="input-group">
+                                    <input type="text" class="form-control" id="rCommessa3" placeholder="Anno" maxlength="3" disabled>
+                                    <span class="input-group-btn">
+                                        <button type="button" class="btn btn-default btn-flat" id="btnEdit_rCommessa3" title="Modifica" onclick="abilitaEditField('rCommessa3')">
+                                            <i class="fa fa-pencil"></i>
+                                        </button>
+                                        <button type="button" class="btn btn-success btn-flat" id="btnOk_rCommessa3" title="Conferma" style="display:none" onclick="confermaEditField('rCommessa3')">
+                                            <i class="fa fa-check"></i>
+                                        </button>
+                                        <button type="button" class="btn btn-danger btn-flat" id="btnCancel_rCommessa3" title="Annulla" style="display:none" onclick="annullaEditField('rCommessa3')">
+                                            <i class="fa fa-times"></i>
+                                        </button>
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="row g-2 align-items-center mb-3">
+                            <div class="col-md-4">
+                                <label>Rinnovo: (<span id="rAnnoIniziale" class="form-control-plaintext"></span>)</label>
+                                <div class="input-group">
+                                    <input type="text" class="form-control text-right" id="rIniziale" placeholder="0,00" disabled>
+                                    <span class="input-group-btn">
+                                        <button type="button" class="btn btn-default btn-flat" id="btnEdit_rIniziale" title="Modifica" onclick="abilitaEditField('rIniziale')">
+                                            <i class="fa fa-pencil"></i>
+                                        </button>
+                                        <button type="button" class="btn btn-success btn-flat" id="btnOk_rIniziale" title="Conferma" style="display:none" onclick="confermaEditField('rIniziale')">
+                                            <i class="fa fa-check"></i>
+                                        </button>
+                                        <button type="button" class="btn btn-danger btn-flat" id="btnCancel_rIniziale" title="Annulla" style="display:none" onclick="annullaEditField('rIniziale')">
+                                            <i class="fa fa-times"></i>
+                                        </button>
+                                    </span>
+                                </div>
+                            </div>
+                             <div class="col-md-4">
+                                <label>Sorveglianza: (<span id="rAnniSorveglianza" class="form-control-plaintext"></span>)</label>
+                                <div class="input-group">
+                                    <input type="text" class="form-control text-right" id="rSorveglianza" placeholder="0,00" disabled>
+                                    <span class="input-group-btn">
+                                        <button type="button" class="btn btn-default btn-flat" id="btnEdit_rSorveglianza" title="Modifica" onclick="abilitaEditField('rSorveglianza')">
+                                            <i class="fa fa-pencil"></i>
+                                        </button>
+                                        <button type="button" class="btn btn-success btn-flat" id="btnOk_rSorveglianza" title="Conferma" style="display:none" onclick="confermaEditField('rSorveglianza')">
+                                            <i class="fa fa-check"></i>
+                                        </button>
+                                        <button type="button" class="btn btn-danger btn-flat" id="btnCancel_rSorveglianza" title="Annulla" style="display:none" onclick="annullaEditField('rSorveglianza')">
+                                            <i class="fa fa-times"></i>
+                                        </button>
+                                    </span>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <label>Proposta Rinnovo Futuro: (dal <span id="rAnnoRinnovo" class="form-control-plaintext"></span>)</label>
+                                <div class="input-group">
+                                    <input type="text" class="form-control text-right" id="rRinnovo" placeholder="0,00" disabled>
+                                    <span class="input-group-btn">
+                                        <button type="button" class="btn btn-default btn-flat" id="btnEdit_rRinnovo" title="Modifica" onclick="abilitaEditField('rRinnovo')">
+                                            <i class="fa fa-pencil"></i>
+                                        </button>
+                                        <button type="button" class="btn btn-success btn-flat" id="btnOk_rRinnovo" title="Conferma" style="display:none" onclick="confermaEditField('rRinnovo')">
+                                            <i class="fa fa-check"></i>
+                                        </button>
+                                        <button type="button" class="btn btn-danger btn-flat" id="btnCancel_rRinnovo" title="Annulla" style="display:none" onclick="annullaEditField('rRinnovo')">
+                                            <i class="fa fa-times"></i>
+                                        </button>
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row g-2 align-items-center mb-2">
+                            <div class="col-md-12">
+                                <label>Note:</label>
+                                <textarea class="form-control" id="rNote" rows="4" placeholder="Inserisci note aggiuntive"></textarea>
+                            </div>
+                        </div>
+                        <div class="row g-2 mb-3">
+                            <div class="col-md-12">
+                                <div class="rSorveglianzaContainer">
+                                    <div class="rSorveglianzaCol">
+                                        <h5>Attività proposte</h5>
+                                        <table class="table table-bordered table-condensed rSorveglianzaTable">
+                                            <thead>
+                                                <tr>
+                                                    <th>Precedente</th>
+                                                    <th style="width: 24%;">Nuova Data</th>
+                                                    <th style="width: 34%;">Nuova Assegnazione</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody id="rSorveglianzaRinnovoBody">
+                                                <tr>
+                                                    <td colspan="3" class="text-center">Nessuna sorveglianza</td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="fForm-footer">
+                        <div class="row g-2 pt-2">
+                            <div class="col-md-6">
+                                <button class="btn btn-primary btn-block" id="btnSalvaRinnovo">Salva</button>
+                            </div>
+                            <div class="col-md-6">
+                                <button class="btn btn-default btn-block closeRModal">Annulla</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+<script language="javascript">
+    $.get("../templates/footer.mst?_"+(new Date()).getTime(), function (template) {
+        $('#thefooter').html(Mustache.render(template, {vv:sessionStorage['vv']}));
+    });
+</script>
+</div>
+</body>
+
+<script>document.write("<script type='text/javascript' src='../server.js?v=" + Date.now() + "'><\/script>");</script>
+<script src="../assets/js/dropzoneSETUP.js" type="text/javascript"></script>
+<script src="../setupajax.js" type="text/javascript"></script>
+<script>
+var tabellaRitardi;
+var tabellaSal;
+var eleRinnovi;
+var eleSorveglianza;
+$(document).ready(function () {
+
+    moment.locale('it');
+    numeral.language('it', {
+        delimiters: {
+            thousands: '.',
+            decimal: ','
+        },
+        abbreviations: {
+            thousand: 'mila',
+            million: 'mil',
+            billion: 'b',
+            trillion: 't'
+        },
+        ordinal: function (number) {
+            return 'º';
+        },
+        currency: {
+            symbol: '€'
+        }
+    });
+    numeral.language('it');
+
+    //Effetto onda sui tasti, stile material design
+    Waves.attach('.btn', ['waves-float']);
+    Waves.init();
+    new WOW().init();
+
+    caricaCalendario();
+
+});
+
+
+var toSalNonFatt = false;
+
+$(document).ready(function () {
+    toSalNonFatt = sessionStorage.getItem('toSalNonFatt');
+    if (toSalNonFatt) {
+        $('a[href="#tab_sal"]').click();
+    }
+    sessionStorage.removeItem('toSalNonFatt');
+
+    var richiestaLayoutLuogo = $.getJSON(server + 'secure/parametri/getByParametro?parametro=' + "conf.categoria1");
+    richiestaLayoutLuogo.success(function (res) {
+        $('.confCategoria1').text(res.valore);
+    })
+    var richiestaLayoutTipoAttivita = $.getJSON(server + 'secure/parametri/getByParametro?parametro=' + "conf.categoria2");
+    richiestaLayoutTipoAttivita.success(function (res) {
+        $('.confCategoria2').text(res.valore);
+    })
+});
+
+function caricaCalendario() {
+
+    var data = {};
+    var eventi = [];
+    var ritardi = [];
+    eleRinnovi = [];
+    eleSorveglianza = [];
+    Pace.track(function () {
+        var elencoScadenze = $.get(server + 'secure/coge/scadclifo');
+        elencoScadenze.success(function (responseString) {
+
+
+            //var responseJson = JSON.parse(responseString);
+            var lista = responseString.map( function(res) {
+                var evento = eleScadenza(res);
+                if(evento!=null){
+                    eventi.push(evento);
+                }
+                var ritardo = isRitardo(res);
+                if(ritardo){
+                    ritardi.push(res);
+                }
+
+                return evento;
+            });
+
+            Pace.track(function () {
+
+                var elencoRinnovi = $.get(server + 'secure/cvi/rinnovi/scadenze');
+                elencoRinnovi.success(function (responseString) {
+                    $('#elencoRinnovi').empty();
+
+                    eleRinnovi = responseString.items.filter(item =>
+                        item.project.fields.STATOPROGETTO !== 'Rinnovato' &&
+                        ![5, 7, 19, 23].includes(parseInt(item.category.key))
+                    );
+
+                    var lista = eleRinnovi.map( function(res) {
+                        var evento = eleRinnovo(res);
+                        if(evento!=null){
+                            eventi.push(evento);
+                        }
+
+                        var ritardo = isRitardoRinnovo(res);
+                        if(ritardo){
+                            ritardi.push(ritardoRinnovo(res));
+                            //ritardi.push(res);
+                        }
+
+
+                        return evento;
+                    });
+
+
+                    eleRinnovi.forEach(pag => {
+                        var dataScadenza = moment(formattaDataDaPME(pag.start));
+                        var dataScadenzaFormattata = dataScadenza.format('DD/MM/YYYY');
+                        var butProv = '<button class="btn btn-info btn-xs">'+pag.category.label+'</button>';
+                        var oggi = moment();
+                        var colore = "";
+                        if (dataScadenza.isBefore(oggi, 'day')) {
+                            colore = "red";
+                            butProv = '<button class="btn btn-danger btn-xs">'+pag.category.label+'</button>';
+                        } else{
+                            if (dataScadenza.isSame(oggi, 'day')) {
+                                colore = "orange";
+                            }
+                            if(![4, 6, 24].includes(parseInt(pag.category.key))){
+                                butProv = '<button class="btn btn-warning btn-xs">'+pag.category.label+'</button>';
+                            }
+                        }
+                        var offertarn = parseFloat(pag.project.fields.OFFERTARN || 0);
+                        var offertasa = parseFloat(pag.project.fields.OFFERTASA || 0);
+                        offertarn = isNaN(offertarn) ? 0 : offertarn;
+                        offertasa = isNaN(offertasa) ? 0 : offertasa;
+                        var importoRinnovo = numeral(offertarn).format('$ 0,0.00');
+                        var importoSorveglianza = numeral(offertasa).format('$ 0,0.00');
+                        var prjkey = pag.project.key;
+                        var itemkey = pag.key;
+
+                        var riga = `
+                            <tr data-prjkey="${prjkey}" data-itemkey="${itemkey}">
+                                <td style="text-align:center;">${dataScadenzaFormattata}</td>
+                                <td style="text-align:right;">${importoRinnovo}</td>
+                                <td style="text-align:right;">${importoSorveglianza}</td>
+                                <td style="text-align:left;">${pag.project.label}</td>
+                                <td style="text-align:left;">${pag.customers[0].label}</td>
+                                <td style="text-align:left;">${pag.customers[0].fields.PARTNER}</td>
+                                <td style="text-align:left;">${pag.resources[0].label}</td>
+                                <td style="text-align:center;">${butProv}</td>
+                            </tr>
+                        `;
+
+                        $('#elencoRinnovi').append(riga);
+                    });
+
+                    ritardi.sort(function(a, b) {
+                        //descending
+                        if (a.dataScadenza < b.dataScadenza) return 1;
+                        if (a.dataScadenza > b.dataScadenza) return -1;
+                        return 0;
+                    });
+
+                    $('#calendario').fullCalendar({
+                        lang: 'it',
+                        header: {
+                            left: 'prev,next today',
+                            center: 'title',
+                            right: 'month,basicWeek'
+                        },
+                        defaultDate: moment(),
+                        editable: false,
+                        eventStartEditable: false,
+                        eventDurationEditable: false,
+                        eventLimit: true, // allow "more" link when too many events
+                        events: eventi,
+                        eventRender: function(event, element) {
+                            if (event.importoTotaleEseguito == event.importoScadenza) {
+                                var titoloOriginale = element.find('.fc-title').html();
+                                element.find('.fc-title').html('<s>' + titoloOriginale + '</s>');
+                            }
+                        },
+                        eventClick: function(event, jsEvent, view) {
+                            var idScadenza = parseInt(event.id.replace(/\D/g, ''), 10);
+                            var scadenza = responseString.find(s => s.id === idScadenza);
+                            if (scadenza.rifTipo == "FATTURA-E") {
+                                dettagliFattura(scadenza.rifDocumentoId, scadenza.societa);
+                            } else {
+                                dettagliDocumento(scadenza.rifDocumentoId, scadenza.societa);
+                            }
+                        }
+                    });
+
+                    //ritardi
+                    $('#elencoRitardi').empty();
+
+                    for(i=0;i<ritardi.length;i++){
+                        var gg = moment().diff(moment(ritardi[i].dataScadenza), 'days');
+                        var riga = `
+                            <tr class="rowPointer" data-id="${ritardi[i].id}" data-tipo="${ritardi[i].tipo}">
+                                <td style="text-align:center;">${gg}</td>
+                                <td style="text-align:left;">${ritardi[i].tipo}</td>
+                                <td style="text-align:left;">${ritardi[i].prj}</td>
+                                <td style="text-align:left;">${ritardi[i].customer}</td>
+                                <td style="text-align:left;">${ritardi[i].stato}</td>
+                            </tr>
+                        `;
+                        $('#elencoRitardi').append(riga);
+                    }
+
+                    $('#tabellaRitardi tbody').off('click').on('click', 'tr', function() {
+                        var id = $(this).data('id');
+                        var tipo = $(this).data('tipo');
+                        var ritardo = responseString.find(r => r.id === id);
+                        if (tipo == "FATTURA-E" ) {
+                            dettagliFattura(id, ritardo.societa);
+                        } else {
+                            dettagliDocumento(id, ritardo.societa);
+                        }
+                    });
+
+                });
+            });
+        });
+    });
+
+}
+function dettagliFattura(idFattura, nomeCliente){
+    var richiestaFattura = $.getJSON(server + 'secure/coge/fattura/' + idFattura);
+    richiestaFattura.success(function(res) {
+        var response = JSON.parse(res.fattura);
+        var dataFattura = moment([response.dataFattura.year, response.dataFattura.monthValue - 1, response.dataFattura.dayOfMonth]).format('DD/MM/YYYY');
+        var totaleDocumento = response.imponibile + response.iva;
+        var totaleNetto = totaleDocumento + response.ritenuta;
+
+        $('#nomeCliente').text(nomeCliente);
+        $('#dataFattura').text(dataFattura);
+        $('#numeroFattura').text(response.numeroFattura);
+        $('#totImponibileFattura').text(numeral(response.imponibile).format('$ 0,0.00'));
+        if (response.inarcassa != 0) {
+            $('.opt-cassa-fattura').show();
+            $('#inarcassaFattura').text(numeral(response.inarcassa).format('$ 0,0.00'));
+        } else {
+            $('.opt-cassa-fattura').hide();
+        }
+        $('#totIvaFattura').text(numeral(response.iva).format('$ 0,0.00'));
+        $('#totDocumentoFattura').text(numeral(totaleDocumento).format('$ 0,0.00'));
+        if (response.ritenuta != 0) {
+            $('.opt-ritenuta-fattura').show();
+            $('#ritAccontoFattura').text(numeral(response.ritenuta).format('$ -0,0.00'));
+        } else {
+            $('.opt-ritenuta-fattura').hide();
+        }
+        $('#totNettoFattura').text(numeral(totaleNetto).format('$ 0,0.00'));
+        $('#totPagatoFattura').text(numeral(response.importoPagato).format('$ 0,0.00'));
+        $('#resPagamentoFattura').text(numeral(totaleNetto - response.importoPagato).format('$ 0,0.00'));
+
+        var richiestaScadenze = $.getJSON(server + 'secure/coge/scadenze/FATTURA-E/' + idFattura);
+        richiestaScadenze.success(function(res) {
+            $('#elencoScadFattura').empty();
+            var tabella = `
+                <table class="table table-striped table-bordered" style="width:90%;">
+                    <thead>
+                        <tr>
+                            <th style="text-align:center;">Data</th>
+                            <th style="text-align:right;">Importo</th>
+                            <th style="text-align:center;">Pagato</th>
+                        </tr>
+                    </thead>
+                    <tbody id="bodyScadenzeFattura"></tbody>
+                </table>
+            `;
+            $('#elencoScadFattura').append(tabella);
+
+            res.forEach(scad => {
+                var dataFormattata = moment([scad.dataScadenza.year, scad.dataScadenza.monthValue - 1, scad.dataScadenza.dayOfMonth]).format('DD/MM/YYYY');
+                var importo = numeral(scad.importoScadenza).format('$ 0,0.00');
+                var pagato = numeral(scad.importoTotaleEseguito).format('$ 0,0.00');
+
+                var riga = `
+                    <tr>
+                        <td style="text-align:center;">${dataFormattata}</td>
+                        <td style="text-align:right;">${importo}</td>
+                        <td style="text-align:center;">${pagato}</td>
+                    </tr>
+                `;
+                $('#bodyScadenzeFattura').append(riga);
+            });
+        });
+
+        $('#pdfFatturaPreview').empty();
+        $('#statusFileFattura').empty();
+        var url = server + 'documenti/allegato/' + response.allegatoId;
+        fetch(url, {
+            headers: { 'Authorization': 'Bearer ' + sessionStorage.getItem('token') }
+        })
+        .then(res => {
+            if (!res.ok) {
+                $('#statusFileFattura').text('Documento PDF non presente');
+                $('.pdf-container-fattura').hide();
+                throw new Error('PDF non trovato');
+            }
+            return res.blob();
+        })
+        .then(blob => {
+            var blobUrl = URL.createObjectURL(blob);
+            $('#pdfFatturaPreview').attr('src', blobUrl);
+            $('#statusFileFattura').text('Documento PDF:');
+            $('.pdf-container-fattura').show();
+        })
+        .catch(err => {
+            console.log(err);
+        });
+
+        $('#fModal').show();
+        $('body').addClass('modal-open');
+    });
+
+
+    $('.closeFModal').on('click', function() {
+        $('#fModal').hide();
+        $('#pdfFatturaPreview').attr('src', '');
+        $('body').removeClass('modal-open');
+    });
+
+}
+
+function dettagliDocumento(idDoc, nomeFornitore){
+    var richiestaDocumento = $.getJSON(server + 'secure/coge/docpassivo/' + idDoc);
+    richiestaDocumento.success(function(response) {
+        var dataDocumento = moment([response.dataDoc.year, response.dataDoc.monthValue - 1, response.dataDoc.dayOfMonth]).format('DD/MM/YYYY');
+        var totaleDocumento = response.imponibile + response.iva;
+        var totaleNetto = totaleDocumento + response.ritenuta;
+
+        if (response.previsionale) {
+            $('#tipoDocumento')
+                .text(response.tipoDoc + ' ')
+                .append('&nbsp;<button class="btn btn-warning btn-xs">Previsionale</button>');
+        } else {
+            $('#tipoDocumento').text(response.tipoDoc);
+        }
+        if (response.tipoDoc == nomeFornitore) {
+            $('.opt-fornitore').hide();
+        } else {
+            $('.opt-fornitore').show();
+            $('#nomeFornitore').text(nomeFornitore);
+        }
+        $('#dataDocumento').text(dataDocumento);
+        $('#numeroDocumento').text(response.numeroDoc);
+        $('#totImponibileDocumento').text(numeral(response.imponibile).format('$ 0,0.00'));
+        if (response.iva != 0) {
+            $('.opt-iva-documento').show();
+            $('.opt-totale-documento').show();
+            $('#totIvaDocumento').text(numeral(response.iva).format('$ 0,0.00'));
+            $('#totDocumentoDocumento').text(numeral(totaleDocumento).format('$ 0,0.00'));
+        } else {
+            $('.opt-iva-documento').hide();
+            $('.opt-totale-documento').hide();
+        }
+        if (response.ritenuta != 0) {
+            $('.opt-ritenuta-documento').show();
+            $('#ritAccontoDocumento').text(numeral(response.ritenuta).format('$ -0,0.00'));
+        } else {
+            $('.opt-ritenuta-documento').hide();
+        }
+        $('#totNettoDocumento').text(numeral(totaleNetto).format('$ 0,0.00'));
+        $('#totPagatoDocumento').text(numeral(response.importoPagato).format('$ 0,0.00'));
+        $('#resPagamentoDocumento').text(numeral(totaleNetto - response.importoPagato).format('$ 0,0.00'));
+
+        var richiestaScadenze = $.getJSON(server + 'secure/coge/scadenze/'+response.tipoDoc+'/' + idDoc);
+        richiestaScadenze.success(function(res) {
+            $('#elencoScadDocumento').empty();
+            var tabella = `
+                <table class="table table-striped table-bordered" style="width:90%;">
+                    <thead>
+                        <tr>
+                            <th style="text-align:center;">Data</th>
+                            <th style="text-align:right;">Importo</th>
+                            <th style="text-align:center;">Pagato</th>
+                        </tr>
+                    </thead>
+                    <tbody id="bodyScadenzeDocumento"></tbody>
+                </table>
+            `;
+            $('#elencoScadDocumento').append(tabella);
+
+            res.forEach(scad => {
+                var dataFormattata = moment([scad.dataScadenza.year, scad.dataScadenza.monthValue - 1, scad.dataScadenza.dayOfMonth]).format('DD/MM/YYYY');
+                var importo = numeral(scad.importoScadenza).format('$ 0,0.00');
+                var pagato = numeral(scad.importoTotaleEseguito).format('$ 0,0.00');
+
+                var riga = `
+                    <tr>
+                        <td style="text-align:center;">${dataFormattata}</td>
+                        <td style="text-align:right;">${importo}</td>
+                        <td style="text-align:center;">${pagato}</td>
+                    </tr>
+                `;
+                $('#bodyScadenzeDocumento').append(riga);
+            });
+        });
+
+        $('#pdfDocumentoPreview').attr('src', '');
+        $('#statusFileDocumento').empty();
+        var url = server + 'documenti/allegato/' + response.allegatoId;
+        fetch(url, {
+            headers: { 'Authorization': 'Bearer ' + sessionStorage.getItem('token') }
+        })
+        .then(res => {
+            if (!res.ok) {
+                $('#statusFileDocumento').text('Documento PDF non presente');
+                $('.pdf-container-documento').hide();
+                throw new Error('PDF non trovato');
+            }
+            return res.blob();
+        })
+        .then(blob => {
+            var blobUrl = URL.createObjectURL(blob);
+            $('#pdfDocumentoPreview').attr('src', blobUrl);
+            $('#statusFileDocumento').text('Documento PDF:');
+            $('.pdf-container-documento').show();
+        })
+        .catch(err => {
+            console.log(err);
+        });
+
+        $('#dModal').show();
+        $('body').addClass('modal-open');
+    });
+
+
+    $('.closeDModal').on('click', function() {
+        $('#dModal').hide();
+        $('#pdfDocumentoPreview').attr('src', '');
+        $('body').removeClass('modal-open');
+    });
+
+}
+
+function getTipoScadenza(ele){
+    switch (ele.tipoScadenza) {
+        case "INCASSO-FE":
+            return "Incasso Fattura";
+            break;
+        default:
+            return ele.tipoScadenza + " "+ ele.rifTipo;
+    }
+}
+function eleScadenza(res){
+    var evento = null;
+
+    var obj = {
+        "id": "ev"+res.id,
+        "title":numeral(res.importoScadenza).format('$ 0,0.00'),
+        "start":formattaDataDaSQL(res.dataScadenza),
+        "backgroundColor":"",
+        "importoTotaleEseguito": res.importoTotaleEseguito,
+        "importoScadenza": res.importoScadenza
+    }
+    if(res.tipoScadenza=="INCASSO-FE"){
+        obj.title = obj.title + "\nda incassare FT\n" + res.societa;
+        if(moment().diff(moment(formattaDataDaSQL(res.dataScadenza)), 'days')>0){
+            if(res.importoTotaleEseguito>0){
+                if(res.importoTotaleEseguito!=res.importoScadenza){
+                    obj.backgroundColor = 'orange';
+                    return obj;
+                }else{
+                    obj.backgroundColor = 'green';
+                    return obj;
+                }
+            }else{
+                obj.backgroundColor = 'red';
+                return obj;
+            }
+        }else{
+            return obj;
+        }
+    }else{
+        if (res.rifTipo == res.societa) {
+            obj.title = obj.title + "\n"+res.tipoScadenza+" "+res.rifTipo;
+        } else {
+            obj.title = obj.title + "\n"+res.tipoScadenza+" "+res.rifTipo+"\n"+res.societa;
+        }
+        if(moment().diff(moment(formattaDataDaSQL(res.dataScadenza)), 'days')>0){
+            if(res.importoTotaleEseguito>0){
+                if(res.importoTotaleEseguito!=res.importoScadenza){
+                    obj.backgroundColor = 'orange';
+                    return obj;
+                }else{
+                    obj.backgroundColor = 'green';
+                    return obj;
+                }
+            }else{
+                obj.backgroundColor = 'red';
+                return obj;
+            }
+
+        }else{
+            if(res.tipoScadenza!='Previsione Pag.'){
+                return obj;
+            }else{
+                obj.backgroundColor = 'grey';
+                return obj;
+            }
+
+        }
+    }
+    return evento;
+}
+function isRitardo(res){
+    var ritardo = false;
+    if(res.tipoScadenza!=""){
+        var gg = moment().diff(moment(formattaDataDaSQL(res.dataScadenza)), 'days');
+        if(gg>0){
+            if(!res.completato){
+                ritardo=true;
+            }
+        }
+        /*
+        if(moment(formattaDataDaSQL(res.dataScadenza)).isBefore(moment())){
+            if(!res.completato){
+                ritardo=true;
+            }
+        }
+        */
+    }
+    return ritardo;
+}
+
+function eleRinnovo(res){
+    var evento = null;
+
+    var obj = {
+        "id": "ri"+res.key,
+        // "title":res.customers[0].label + "\n" + res.project.label + "\n" + res.category.label,
+        "title":res.customers[0].label + "\n" + res.project.label,
+        "start":formattaDataDaPME(res.start),
+        "backgroundColor":"",
+        "importoTotaleEseguito": 0,
+        "importoScadenza": null
+    }
+
+    if(moment().diff(moment(formattaDataDaPME(res.start)), 'days')>0){
+        obj.backgroundColor = 'red';
+        return obj;
+    }else{
+        obj.backgroundColor = 'blue';
+        return obj;
+    }
+}
+function isRitardoRinnovo(res){
+    var ritardo = false;
+    var gg = moment().diff(moment(formattaDataDaPME(res.start)), 'days');
+    if(gg>0){
+        ritardo=true;
+    }
+
+    return ritardo;
+}
+
+function ritardoRinnovo(res){
+    var evento = null;
+
+    var obj = {
+        "id": "ri"+res.key,
+        "tipo":"RINNOVO",
+        "prj":res.project.label ,
+        "customer":res.customers[0].label ,
+        "stato":res.category.label,
+        "dataScadenza":formattaDataDaPME(res.start),
+    }
+
+    return obj;
+}
+function noNaN( n ) {
+	return isNaN( n ) ? 0 : n;
+}
+
+var animationEnd = 'webkitAnimationEnd mozAnimationEnd MSAnimationEnd oanimationend animationend';
+
+
+function formattaDataDaSQL(dataObj) {
+    if (!dataObj || typeof dataObj !== 'object') return null;
+    return moment([dataObj.year, dataObj.monthValue - 1, dataObj.dayOfMonth]).format('YYYY-MM-DD');
+}
+function formattaDataDaPME(dataPME) {
+
+    return dataPME.substr(0,10);
+}
+function tabPagamenti() {
+    var elencoPagamenti = $.get(server + 'secure/coge/pagamenti');
+    elencoPagamenti.success(function (responseString) {
+        $('#elencoPagamenti').empty();
+        var pagList = responseString;
+        pagList.forEach(pag => {
+            var dataScadenza = moment([pag.scadenzaData.year, pag.scadenzaData.monthValue - 1, pag.scadenzaData.dayOfMonth]);
+            var dataScadenzaFormattata = dataScadenza.format('DD/MM/YYYY');
+            var dataDocumentoFormattata = moment([pag.dataDoc.year, pag.dataDoc.monthValue - 1, pag.dataDoc.dayOfMonth]).format('DD/MM/YYYY');
+            var importoResiduo = pag.scadenzaImporto - pag.scadenzaImportoTotaleEseguito;
+            var percPagato = Math.round((importoResiduo * 100) / pag.scadenzaImporto);
+            var butProv = pag.previsionale?'<button class="btn btn-warning btn-xs">Previsionale</button>':'';
+
+            var oggi = moment();
+            var colore = "";
+            if (dataScadenza.isBefore(oggi, 'day')) {
+                colore = "red";
+            } else if (dataScadenza.isSame(oggi, 'day')) {
+                colore = "orange";
+            }
+            if (isNaN(percPagato)) {
+                percPagato = 0;
+            }
+            var totaleCommessa = numeral(pag.commessaTotale).format('$ 0,0.00');
+            var commessa = pag.commessaCode;
+            if (commessa.indexOf("_") > 0) {
+                var splitcommessa = commessa.split("_");
+                if (splitcommessa.length >= 3) {
+                    commessa = splitcommessa[0] + "_" + splitcommessa[1] + "_" + splitcommessa[2];
+                }
+            }
+
+            var riga = `
+                <tr>
+                    <td style="text-align:center;">${dataScadenzaFormattata}</td>
+                    <td style="text-align:right;">${numeral(importoResiduo).format('$ 0,0.00')}</td>
+                    <td style="text-align:center;">${percPagato}%</td>
+                    <td style="text-align:left;">${pag.tipoDoc}</td>
+                    <td style="text-align:center;">${dataDocumentoFormattata}</td>
+                    <td style="text-align:left;">${pag.numeroDoc}</td>
+                    <td style="text-align:left;">${pag.fornitore}</td>
+                    <td style="text-align:right; color:${colore};">${numeral(pag.totalePagare).format('$ 0,0.00')}</td>
+                    <td style="text-align:left;">${commessa}</td>
+                    <td style="text-align:left;">${pag.clienteSocieta}</td>
+                    <td style="text-align:right;">${totaleCommessa}</td>
+                    <td style="text-align:left;">${pag.commessaLuogo}</td>
+                    <td style="text-align:left;">${pag.commessaTipoAttivita}</td>
+                    <td style="text-align:left;">${pag.commessaTipo}</td>
+                    <td>${butProv}</td>
+                </tr>
+            `;
+
+            $('#elencoPagamenti').append(riga);
+        });
+    });
+}
+
+function tabIncassi() {
+    var elencoIncassi = $.get(server + 'secure/coge/incassiScaduti');
+    elencoIncassi.success(function (responseString) {
+    $('#elencoIncassi').empty();
+    var incList = responseString;
+    incList.forEach(inc => {
+            var dataFormattata = moment([inc.data.year, inc.data.monthValue - 1, inc.data.dayOfMonth]).format('DD/MM/YYYY');
+            var importoResiduo = inc.importo - inc.importoEvaso;
+            var percIncassato = Math.round((importoResiduo * 100) / inc.importo);
+            if (isNaN(percIncassato)) {
+                percIncassato = 0;
+            }
+            var totaleCommessa = numeral(inc.totaleCommessa).format('$ 0,0.00');
+            var commessa = inc.nomeCommessa;
+            if (commessa.indexOf("_") > 0) {
+                var splitcommessa = commessa.split("_");
+                if (splitcommessa.length >= 3) {
+                    commessa = splitcommessa[0] + "_" + splitcommessa[1] + "_" + splitcommessa[2];
+                }
+            }
+
+            var riga = `
+                <tr>
+                    <td style="text-align:center;">${dataFormattata}</td>
+                    <td style="text-align:right;">${numeral(importoResiduo).format('$ 0,0.00')}</td>
+                    <td style="text-align:center;">${percIncassato}%</td>
+                    <td style="text-align:left;">${inc.cliente}</td>
+                    <td style="text-align:center;">${inc.sequenza}</td>
+                    <td style="text-align:left;">${commessa}</td>
+                    <td style="text-align:right;">${totaleCommessa}</td>
+                    <td style="text-align:left;">${inc.luogoCommessa}</td>
+                    <td style="text-align:left;">${inc.tipoAttivitaCommessa}</td>
+                    <td style="text-align:left;">${inc.tipoCommessa}</td>
+                </tr>
+            `;
+
+            $('#elencoIncassi').append(riga);
+        });
+    });
+}
+
+function tabSal() {
+    var elencoSal = $.get(server + 'secure/coge/salScaduti');
+    elencoSal.success(function (responseString) {
+        $('#elencoSal').empty();
+        var salList = responseString;
+        salList.forEach(sal => {
+            var dataFormattata = moment([sal.data.year, sal.data.monthValue - 1, sal.data.dayOfMonth]).format('DD/MM/YYYY');
+            var importo = numeral(sal.importo).format('$ 0,0.00');
+            var totaleCommessa = numeral(sal.totaleCommessa).format('$ 0,0.00');
+            var commessa = sal.nomeCommessa;
+            if (commessa.indexOf("_") > 0) {
+                var splitcommessa = commessa.split("_");
+                if (splitcommessa.length >= 3) {
+                    commessa = splitcommessa[0] + "_" + splitcommessa[1] + "_" + splitcommessa[2];
+                }
+            }
+
+            var riga = `
+                <tr data-id-preventivo="${sal.idPreventivo}">
+                    <td style="text-align:center;">${dataFormattata}</td>
+                    <td style="text-align:right;">${importo}</td>
+                    <td style="text-align:left;">${sal.cliente}</td>
+                    <td style="text-align:center;">${sal.sequenza}</td>
+                    <td style="text-align:left;">${commessa}</td>
+                    <td style="text-align:right;">${totaleCommessa}</td>
+                    <td style="text-align:left;">${sal.luogoCommessa}</td>
+                    <td style="text-align:left;">${sal.tipoAttivitaCommessa}</td>
+                    <td style="text-align:left;">${sal.tipoCommessa}</td>
+                </tr>
+            `;
+
+            $('#elencoSal').append(riga);
+        });
+    });
+    $('#elencoSal').on('click', 'tr', function() {
+        var idPreventivo = $(this).data('id-preventivo');
+        sessionStorage.setItem('idCommessa', idPreventivo);
+        sessionStorage.setItem('fromScadSalNonFatt', true);
+        location.href ="../gestionecommesse/";
+    });
+}
+
+function tabRinnovi() {
+
+}
+
+function formattaDataSorveglianza(data) {
+    if (!data) return '';
+    var m = moment(data);
+    return m.isValid() ? m.format('DD/MM/YYYY') : '';
+}
+
+function calcolaDataRinnovoSorveglianza(data, dataExtra,label) {
+    if (!data) return '';
+
+    var dataBase = moment(data);
+    if (!dataBase.isValid()) return '';
+
+    if (label === 'RINNOVO') {
+        return dataBase.format('DD/MM/YYYY');
+    }
+
+    var dataRiferimento = dataExtra ? moment(dataExtra) : dataBase;
+    if (!dataRiferimento.isValid()) {
+        dataRiferimento = dataBase;
+    }
+
+    var m = moment({
+        year: dataBase.year(),
+        month: dataRiferimento.month(),
+        date: dataRiferimento.date()
+    }).add(3, 'years');
+
+    if (!m.isValid()) return '';
+
+    if (m.day() === 6) {
+        m.subtract(1, 'day');
+    } else if (m.day() === 0) {
+        m.subtract(2, 'days');
+    }
+
+    return m.format('DD/MM/YYYY');
+}
+
+function getRisorsePME() {
+    var raw = sessionStorage.getItem('pme-resources') || '[]';
+    var risorse = [];
+
+    try {
+        risorse = JSON.parse(raw);
+    } catch (e) {
+        risorse = [];
+    }
+
+    if (!Array.isArray(risorse)) {
+        risorse = [];
+    }
+
+    return risorse
+        .filter(function (risorsa) {
+            return risorsa && risorsa.key != null && risorsa.label;
+        })
+        .sort(function (a, b) {
+            return (a.label || '').localeCompare((b.label || ''));
+        });
+}
+
+function aggiungiOpzioniRisorse($select, risorse, incaricatoCorrente) {
+    $select.append($('<option>', { value: '', text: '' }));
+
+    risorse.forEach(function (risorsa) {
+        $select.append($('<option>', {
+            value: risorsa.key,
+            text: risorsa.label
+        }));
+    });
+
+    if (incaricatoCorrente && incaricatoCorrente.key != null) {
+        var exists = risorse.some(function (risorsa) {
+            return String(risorsa.key) === String(incaricatoCorrente.key);
+        });
+
+        if (!exists) {
+            $select.append($('<option>', {
+                value: incaricatoCorrente.key,
+                text: incaricatoCorrente.label || incaricatoCorrente.key
+            }));
+        }
+
+        $select.val(String(incaricatoCorrente.key));
+    }
+}
+
+function popolaRinnovoSorveglianza(items,rinnovo) {
+    
+    var sorveglianze = Array.isArray(items) ? items : [];
+    var risorse = getRisorsePME();
+    var $rinnovoBody = $('#rSorveglianzaRinnovoBody');
+
+    $rinnovoBody.find('.rSaIncaricato').each(function () {
+        if ($(this).data('select2')) {
+            $(this).select2('destroy');
+        }
+    });
+
+    $rinnovoBody.empty();
+
+    if (!sorveglianze.length) {
+        $rinnovoBody.append('<tr><td colspan="3" class="text-center">Nessuna sorveglianza</td></tr>');
+        return;
+    }
+
+    sorveglianze.forEach(function (item, index) {
+        var incaricato = item.resources && item.resources.length ? item.resources[0] : null;
+        var descrizionePrecedente = [
+            formattaDataSorveglianza(item.start),
+            item.label || '',
+            incaricato ? (incaricato.label || '') : ''
+        ].filter(function (valore) {
+            return valore;
+        }).join(' - ');
+
+        var $dataInput = $('<input>', {
+            type: 'text',
+            class: 'form-control rSaData',
+            value: calcolaDataRinnovoSorveglianza(item.start,rinnovo.project.fields.SCADENZACERTIFICATO,item.label),
+            readonly: true,
+            'data-index': index
+        });
+        var $calendarButton = $('<button>', {
+            type: 'button',
+            class: 'btn btn-default btn-flat rSaCalendar',
+            title: 'Seleziona data'
+        }).append($('<i>', { class: 'fa fa-calendar' }));
+        var $dataGroup = $('<div>', { class: 'input-group' })
+            .append($dataInput)
+            .append($('<span>', { class: 'input-group-btn' }).append($calendarButton));
+
+        var $select = $('<select>', {
+            class: 'form-control rSaIncaricato',
+            'data-index': index
+        });
+        var incaricatoDaAssegnare = risorse.find(function (risorsa) {
+            return risorsa.label === 'DA ASSEGNARE';
+        });
+        aggiungiOpzioniRisorse($select, risorse, incaricatoDaAssegnare);
+
+        var $rinnovoRow = $('<tr>', {
+            'data-original-key': item.key || '',
+            'data-attivita': item.label || ''
+        });
+        $('<td>').text(descrizionePrecedente).appendTo($rinnovoRow);
+        $('<td>').append($dataGroup).appendTo($rinnovoRow);
+        $('<td>').append($select).appendTo($rinnovoRow);
+        $rinnovoBody.append($rinnovoRow);
+    });
+
+    $('.rSaData').datepicker({
+        format: 'dd/mm/yyyy',
+        todayHighlight: true,
+        weekStart: 1
+    }).off('changeDate.rSaData').on('changeDate.rSaData', function () {
+        $(this).datepicker('hide');
+    });
+
+    $('.rSaCalendar').off('click').on('click', function () {
+        $(this).closest('.input-group').find('.rSaData').datepicker('show');
+    });
+
+    $('.rSaIncaricato').select2({
+        width: '100%',
+        placeholder: 'Seleziona',
+        allowClear: true,
+        dropdownParent: $('#rModal')
+    });
+}
+
+function leggiRinnovoSorveglianza() {
+    var dati = [];
+
+    $('#rSorveglianzaRinnovoBody tr[data-original-key]').each(function () {
+        var $row = $(this);
+        var $select = $row.find('.rSaIncaricato');
+        var resourceKey = $select.val();
+        var dataRinnovo = moment($row.find('.rSaData').val(), 'DD/MM/YYYY', true);
+
+        dati.push({
+            data: dataRinnovo.isValid() ? dataRinnovo.format('YYYY-MM-DD') : '',
+            attivita: $row.data('attivita') || '',
+            incaricato: resourceKey ? parseInt(resourceKey, 10) : null,
+            itemKey: $row.data('original-key') || ''
+        });
+    });
+
+    return dati;
+}
+
+
+function apriRinnovoModal(itemkey,prjkey) {
+    //var rinnovo = eleRinnovi.find(r => r.project.key === prjkey);
+    var rinnovo = eleRinnovi.find(r => r.key === itemkey);
+    if (!rinnovo) {
+        swal({
+            title: 'Attenzione',
+            type: 'error',
+            text: 'Dati rinnovo non trovati',
+            allowOutsideClick: false,
+            allowEscapeKey: false
+        }, function(){
+
+        });
+        return;
+    }
+
+    Pace.track(function () {
+        eleSorveglianza = [];
+        var elencoSA = $.get(server + 'secure/cvi/progetto/sorveglianza?prjkey=' + rinnovo.project.key);
+        elencoSA.success(function (responseString) {
+
+            eleSorveglianza = responseString.items;
+            popolaRinnovoSorveglianza(eleSorveglianza,rinnovo);
+
+            // Valorizzare i campi del form
+            $('#rCliente').text(rinnovo.customers[0].label);
+            $('#rPartner').text(rinnovo.customers[0].fields.PARTNER || '');
+
+            // Valorizzare i campi importo
+            var offertari = rinnovo.project.fields.OFFERTARN;
+            var offertasa = rinnovo.project.fields.OFFERTASA;
+            $('#rIniziale').val(offertari ? numeral(offertari).format('0,0.00') : '');
+            $('#rSorveglianza').val(offertasa ? numeral(offertasa).format('0,0.00') : '');
+            $('#rRinnovo').val(offertari ? numeral(offertari).format('0,0.00') : '');
+
+            // Valorizzare i campi commessa
+            var projectLabel = rinnovo.project.label;
+            var commessaParts = projectLabel.split(' - ');
+            var rCommessa1Value = commessaParts.length > 1 ? commessaParts[0].trim() : '';
+            var rCommessa2Value = commessaParts.length > 2 ? commessaParts[1].trim() : '';
+
+            $('#rCommessa1').val(rCommessa1Value);
+            $('#rCommessa2').val(rCommessa2Value);
+            $('#rCommessa3').val(new Date().getFullYear().toString());
+
+            // Valorizzare gli anni negli span
+            var annoCorrente = new Date().getFullYear();
+            $('#rAnnoIniziale').text(annoCorrente);
+            $('#rAnniSorveglianza').text((annoCorrente + 1) + " / " + (annoCorrente + 2));
+            $('#rAnnoRinnovo').text(annoCorrente + 3);
+
+            // Valorizzare il campo Note
+            $('#rNote').val(rinnovo.project.fields.NOTE || '');
+
+            // Memorizzare itemkey e prjkey per l'uso nel salvataggio
+            $('#rModal').data('itemkey', itemkey);
+            $('#rModal').data('prjkey', prjkey);
+
+            $('#rModal').show();
+            $('body').addClass('modal-open');
+
+        });
+    });
+
+}
+
+function salvaRinnovo() {
+    var itemkey = $('#rModal').data('itemkey');
+    var prjkey = $('#rModal').data('prjkey');
+    if (!prjkey || !itemkey) {
+        swal({
+            title: 'Attenzione',
+            type: 'error',
+            text: 'Errore: chiave progetto non trovata',
+            allowOutsideClick: false,
+            allowEscapeKey: false
+        }, function(){
+
+        });
+        return;
+    }
+
+    var commessa1 = $('#rCommessa1').val().trim();
+    var commessa2 = $('#rCommessa2').val().trim();
+    var commessa3 = $('#rCommessa3').val().trim();
+    var iniziale = $('#rIniziale').val().trim();
+    var sorveglianza = $('#rSorveglianza').val().trim();
+    var rinnovo = $('#rRinnovo').val().trim();
+    var note = $('#rNote').val().trim();
+
+    // Convertire stringhe numeriche in numeri
+    iniziale = iniziale ? numeral(iniziale).value() : 0;
+    sorveglianza = sorveglianza ? numeral(sorveglianza).value() : 0;
+    rinnovo = rinnovo ? numeral(rinnovo).value() : 0;
+
+    var dati = {
+        itemkey: itemkey,
+        prjkey: prjkey,
+        commessa: {
+            parte1: commessa1,
+            parte2: commessa2,
+            parte3: commessa3
+        },
+        iniziale: iniziale,
+        sorveglianza: sorveglianza,
+        rinnovo: rinnovo,
+        note: note,
+        sorveglianze: leggiRinnovoSorveglianza()
+    };
+
+    $.ajax({
+        url: server + 'secure/cvi/rinnovi/nuovo',
+        type: 'POST',
+        contentType: 'application/json',
+        data: JSON.stringify(dati),
+        headers: {
+            'Authorization': 'Bearer ' + sessionStorage.getItem('token')
+        },
+        success: function(response) {
+            swal({
+                title: 'Successo',
+                type: 'success',
+                text: 'Rinnovo Avvenuto Correttamente',
+                allowOutsideClick: false,
+                allowEscapeKey: false
+            }, function(){
+                $('#rModal').hide();
+                $('body').removeClass('modal-open');
+                caricaCalendario();
+            });
+        },
+        error: function(xhr, status, error) {
+            console.error('Errore nel salvataggio:', error);
+            swal({
+                title: 'Errore',
+                type: 'error',
+                text: 'Errore nel salvataggio del rinnovo'
+            });
+        }
+    });
+}
+
+$(document).ready(function() {
+    // Event handler per il click sulle righe della tabella #elencoRinnovi
+    $(document).on('click', '#elencoRinnovi tr', function() {
+        /*
+        var prjkey = $(this).data('prjkey');
+        if (prjkey) {
+            apriRinnovoModal(prjkey);
+        }
+        */
+        var prjkey = $(this).data('prjkey');
+        var itemkey = $(this).data('itemkey');
+        if (itemkey && prjkey) {
+            apriRinnovoModal(itemkey,prjkey);
+        }
+    });
+
+    // Close button del modal
+    $('.closeRModal').on('click', function() {
+        $('#rModal').hide();
+        $('body').removeClass('modal-open');
+    });
+
+    // Salva button
+    $('#btnSalvaRinnovo').on('click', function() {
+        salvaRinnovo();
+    });
+
+    // Gestione filtri colonne
+    $(document).on('keyup', '.filter-input', function() {
+        filtraRinnovi();
+    });
+});
+
+// Funzione per filtrare le righe della tabella rinnovi
+function filtraRinnovi() {
+    var filtri = {};
+
+    // Raccogli i valori dei filtri
+    $('.filter-input').each(function() {
+        var colonna = $(this).data('column');
+        var valore = $(this).val().toLowerCase();
+        if (valore) {
+            filtri[colonna] = valore;
+        }
+    });
+
+    // Filtra le righe
+    $('#elencoRinnovi tr').each(function() {
+        var mostraRiga = true;
+        var celle = $(this).find('td');
+
+        for (var colonna in filtri) {
+            var testoColonna = $(celle[colonna]).text().toLowerCase();
+            if (testoColonna.indexOf(filtri[colonna]) === -1) {
+                mostraRiga = false;
+                break;
+            }
+        }
+
+        if (mostraRiga) {
+            $(this).show();
+        } else {
+            $(this).hide();
+        }
+    });
+}
+
+// ===== Inline Edit Fields Management =====
+var inlineEditBackup = {};
+var euroFieldIds = ['rIniziale', 'rSorveglianza', 'rRinnovo'];
+
+function normalizeEuroAmount(value) {
+    if (!value || value === '') return '';
+
+    var normalized = ('' + value).trim().replace(/\s/g, '');
+    var lastComma = normalized.lastIndexOf(',');
+    var lastDot = normalized.lastIndexOf('.');
+
+    if (lastComma !== -1 && lastDot !== -1) {
+        if (lastComma > lastDot) {
+            normalized = normalized.replace(/\./g, '').replace(',', '.');
+        } else {
+            normalized = normalized.replace(/,/g, '');
+        }
+    } else if (lastComma !== -1) {
+        normalized = normalized.replace(/\./g, '').replace(',', '.');
+    } else if (lastDot !== -1 && /^\d{1,3}(\.\d{3})+$/.test(normalized)) {
+        normalized = normalized.replace(/\./g, '');
+    }
+
+    return normalized;
+}
+
+function formatEuroAmountForEdit(value) {
+    if (!value || value === '') return '';
+
+    var normalized = ('' + value).trim().replace(/\s/g, '');
+    var lastComma = normalized.lastIndexOf(',');
+    var lastDot = normalized.lastIndexOf('.');
+
+    if (lastComma !== -1 && lastDot !== -1) {
+        if (lastComma > lastDot) {
+            return normalized.replace(/\./g, '');
+        }
+
+        return normalized.replace(/,/g, '').replace('.', ',');
+    }
+
+    if (lastComma !== -1) {
+        return normalized.replace(/\./g, '');
+    }
+
+    if (lastDot !== -1) {
+        if (/^\d{1,3}(\.\d{3})+$/.test(normalized)) {
+            return normalized.replace(/\./g, '');
+        }
+
+        return normalized.replace('.', ',');
+    }
+
+    return normalized;
+}
+
+function isValidEuroAmount(value) {
+    if (!value || value === '') return false;
+
+    var normalized = normalizeEuroAmount(value);
+
+    // Regex: numeri interi o decimali (max 2 decimali)
+    var pattern = /^\d+(\.\d{1,2})?$/;
+
+    return pattern.test(normalized);
+}
+
+function formatEuroAmount(value) {
+    if (!value || value === '') return '';
+
+    var normalized = normalizeEuroAmount(value);
+
+    // Valida
+    if (!isValidEuroAmount(normalized)) {
+        return null; // Invalido
+    }
+
+    // Converti a numero e formatta con 2 decimali e virgola
+    var num = parseFloat(normalized);
+    return num.toLocaleString('it-IT', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+}
+
+function abilitaEditField(fieldId) {
+    var $input = $('#' + fieldId);
+    if (!$input.length) return;
+
+    inlineEditBackup[fieldId] = $input.val();
+
+    if (euroFieldIds.indexOf(fieldId) !== -1) {
+        $input.val(formatEuroAmountForEdit($input.val()));
+    }
+
+    $input.prop('disabled', false).focus().select();
+
+    $('#btnEdit_' + fieldId).hide();
+    $('#btnOk_' + fieldId).show();
+    $('#btnCancel_' + fieldId).show();
+}
+
+function annullaEditField(fieldId) {
+    var $input = $('#' + fieldId);
+    if (!$input.length) return;
+
+    var oldVal = inlineEditBackup[fieldId];
+    if (oldVal == null) oldVal = $input.data('original') || '';
+
+    $input.val(oldVal);
+    resetInlineEditField(fieldId);
+}
+
+function confermaEditField(fieldId) {
+    var $input = $('#' + fieldId);
+    if (!$input.length) return;
+
+    var newVal = ($input.val() || '').trim();
+    var oldVal = (inlineEditBackup[fieldId] != null ? ('' + inlineEditBackup[fieldId]) : ($input.data('original') || '')).trim();
+
+    // Validazione per campi di importo in euro
+    if (euroFieldIds.indexOf(fieldId) !== -1) {
+        if (newVal !== '') {
+            if (!isValidEuroAmount(newVal)) {
+                swal({
+                    title: "Importo non valido",
+                    text: "Inserisci un importo valido in euro (es: 1000 o 1000,50)",
+                    type: "warning",
+                    confirmButtonText: "OK"
+                });
+                $input.focus().select();
+                return;
+            }
+
+            // Formatta il valore
+            var formatted = formatEuroAmount(newVal);
+            newVal = formatted;
+            $input.val(newVal);
+        }
+    }
+
+    // niente cambiamenti
+    if (newVal === oldVal) {
+        resetInlineEditField(fieldId);
+        return;
+    }
+
+    $input.data('original', newVal);
+    inlineEditBackup[fieldId] = newVal;
+    resetInlineEditField(fieldId);
+}
+
+function resetInlineEditField(fieldId) {
+    var $input = $('#' + fieldId);
+    if (!$input.length) return;
+
+    // reset pulsanti
+    $('#btnEdit_' + fieldId).show();
+    $('#btnOk_' + fieldId).hide();
+    $('#btnCancel_' + fieldId).hide();
+
+    // disable input
+    $input.prop('disabled', true);
+
+    inlineEditBackup[fieldId] = ($input.data('original') != null ? $input.data('original') : $input.val());
+}
+
+</script>
+
+</html>

@@ -1,0 +1,76 @@
+{{^pme}}
+<section class="sidebar">
+    <div class="user-panel">
+        <div class="pull-left image">
+            <img src="../assets/img/user-silhouette-icon.png" class="img-circle" alt="User Image"/>
+        </div>
+        <div class="pull-left info">
+            <div class="pull-left info">
+                <p id="nominativoUser"></p>
+                <script>
+                document.getElementById("nominativoUser").innerHTML = sessionStorage.getItem('nominativo');
+                </script>
+            </div>
+        </div>
+    </div>
+    <ul class="sidebar-menu" id="menulaterale">
+        {{#admins}}
+        <!--li class="header" style="color: white" id="admin">ADMIN</li-->
+        
+        <li class="treeview {{#active.gvoci}}active{{/active.gvoci}}{{#active.gtppr}}active{{/active.gtppr}}{{#active.cv}}active{{/active.cv}}{{#active.gu}}active{{/active.gu}}">
+            <a href="#"><span>Impostazioni</span><i class="fa fa-angle-left pull-right"></i></a>
+            <ul class="treeview-menu">
+                <li class="{{#active.gu}}active{{/active.gu}}" id="sezioneUtenti"><a href="{{#active.gu}}#{{/active.gu}}{{^active.gu}}../gestioneutenti/?v={{vv}}{{/active.gu}}"><span>Gestione Accessi</span></a></li>
+                <li class="{{#active.gvoci}}active{{/active.gvoci}}"><a href="{{#active.gvoci}}#{{/active.gvoci}}{{^active.gvoci}}../gestionevoci/?v={{vv}}{{/active.gvoci}}"><span> Servizi</span></a></li>
+                <li class="{{#active.gtppr}}active{{/active.gtppr}}"><a href="{{#active.gtppr}}#{{/active.gtppr}}{{^active.gtppr}}../gestionetipipreventivi/?v={{vv}}{{/active.gtppr}}"><span> Tipi Offerta</span></a></li>
+                <li class="{{#active.cv}}active{{/active.cv}}"><a href="{{#active.cv}}#{{/active.cv}}{{^active.cv}}../gestionevaloridefault/?v={{vv}}{{/active.cv}}"><span>Impostazioni</span></a></li>
+            </ul>
+        </li>
+        {{/admins}}
+    	<li class="header" style="color: white">SALES</li>
+    	<li class="{{#active.pprev}}active{{/active.pprev}}"><a href="{{#active.pprev}}#{{/active.pprev}}{{^active.pprev}}../gestionepipeline/?v={{vv}}{{/active.pprev}}"><span>Sales Pipeline</span></a></li>
+    	<li class="{{#active.gprev}}active{{/active.gprev}}"><a href="{{#active.gprev}}#{{/active.gprev}}{{^active.gprev}}../gestionepreventivi/?v={{vv}}{{/active.gprev}}"><span>Offerte</span></a></li>
+        
+        <li class="header" style="color: white">GESTIONALE</li>
+        <li class="{{#active.gpme}}active{{/active.gpme}}"><a href="{{#active.gpme}}#{{/active.gpme}}{{^active.gpme}}../gestionecommesse/?v={{vv}}{{/active.gpme}}"><span>Commesse</span></a></li>
+        <li class="{{#active.cg01}}active{{/active.cg01}}"><a href="{{#active.cg01}}#{{/active.cg01}}{{^active.cg01}}../contabilitar00/?v={{vv}}{{/active.cg01}}"><span>Dossier</span></a></li>
+        <li class="{{#active.cg00}}active{{/active.cg00}}"><a href="{{#active.cg00}}#{{/active.cg00}}{{^active.cg00}}../scadenzario/?v={{vv}}{{/active.cg00}}"><span>Scadenzario</span></a></li>
+        
+
+        <li class="header" style="color: white">CONTABILITÀ</li>
+        <li class="{{#active.cg02}}active{{/active.cg02}}"><a href="{{#active.cg02}}#{{/active.cg02}}{{^active.cg02}}../flussocassa/?v={{vv}}{{/active.cg02}}"><span>Prima Nota</span></a></li>
+        <li class="{{#active.cg05}}active{{/active.cg05}}"><a href="{{#active.cg05}}#{{/active.cg05}}{{^active.cg05}}../registrazione/?v={{vv}}{{/active.cg05}}"><span>Registrazione Doc Fiscali</span></a></li>
+        <li class="{{#active.co03}}active{{/active.co03}}"><a href="{{#active.co03}}#{{/active.co03}}{{^active.co03}}../fatturazione/?v={{vv}}{{/active.co03}}"><span>Fatture Emesse</span></a></li>
+        
+    	<li class="header" style="color: white">ANAGRAFICHE</li>
+        <li class="{{#active.ganag}}active{{/active.ganag}}"><a href="{{#active.ganag}}#{{/active.ganag}}{{^active.ganag}}../anagraficaclienti/?v={{vv}}{{/active.ganag}}"><span>Clienti</span></a></li>
+        <li class="{{#active.ganaf}}active{{/active.ganaf}}"><a href="{{#active.ganaf}}#{{/active.ganaf}}{{^active.ganaf}}../anagraficafornitori/?v={{vv}}{{/active.ganaf}}"><span>Fornitori</span></a></li>
+        
+        <!-- <li class="{{#active.cg03}}active{{/active.cg03}}"><a href="{{#active.cg03}}#{{/active.cg03}}{{^active.cg03}}../fatturazioner00/?v={{vv}}{{/active.cg03}}"><span>Fatturazione R00</span></a></li> -->
+        <!--li class="{{#active.cg04}}active{{/active.cg04}}"><a href="{{#active.cg04}}#{{/active.cg04}}{{^active.cg04}}../f24/?v={{vv}}{{/active.cg04}}"><span>F24</span></a></li -->
+
+        
+
+</section>
+{{/pme}}
+{{#pme}}
+<section class="sidebar">
+    <ul class="sidebar-menu" id="menulaterale">
+    	<li class="header" style="color: white">AREA VENDITE</li>
+    	<li class="{{#active.pprev}}active{{/active.pprev}}"><a href="{{#active.pprev}}#{{/active.pprev}}{{^active.pprev}}../gestionepipeline/?v={{vv}}{{/active.pprev}}"><span>Sales Pipeline</span></a></li>
+    	<li class="{{#active.gprev}}active{{/active.gprev}}"><a href="{{#active.gprev}}#{{/active.gprev}}{{^active.gprev}}../gestionepreventivi/?v={{vv}}{{/active.gprev}}"><span>Offerte</span></a></li>
+        <li class="{{#active.gpme}}active{{/active.gpme}}"><a href="{{#active.gpme}}#{{/active.gpme}}{{^active.gpme}}../commessepme/?v={{vv}}{{/active.gpme}}"><span>Commesse</span></a></li>
+        <!--li class="{{#active.gpme}}active{{/active.gpme}}"><a href="{{#active.gpme}}#{{/active.gpme}}{{^active.gpme}}../gestionecommesse/?v={{vv}}{{/active.gpme}}"><span>Commesse (draft)</span></a></li-->
+        <li class="{{#active.cg00}}active{{/active.cg00}}"><a href="{{#active.cg00}}#{{/active.cg00}}{{^active.cg00}}../scadenzario/?v={{vv}}{{/active.cg00}}"><span>Scadenzario</span></a></li>
+
+        {{#admins}}
+        <li class="header" style="color: white" id="admin">CONFIGURAZIONI</li>
+        <li class="{{#active.ganag}}active{{/active.ganag}}"><a href="{{#active.ganag}}#{{/active.ganag}}{{^active.ganag}}../anagraficaclientipme/?v={{vv}}{{/active.ganag}}"><span>Clienti</span></a></li>
+        <li class="{{#active.gvoci}}active{{/active.gvoci}}"><a href="{{#active.gvoci}}#{{/active.gvoci}}{{^active.gvoci}}../gestionevoci/?v={{vv}}{{/active.gvoci}}"><span> Prodotti e Servizi</span></a></li>
+        <li class="{{#active.gtppr}}active{{/active.gtppr}}"><a href="{{#active.gtppr}}#{{/active.gtppr}}{{^active.gtppr}}../gestionetipipreventivi/?v={{vv}}{{/active.gtppr}}"><span> Tipi Offerta</span></a></li>
+        <li class="{{#active.cv}}active{{/active.cv}}"><a href="{{#active.cv}}#{{/active.cv}}{{^active.cv}}../gestionevaloridefault/?v={{vv}}{{/active.cv}}"><span>Impostazioni</span></a></li>
+        {{/admins}}
+</section>
+{{/pme}}
+
+

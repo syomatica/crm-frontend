@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <script type="application/javascript">
+        if (!sessionStorage.getItem('token'))
+            window.location.replace("index.html");
+    </script>
+    <meta charset="UTF-8">
+    <meta http-equiv="cache-control" content="no-cache"/>
+    <meta http-equiv="expires" content="0"/>
+    <meta http-equiv="pragma" content="no-cache"/>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
+
+    <title>PreAut | Gestione valori di default</title>
+
+    <!-- CSS -->
+    <link href="../assets/css/bootstrap.css" rel="stylesheet" type="text/css"/>
+    <link href="../assets/css/font-awesome.min.css" rel="stylesheet" type="text/css"/>
+    <link href="../assets/css/AdminLTE.min.css" rel="stylesheet" type="text/css"/>
+    <link href="../assets/css/skins/skin-blue.min.css" rel="stylesheet" type="text/css"/>
+    <link href="../assets/css/animate.css" rel="stylesheet" type="text/css">
+    <link href="../assets/css/sweetalert.css" rel="stylesheet" type="text/css">
+    <link href="../assets/css/select2.css" rel="stylesheet" type="text/css">
+    <link href="../assets/css/waves.min.css" rel="stylesheet" type="text/css">
+    <link href="../plugins/iCheck/all.css" rel="stylesheet" type="text/css">
+    <link href="../assets/css/paceFlash.css" rel="stylesheet" type="text/css">
+
+    <!-- JS -->
+    <script src="../assets/js/jquery-2.1.4.min.js"></script>
+    <script src="../assets/js/bootstrap.min.js" type="text/javascript"></script>
+    <script src="../assets/js/app.min.js" type="text/javascript"></script>
+    <script src="../assets/js/sweetalert.min.js" type="text/javascript"></script>
+    <script src="../plugins/iCheck/icheck.min.js" type="text/javascript"></script>
+    <script src="../assets/js/select2.full.min.js" type="text/javascript"></script>
+    <script src="../assets/js/jquery.blockUI.js" type="text/javascript"></script>
+    <script src="../assets/js/waves.min.js" type="text/javascript"></script>
+    <script src="../assets/js/jquery.noty.packaged.min.js" type="text/javascript"></script>
+    <script src="../assets/js/mustache.js" type="text/javascript"></script>
+    <script src="../assets/js/pace.min.js" type="text/javascript"></script>
+    <script src="../assets/js/preaut.js" type="text/javascript"></script>
+
+</head>
+<body class="skin-blue sidebar-mini">
+    <div class="wrapper">
+        <header class="main-header" id="theheader"></header>
+        <script language="javascript">
+            if (!(sessionStorage.getItem("pme") === 'true')) {
+                $.get("../templates/header.mst?_" + (new Date()).getTime(), function (template) {
+                    $('#theheader').html(Mustache.render(template, {}));
+                });
+            }
+        </script>
+        <aside class="main-sidebar" id="themenu"></aside>
+        <script language="javascript">
+
+            $.get("../templates/menu.mst?_" + (new Date()).getTime(), function (template) {
+                $('#themenu').html(Mustache.render(template, {
+
+                    admins: sessionStorage['admins'] == 'true' ? true : false,
+                    vv: sessionStorage['vv'],
+                    active: { cv: true },
+                    pme: sessionStorage['pme'] == 'true' ? true : false
+                }));
+                eventMenu();
+            });
+        </script>
+
+        <div class="content-wrapper">
+            <section class="content-header">
+                <h1>Gestione valori di default</h1>
+            </section>
+
+            <section class="content">
+                <div class="row">
+                    <!-- SINISTRA -->
+                    <div class="col-md-4">
+                        <div class="box box-primary" id="form">
+                            <div class="box-header">
+                                <i id="scheda-icon" class="fa fa-eye"></i>
+                                <h3 class="box-title" id="formtitolo">Dettagli</h3>
+                            </div>
+                        <div class="box-body">
+                            <h4 id="schedaTitolo" class="text-center"></h4>
+                            <div id="valueContainer" class="form-group"></div>
+
+                            <div class="text-right">
+                                <button id="btnAnnulla" class="btn btn-danger btn-flat hidden" style="margin-right: 10px;">Annulla</button>
+                                <button id="btnSalva" class="btn btn-success" style="margin-right: 10px;">Salva</button>
+                                <button id="btnModifica" class="btn btn-warning btn-flat">Modifica</button>
+                            </div>
+                        </div>
+                        </div>
+                    </div>
+
+                    <!-- DESTRA -->
+                    <div class="col-md-8">
+                        <div class="box box-primary" id="boxregistrati">
+                            <div class="box-header">
+                                <i class="fa fa-navicon"></i>
+                                <h3 class="box-title">Elenco valori di default</h3>
+                            </div>
+                            <div class="box-body" style="max-height: 554px; overflow-y: auto;">
+                                <div class="box-body table-responsive no-padding">
+                                    <table class="table table-hover">
+                                        <thead>
+                                            <tr><th>Descrizione</th></tr>
+                                        </thead>
+                                        <tbody id="valoriDefaultEsistenti"></tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </div>
+
+        <footer id="thefooter" class="main-footer"></footer>
+        <script>
+            $.get("../templates/footer.mst?_"+(new Date()).getTime(), function (template) {
+                $('#thefooter').html(Mustache.render(template, {vv:sessionStorage['vv']}));
+            });
+        </script>
+    </div>
+
+    <!-- Script finali -->
+    <script>document.write("<script type='text/javascript' src='../server.js?v=" + Date.now() + "'><\/script>");</script>
+    <script src="../setupajax.js" type="text/javascript"></script>
+    <script>document.write("<script type='text/javascript' src='prepare.js?v=" + Date.now() + "'><\/script>");</script>
+    <script>document.write("<script type='text/javascript' src='eventfunc.js?v=" + Date.now() + "'><\/script>");</script>
+</body>
+</html>

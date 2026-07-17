@@ -1,0 +1,1214 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <title>CRM Sales | Commesse</title>
+  <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
+
+  <!--
+    VERSIONE "DEFINITIVA PULITA" - SOLO COMMESSE
+    ------------------------------------------------
+    - Nessuna dipendenza logica da "preventivi" / endpoint legacy.
+    - Il backend espone response già normalizzate (array di righe, percentuali, ecc.).
+    - UI: Elenco + Scheda Commessa (Riepilogo, Voci, SAL, Consuntivo light, Documenti, Integrazioni).
+    - Tutto in un file per sostituzione diretta dal menu.
+
+    NOTE:
+    - Adegua i path CSS/JS alle tue cartelle reali (qui uso gli stessi path tipici del tuo progetto).
+    - Adegua la funzione di navigazione verso la scheda Offerta origine (se vuoi mantenerla).
+  -->
+
+  <!--link rel="stylesheet" href="../assets/bootstrap/css/bootstrap.min.css">
+  <link rel="stylesheet" href="../assets/font-awesome/css/font-awesome.min.css">
+  <link rel="stylesheet" href="../assets/adminlte/css/AdminLTE.min.css">
+  <link rel="stylesheet" href="../assets/adminlte/css/skins/skin-blue.min.css">
+  <link rel="stylesheet" href="../assets/datatables/dataTables.bootstrap.min.css"-->
+
+  <link href="../assets/css/bootstrap.css" rel="stylesheet" type="text/css"/>
+  <link href="../assets/css/font-awesome.min.css" rel="stylesheet" type="text/css"/>
+  <link href="../assets/css/AdminLTE.min.css" rel="stylesheet" type="text/css"/>
+  <link href="../assets/css/skins/skin-blue.min.css" rel="stylesheet" type="text/css"/>
+  <link href="../plugins/datatables_1_10_19/css/jquery.dataTables.min.css" rel="stylesheet" type="text/css">
+
+  
+
+  <style>
+    .content-wrapper { min-height: 100vh; }
+    .toolbar { display:flex; gap:8px; flex-wrap:wrap; align-items:center; margin-bottom:10px; }
+    .toolbar .form-control { max-width: 340px; }
+    .kpi { display:flex; gap:10px; flex-wrap:wrap; margin: 10px 0 0; }
+    .kpi .info-box { margin-bottom: 0; min-width: 220px; flex:1; }
+    .hidden { display:none !important; }
+    .table td { vertical-align: middle; }
+    .tab-pane { padding: 12px 0; }
+    .mono { font-family: Menlo, Consolas, monospace; }
+    .badge-soft { background:#e8f4ff; color:#1b6aa5; border:1px solid #b9dcff; }
+    .box-tools .btn { margin-left:6px; }
+    .muted { color:#777; }
+    .pill { display:inline-block; padding:2px 8px; border-radius:999px; font-size:12px; border:1px solid #ddd; }
+  </style>
+
+
+    <script src="https://code.jquery.com/jquery-2.2.4.min.js" integrity="sha256-BbhdlvQf/xTY9gja0Dq3HiwQF8LaCRTXxZKRutelT44="
+    crossorigin="anonymous"></script>
+    <script src="../assets/js/bootstrap.min.js" type="text/javascript"></script>
+    <script src="../assets/js/app.min.js" type="text/javascript"></script>
+    <script src="../plugins/datatables_1_10_19/js/jquery.dataTables.js"></script>
+    <script src="../assets/js/moment.js" type="text/javascript"></script>
+    <script src="../assets/js/numeral.min.js" type="text/javascript"></script>
+    <script src="../assets/js/jquery.noty.packaged.min.js" type="text/javascript"></script>
+    <script src="../assets/js/sweetalert.min.js" type="text/javascript"></script>
+    <script src="../assets/js/mustache.js" type="text/javascript"></script>
+</head>
+
+<body class="hold-transition skin-blue sidebar-mini">
+<div class="wrapper">
+
+  <!--header class="main-header">
+    <a href="#" class="logo">
+      <span class="logo-mini"><b>CRM</b></span>
+      <span class="logo-lg"><b>CRM</b> Sales</span>
+    </a>
+    <nav class="navbar navbar-static-top">
+      <a href="#" class="sidebar-toggle" data-toggle="push-menu" role="button">
+        <span class="sr-only">Toggle navigation</span>
+      </a>
+      <div class="navbar-custom-menu">
+        <ul class="nav navbar-nav">
+          <li><a href="#" onclick="goToElenco(); return false;"><i class="fa fa-list"></i> Elenco</a></li>
+        </ul>
+      </div>
+    </nav>
+  </header>
+
+  <aside class="main-sidebar">
+    <section class="sidebar">
+      <ul class="sidebar-menu" data-widget="tree">
+        <li class="header">MENU</li>
+        <li class="active"><a href="#"><i class="fa fa-briefcase"></i> <span>Commesse</span></a></li>
+      </ul>
+    </section>
+  </aside-->
+
+<header class="main-header" id="theheader"></header>
+<script language="javascript">
+    if (!(sessionStorage.getItem("pme") === 'true')) {
+        $.get("../templates/header.mst?_" + (new Date()).getTime(), function (template) {
+            $('#theheader').html(Mustache.render(template, {}));
+        });
+    }
+</script>
+<aside class="main-sidebar" id="themenu"></aside>
+<script language="javascript">
+
+    $.get("../templates/menu.mst?_" + (new Date()).getTime(), function (template) {
+        $('#themenu').html(Mustache.render(template, {
+
+            admins: sessionStorage['admins'] == 'true' ? true : false,
+            vv: sessionStorage['vv'],
+            active: { gpme: true },
+            pme: sessionStorage['pme'] == 'true' ? true : false
+        }));
+        //eventMenu();
+    });
+</script>
+
+  <div class="content-wrapper">
+    <section class="content-header">
+      <h1>Commesse <small>elenco & gestione</small></h1>
+    </section>
+
+    <section class="content">
+
+      <!-- =========================
+           VIEW: ELENCO COMMESSE
+           ========================= -->
+      <div id="viewList">
+
+        <div class="box box-default">
+          <div class="box-body">
+
+            <div class="toolbar">
+              <button class="btn btn-primary" onclick="loadCommesse();">
+                <i class="fa fa-refresh"></i> Aggiorna
+              </button>
+
+              <div class="input-group">
+                <input id="q" type="text" class="form-control" placeholder="Cerca (codice, cliente, oggetto)...">
+                <span class="input-group-btn">
+                  <button class="btn btn-default" onclick="loadCommesse();"><i class="fa fa-search"></i></button>
+                </span>
+              </div>
+
+              <select id="stato" class="form-control" onchange="loadCommesse();">
+                <option value="">Tutti gli stati</option>
+                <option value="10">Attivo</option>
+                <option value="11">Revocato</option>
+                <option value="12">Sospeso</option>
+                <option value="13">N/A</option>
+              </select>
+
+              <select id="tipo" class="form-control" onchange="loadCommesse();">
+                <option value="">Tutti i tipi</option>
+                <option value="PRINCIPALE">Principale</option>
+                <option value="INTEGRAZIONE">Integrazione</option>
+                <option value="VARIANTE">Variante</option>
+              </select>
+
+              <select id="trimestre" class="form-control" onchange="loadCommesse();">
+                <option value="">Tutti i trimestri</option>
+                <option value="Q1">Q1</option>
+                <option value="Q2">Q2</option>
+                <option value="Q3">Q3</option>
+                <option value="Q4">Q4</option>
+              </select>
+            </div>
+
+            <div class="kpi">
+              <div class="info-box">
+                <span class="info-box-icon bg-aqua"><i class="fa fa-briefcase"></i></span>
+                <div class="info-box-content">
+                  <span class="info-box-text">Commesse</span>
+                  <span class="info-box-number" id="kpiTot">0</span>
+                </div>
+              </div>
+              <div class="info-box">
+                <span class="info-box-icon bg-green"><i class="fa fa-eur"></i></span>
+                <div class="info-box-content">
+                  <span class="info-box-text">Totale venduto</span>
+                  <span class="info-box-number" id="kpiVal">€ 0,00</span>
+                </div>
+              </div>
+              <div class="info-box">
+                <span class="info-box-icon bg-yellow"><i class="fa fa-line-chart"></i></span>
+                <div class="info-box-content">
+                  <span class="info-box-text">% Fatturato (media)</span>
+                  <span class="info-box-number" id="kpiFatt">0%</span>
+                </div>
+              </div>
+              <div class="info-box">
+                <span class="info-box-icon bg-purple"><i class="fa fa-credit-card"></i></span>
+                <div class="info-box-content">
+                  <span class="info-box-text">% Incassato (media)</span>
+                  <span class="info-box-number" id="kpiInc">0%</span>
+                </div>
+              </div>
+            </div>
+
+          </div>
+
+          <div class="box-body" style="padding-top:0;">
+            <table id="tblCommesse" class="table table-hover table-striped" style="width:100%">
+              <thead>
+              <tr>
+                <th>Data</th>
+                <th>Codice</th>
+                <th>Cliente</th>
+                <th>Oggetto</th>
+                <th>Tipo</th>
+                <th style="text-align:right;">Totale</th>
+                <th style="text-align:center;">Stato</th>
+                <th style="text-align:right;">% Fatt.</th>
+                <th style="text-align:right;">% Inc.</th>
+                <th style="text-align:center;">Azioni</th>
+              </tr>
+              </thead>
+              <tbody></tbody>
+            </table>
+
+            <div class="text-muted" style="margin-top:6px;">
+              Clicca su una riga o su <i class="fa fa-folder-open"></i> per aprire la scheda.
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+
+      <!-- =========================
+           VIEW: DETTAGLIO COMMESSA
+           ========================= -->
+      <div id="viewDetail" class="hidden">
+
+        <div class="box box-primary">
+          <div class="box-header with-border">
+            <div style="display:flex; align-items:center; justify-content:space-between; gap:10px; flex-wrap:wrap;">
+              <div>
+                <button class="btn btn-primary btn-sm" onclick="goToElenco();">
+                  <i class="fa fa-chevron-left"></i> Elenco
+                </button>
+
+                <span style="margin-left:10px;">
+                  <strong class="mono" id="d_code">—</strong>
+                  <span class="label label-info" id="d_stato" style="margin-left:8px;">—</span>
+                  <span class="pill" id="d_tipo" style="margin-left:8px;">—</span>
+                </span>
+
+                <span id="d_parentBox" class="muted" style="margin-left:12px; display:none;">
+                  Parent: <a href="#" id="d_parentLink" class="mono"></a>
+                </span>
+              </div>
+
+              <div class="box-tools">
+                <button class="btn btn-default btn-sm" onclick="reloadDettaglio();">
+                  <i class="fa fa-refresh"></i> Ricarica
+                </button>
+                <button class="btn btn-default btn-sm" onclick="openOffertaOrigine();" id="btnOfferta">
+                  <i class="fa fa-file-text-o"></i> Offerta origine
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <div class="box-body">
+            <div class="row">
+              <div class="col-md-3">
+                <div class="form-group">
+                  <label>Data commessa</label>
+                  <input id="d_data" class="form-control" readonly>
+                </div>
+              </div>
+              <div class="col-md-5">
+                <div class="form-group">
+                  <label>Cliente</label>
+                  <input id="d_cliente" class="form-control" readonly>
+                </div>
+              </div>
+              <div class="col-md-4">
+                <div class="form-group">
+                  <label>Totale venduto</label>
+                  <input id="d_totale" class="form-control" readonly>
+                </div>
+              </div>
+            </div>
+
+            <div class="nav-tabs-custom">
+              <ul class="nav nav-tabs">
+                <li class="active"><a href="#tabRiepilogo" data-toggle="tab">Riepilogo</a></li>
+                <li><a href="#tabVoci" data-toggle="tab">Voci</a></li>
+                <li><a href="#tabSAL" data-toggle="tab">SAL / Pagamenti</a></li>
+                <li><a href="#tabCons" data-toggle="tab">Consuntivo</a></li>
+                <li><a href="#tabInteg" data-toggle="tab" id="tabIntegBtn">Integrazioni</a></li>
+                <li><a href="#tabDoc" data-toggle="tab">Documenti</a></li>
+              </ul>
+
+              <div class="tab-content">
+
+                <!-- RIEPILOGO -->
+                <div class="tab-pane active" id="tabRiepilogo">
+                  <div class="row">
+                    <div class="col-md-6">
+                      <div class="form-group">
+                        <label>Oggetto</label>
+                        <input id="d_oggetto" class="form-control" readonly>
+                      </div>
+                    </div>
+                    <div class="col-md-3">
+                      <div class="form-group">
+                        <label>Trimestre pipeline</label>
+                        <input id="d_trimestre" class="form-control" readonly>
+                      </div>
+                    </div>
+                    <div class="col-md-3">
+                      <div class="form-group">
+                        <label>Scadenza (opz.)</label>
+                        <input id="d_scadenza" class="form-control" readonly>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="row">
+                    <div class="col-md-4">
+                      <div class="form-group">
+                        <label>% Fatturato</label>
+                        <input id="d_pf" class="form-control" readonly>
+                      </div>
+                    </div>
+                    <div class="col-md-4">
+                      <div class="form-group">
+                        <label>% Incassato</label>
+                        <input id="d_pi" class="form-control" readonly>
+                      </div>
+                    </div>
+                    <div class="col-md-4">
+                      <div class="form-group">
+                        <label>Riferimento (opz.)</label>
+                        <input id="d_ref" class="form-control" readonly>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="form-group">
+                    <label>Note</label>
+                    <textarea id="d_note" class="form-control" rows="4" readonly></textarea>
+                  </div>
+                </div>
+
+                <!-- VOCI -->
+                <div class="tab-pane" id="tabVoci">
+                  <div class="table-responsive">
+                    <table class="table table-striped table-condensed" id="tblVoci">
+                      <thead>
+                      <tr>
+                        <th>Descrizione</th>
+                        <th style="width:70px; text-align:center;">U.M.</th>
+                        <th style="width:90px; text-align:right;">Q.tà</th>
+                        <th style="width:120px; text-align:right;">Prezzo</th>
+                        <th style="width:140px; text-align:right;">Totale</th>
+                      </tr>
+                      </thead>
+                      <tbody></tbody>
+                      <tfoot>
+                      <tr>
+                        <th colspan="4" style="text-align:right;">Totale voci</th>
+                        <th style="text-align:right;" id="vociTot">€ 0,00</th>
+                      </tr>
+                      </tfoot>
+                    </table>
+                  </div>
+                  <div class="text-muted">
+                    Supporta righe a importo 0 (omaggi) e quantità null.
+                  </div>
+                </div>
+
+                <!-- SAL -->
+                <div class="tab-pane" id="tabSAL">
+                  <div class="row" style="margin-bottom:10px;">
+                    <div class="col-md-12" style="display:flex; gap:8px; flex-wrap:wrap;">
+                      <button class="btn btn-success btn-sm" onclick="addSalRow();">
+                        <i class="fa fa-plus"></i> Aggiungi riga
+                      </button>
+                      <button class="btn btn-primary btn-sm" onclick="saveSAL();">
+                        <i class="fa fa-save"></i> Salva
+                      </button>
+                      <span class="text-muted" id="salHint" style="align-self:center;"></span>
+                    </div>
+                  </div>
+
+                  <div class="table-responsive">
+                    <table class="table table-hover table-striped" id="tblSAL">
+                      <thead>
+                      <tr>
+                        <th style="width:70px;">Nr.</th>
+                        <th style="width:140px; text-align:right;">Importo</th>
+                        <th style="width:160px;">Data</th>
+                        <th style="width:100px; text-align:center;">Fatturato</th>
+                        <th style="width:100px; text-align:center;">Incassato</th>
+                        <th style="width:60px;"></th>
+                      </tr>
+                      </thead>
+                      <tbody></tbody>
+                      <tfoot>
+                      <tr>
+                        <th colspan="1" style="text-align:right;">Totale</th>
+                        <th style="text-align:right;" id="salTot">€ 0,00</th>
+                        <th colspan="4"></th>
+                      </tr>
+                      </tfoot>
+                    </table>
+                  </div>
+
+                  <div class="text-muted">
+                    Data consigliata in formato <span class="mono">YYYY-MM-DD</span>. Percentuali fatturato/incassato calcolate dal sistema.
+                  </div>
+                </div>
+
+                <!-- CONSUNTIVO -->
+                <div class="tab-pane" id="tabCons">
+                  <div class="row" style="margin-bottom:10px;">
+                    <div class="col-md-12" style="display:flex; gap:8px; flex-wrap:wrap;">
+                      <button class="btn btn-success btn-sm" onclick="openConsModal();">
+                        <i class="fa fa-plus"></i> Aggiungi consuntivo
+                      </button>
+                      <button class="btn btn-default btn-sm" onclick="loadConsuntivi();">
+                        <i class="fa fa-refresh"></i> Aggiorna
+                      </button>
+                      <span class="text-muted" id="consHint" style="align-self:center;"></span>
+                    </div>
+                  </div>
+
+                  <div class="table-responsive">
+                    <table class="table table-hover table-striped" id="tblCons">
+                      <thead>
+                      <tr>
+                        <th style="width:120px;">Data</th>
+                        <th>Risorsa</th>
+                        <th style="width:120px; text-align:right;">Ore</th>
+                        <th style="width:160px; text-align:right;">Costo (opz.)</th>
+                        <th>Note</th>
+                      </tr>
+                      </thead>
+                      <tbody></tbody>
+                      <tfoot>
+                      <tr>
+                        <th colspan="2" style="text-align:right;">Totale</th>
+                        <th style="text-align:right;" id="consTotOre">0</th>
+                        <th style="text-align:right;" id="consTotCosto">€ 0,00</th>
+                        <th></th>
+                      </tr>
+                      </tfoot>
+                    </table>
+                  </div>
+
+                  <div class="text-muted">
+                    Il costo può essere calcolato dal backend (ore * costo risorsa) oppure restituito già pronto.
+                  </div>
+                </div>
+
+                <!-- INTEGRAZIONI -->
+                <div class="tab-pane" id="tabInteg">
+                  <div class="row" style="margin-bottom:10px;">
+                    <div class="col-md-12" style="display:flex; gap:8px; flex-wrap:wrap;">
+                      <button class="btn btn-default btn-sm" onclick="loadIntegrazioni();">
+                        <i class="fa fa-refresh"></i> Aggiorna
+                      </button>
+                      <span class="text-muted" id="integHint" style="align-self:center;"></span>
+                    </div>
+                  </div>
+
+                  <div class="row" style="margin-bottom:10px;">
+                    <div class="col-md-4">
+                      <div class="info-box" style="margin-bottom:0;">
+                        <span class="info-box-icon bg-aqua"><i class="fa fa-sitemap"></i></span>
+                        <div class="info-box-content">
+                          <span class="info-box-text">Integrazioni</span>
+                          <span class="info-box-number" id="integCount">0</span>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="col-md-4">
+                      <div class="info-box" style="margin-bottom:0;">
+                        <span class="info-box-icon bg-green"><i class="fa fa-eur"></i></span>
+                        <div class="info-box-content">
+                          <span class="info-box-text">Totale integrazioni</span>
+                          <span class="info-box-number" id="integTot">€ 0,00</span>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="col-md-4">
+                      <div class="info-box" style="margin-bottom:0;">
+                        <span class="info-box-icon bg-purple"><i class="fa fa-calculator"></i></span>
+                        <div class="info-box-content">
+                          <span class="info-box-text">Totale aggregato</span>
+                          <span class="info-box-number" id="integAgg">€ 0,00</span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <table class="table table-hover table-striped" id="tblInteg">
+                    <thead>
+                    <tr>
+                      <th>Codice</th>
+                      <th>Oggetto</th>
+                      <th style="width:120px;">Stato</th>
+                      <th style="width:160px; text-align:right;">Totale</th>
+                      <th style="width:120px;">Data</th>
+                      <th style="width:80px; text-align:center;">Apri</th>
+                    </tr>
+                    </thead>
+                    <tbody></tbody>
+                  </table>
+
+                  <div class="text-muted">
+                    Questo tab è rilevante soprattutto per commesse <b>PRINCIPALI</b>.
+                  </div>
+                </div>
+
+                <!-- DOCUMENTI -->
+                <div class="tab-pane" id="tabDoc">
+                  <div class="row" style="margin-bottom:10px;">
+                    <div class="col-md-12">
+                      <button class="btn btn-default btn-sm" onclick="loadAllegati();">
+                        <i class="fa fa-refresh"></i> Aggiorna allegati
+                      </button>
+                    </div>
+                  </div>
+
+                  <table class="table table-hover table-striped" id="tblAllegati">
+                    <thead>
+                    <tr>
+                      <th>Documento</th>
+                      <th>Titolo</th>
+                      <th>File</th>
+                      <th>Aggiornato</th>
+                      <th style="width:120px;">Azioni</th>
+                    </tr>
+                    </thead>
+                    <tbody></tbody>
+                  </table>
+
+                </div>
+
+              </div>
+            </div>
+
+          </div>
+        </div>
+
+      </div>
+
+    </section>
+  </div>
+
+  <footer class="main-footer">
+    <div class="pull-right hidden-xs">CRM Sales</div>
+    <strong>Commesse</strong>
+  </footer>
+
+</div>
+
+<!-- MODAL CONSUNTIVO -->
+<div class="modal fade" id="modalCons" tabindex="-1" role="dialog" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal"><span>&times;</span></button>
+        <h4 class="modal-title"><i class="fa fa-clock-o"></i> Nuovo consuntivo</h4>
+      </div>
+      <div class="modal-body">
+        <div class="form-group">
+          <label>Data (YYYY-MM-DD)</label>
+          <input id="c_data" class="form-control" placeholder="2026-02-09">
+        </div>
+        <div class="form-group">
+          <label>Risorsa</label>
+          <input id="c_risorsa" class="form-control" placeholder="Nome risorsa / fornitore">
+        </div>
+        <div class="form-group">
+          <label>Ore</label>
+          <input id="c_ore" class="form-control" type="number" step="0.25" min="0" value="1">
+        </div>
+        <div class="form-group">
+          <label>Note</label>
+          <textarea id="c_note" class="form-control" rows="3"></textarea>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-default" data-dismiss="modal">Annulla</button>
+        <button class="btn btn-primary" onclick="saveConsuntivo();"><i class="fa fa-save"></i> Salva</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- JS -->
+<!--script src="../assets/jquery/jquery.min.js"></script>
+<script src="../assets/bootstrap/js/bootstrap.min.js"></script>
+<script src="../assets/adminlte/js/adminlte.min.js"></script>
+<script src="../assets/datatables/jquery.dataTables.min.js"></script>
+<script src="../assets/datatables/dataTables.bootstrap.min.js"></script>
+
+<script src="../assets/moment/moment.min.js"></script>
+<script src="../assets/moment/locale/it.js"></script>
+<script src="../assets/numeral/numeral.min.js"></script>
+<script src="../assets/numeral/it.js"></script>
+
+<script src="../assets/noty/jquery.noty.packaged.min.js"></script>
+<script src="../assets/sweetalert/sweetalert.min.js"></script-->
+
+
+
+
+<script>document.write("<script type='text/javascript' src='../server.js?v=" + Date.now() + "'><\/script>");</script>
+<script src="../setupajax.js" type="text/javascript"></script>
+
+<script>
+/* ============================================================
+   API "PULITE" (DA IMPLEMENTARE)
+   ============================================================
+
+   1) LISTA COMMESSE (filtri)
+      POST secure/commesse/list
+      body: { q?, stato?, tipo?, trimestre? }
+      resp: [
+        { id, data, code, cliente, oggetto, tipo, totale, stato, pctFatturato, pctIncassato, trimestre }
+      ]
+
+   2) DETTAGLIO COMMESSA
+      GET secure/commesse/{id}
+      resp: {
+        id, data, code, cliente, oggetto, tipo, totale, stato, trimestre,
+        scadenza?, riferimento?, note?,
+        idOffertaOrigine?, parent?: { id, code }?
+      }
+
+   3) VOCI
+      GET secure/commesse/{id}/voci
+      resp: [{ descrizione, um, qta, importo, totale }]
+
+   4) SAL / PAGAMENTI
+      GET  secure/commesse/{id}/sal
+      resp: [{ idSal?, sequenza, importo, data, fatturato, incassato }]
+      POST secure/commesse/{id}/sal
+      body: stesso array
+
+   5) CONSUNTIVO LIGHT
+      GET  secure/commesse/{id}/consuntivi
+      resp: [{ data, risorsa, ore, costo?, note }]
+      POST secure/commesse/{id}/consuntivi
+      body: { data, risorsa, ore, note }
+
+   6) INTEGRAZIONI (solo per PRINCIPALI, ma puoi rispondere sempre)
+      GET secure/commesse/{id}/integrazioni
+      resp: {
+        children:[{ id, code, oggetto, stato, totale, data }],
+        totalChildren, totalAggregated
+      }
+
+   7) DOCUMENTI / ALLEGATI (puoi riusare il tuo pattern)
+      GET secure/allegati/elencoByOfferta?idOfferta={commessaId}
+      GET documenti/allegato/{id}
+
+*/
+
+var isPme =  sessionStorage['pme'] == 'true' ? true : false;
+
+let dt = null;
+let commessaCorrenteId = null;
+let commessaCorrente = null;
+
+function fmtMoney(v){
+  try { return numeral(v || 0).format('$ 0,0.00').replace('$','€'); } catch(e) { return '€ 0,00'; }
+}
+function fmtDate(d){
+  if(!d) return '';
+  if(typeof d === 'string'){
+    if(/^\d{2}\/\d{2}\/\d{4}$/.test(d)) return d;
+    if(/^\d{4}-\d{2}-\d{2}/.test(d)) return moment(d.substring(0,10)).format('DD/MM/YYYY');
+  }
+  return moment(d).isValid() ? moment(d).format('DD/MM/YYYY') : '';
+}
+function escapeHtml(s){
+  return String(s ?? '')
+    .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
+    .replace(/"/g,'&quot;').replace(/'/g,'&#039;');
+}
+function toastOk(msg){ noty({ text: msg, layout:'topCenter', type:'success', killer:true, timeout:1800 }); }
+function toastErr(msg){ noty({ text: msg, layout:'bottomCenter', type:'error', killer:true, timeout:2500 }); }
+
+$(function(){
+  //numeral.locale('it');
+  numeral.language('it', {
+    delimiters: {
+        thousands: '.',
+        decimal: ','
+    },
+    abbreviations: {
+        thousand: 'mila',
+        million: 'mil',
+        billion: 'b',
+        trillion: 't'
+    },
+    ordinal: function (number) {
+        return 'º';
+    },
+    currency: {
+        symbol: '€'
+    }
+  });
+  numeral.language('it');
+  moment.locale('it');
+
+  initTable();
+  loadCommesse();
+
+  $('#q').on('keyup', function(e){ if(e.key === 'Enter') loadCommesse(); });
+});
+
+function initTable(){
+  dt = $('#tblCommesse').DataTable({
+    paging: true,
+    pageLength: 25,
+    searching: false,
+    info: true,
+    order: [[0,'desc']],
+    columns: [
+      { data:'data', render:(d)=> fmtDate(d) },
+      { data:'code', render:(d)=> `<span class="mono">${escapeHtml(d)}</span>` },
+      { data:'cliente', render:(d)=> escapeHtml(d) },
+      { data:'oggetto', render:(d)=> escapeHtml(d) },
+      { data:'tipo', render:(d)=> `<span class="pill">${escapeHtml(d||'—')}</span>` },
+      { data:'totale', className:'text-right', render:(d)=> fmtMoney(d) },
+      { data:'stato', className:'text-center', render:(d)=> `<span class="label ${statoToLabel(d)}">${escapeHtml(d||'—')}</span>` },
+      { data:'pctFatturato', className:'text-right', render:(d)=> `${Math.round((+d||0))}%` },
+      { data:'pctIncassato', className:'text-right', render:(d)=> `${Math.round((+d||0))}%` },
+      { data:null, orderable:false, className:'text-center',
+        render:(row)=> `<button class="btn btn-xs btn-default" title="Apri" onclick="openCommessa(${row.id}); return false;"><i class="fa fa-folder-open"></i></button>`
+      }
+    ]
+  });
+
+  $('#tblCommesse tbody').on('click', 'tr', function(){
+    const row = dt.row(this).data();
+    if(row && row.id) openCommessa(row.id);
+  });
+}
+
+function loadCommesse(){
+  const payload = {
+    q: $('#q').val()?.trim() || null,
+    stato: $('#stato').val() || null,
+    tipo: $('#tipo').val() || null,
+    trimestre: $('#trimestre').val() || null
+  };
+  Object.keys(payload).forEach(k => payload[k] === null && delete payload[k]);
+
+  $.ajax({
+    url: server + 'secure/commesse/list',
+    method: 'POST',
+    contentType: 'application/json',
+    dataType: 'json',
+    data: JSON.stringify(payload),
+    success: function(lista){
+      const list = JSON.parse(lista || '[]');
+      const rows = Array.isArray(list) ? list : [];
+      dt.clear().rows.add(rows).draw();
+
+      $('#kpiTot').text(rows.length);
+      const sum = rows.reduce((a,r)=> a + (+r.totale||0), 0);
+      $('#kpiVal').text(fmtMoney(sum));
+      const avgF = rows.length ? rows.reduce((a,r)=> a + (+r.pctFatturato||0), 0) / rows.length : 0;
+      const avgI = rows.length ? rows.reduce((a,r)=> a + (+r.pctIncassato||0), 0) / rows.length : 0;
+      $('#kpiFatt').text(Math.round(avgF) + '%');
+      $('#kpiInc').text(Math.round(avgI) + '%');
+    },
+    error: function(xhr){
+      toastErr('Errore nel caricamento elenco commesse');
+      console.error(xhr);
+    }
+  });
+}
+
+function openCommessa(id){
+  commessaCorrenteId = id;
+  $('#viewList').addClass('hidden');
+  $('#viewDetail').removeClass('hidden');
+  reloadDettaglio();
+}
+
+function goToElenco(){
+  commessaCorrenteId = null;
+  commessaCorrente = null;
+  $('#viewDetail').addClass('hidden');
+  $('#viewList').removeClass('hidden');
+}
+
+function reloadDettaglio(){
+  if(!commessaCorrenteId) return;
+
+  $.ajax({
+    url: server + 'secure/commesse/' + commessaCorrenteId,
+    method: 'GET',
+    dataType: 'json',
+    success: function(c){
+      commessaCorrente = c || {};
+      renderDettaglio(commessaCorrente);
+      loadVoci();
+      loadSAL();
+      loadConsuntivi();
+      loadIntegrazioni();
+      loadAllegati();
+    },
+    error: function(xhr){
+      toastErr('Errore nel caricamento dettaglio commessa');
+      console.error(xhr);
+    }
+  });
+}
+
+function renderDettaglio(c){
+  $('#d_code').text(c.code || '—');
+  $('#d_stato').text(codeToStato(c.stato))
+    .removeClass('label-info label-success label-warning label-danger label-default')
+    .addClass('label ' + statoToLabel(c.stato));
+
+  $('#d_tipo').text(c.tipo || '—');
+
+  $('#d_data').val(fmtDate(c.data));
+  $('#d_cliente').val(c.cliente || '');
+  $('#d_totale').val(fmtMoney(c.totale));
+
+  $('#d_oggetto').val(c.oggetto || '');
+  $('#d_trimestre').val(c.trimestre || '');
+  $('#d_scadenza').val(fmtDate(c.scadenza));
+  $('#d_pf').val(Math.round((+c.pctFatturato||0)) + '%');
+  $('#d_pi').val(Math.round((+c.pctIncassato||0)) + '%');
+  $('#d_ref').val(c.riferimento || '');
+  $('#d_note').val(c.note || '');
+
+  // offerta origine
+  if(c.idOffertaOrigine){
+    $('#btnOfferta').prop('disabled', false).data('idofferta', c.idOffertaOrigine);
+  } else {
+    $('#btnOfferta').prop('disabled', true).data('idofferta', null);
+  }
+
+  // parent link
+  if(c.parent && c.parent.id){
+    $('#d_parentBox').show();
+    $('#d_parentLink').text(c.parent.code || ('#' + c.parent.id)).off('click').on('click', function(e){
+      e.preventDefault();
+      openCommessa(c.parent.id);
+    });
+  } else {
+    $('#d_parentBox').hide();
+  }
+
+  // Tab integrazioni: utile soprattutto per principali
+  if((c.tipo||'').toUpperCase() === 'PRINCIPALE'){
+    $('#tabIntegBtn').parent().show();
+  } else {
+    $('#tabIntegBtn').parent().hide(); // se non vuoi nasconderlo, togli questa riga
+  }
+}
+
+function statoToLabel(stato){
+  switch((stato||'').toUpperCase()){
+    case '10': return 'label-success';
+    case '12': return 'label-warning';
+    case '13': return 'label-default';
+    case '11': return 'label-danger';
+    case 'ATTIVO': return 'label-success';
+    case 'SOSPESO': return 'label-warning';
+    case 'N/A': return 'label-default';
+    case 'REVOCATO': return 'label-danger';
+    //case 'APERTA': return 'label-info';
+    default: return 'label-default';
+  }
+}
+
+function codeToStato(code){
+  switch((code||'').toUpperCase()){
+    case '10': return 'Attivo';
+    case '12': return 'Sospeso';
+    case '13': return 'N/A';
+    case '11': return 'Revocato';
+    default: return '-';
+  }
+}
+
+function openOffertaOrigine(){
+  const idOff = $('#btnOfferta').data('idofferta');
+  if(!idOff) return;
+  swal("Info", "Aggancia qui la tua route verso Offerta (id=" + idOff + ").", "info");
+}
+
+/* VOCI */
+function loadVoci(){
+  if(!commessaCorrenteId) return;
+  $.ajax({
+    url: server + 'secure/commesse/' + commessaCorrenteId + '/voci',
+    method: 'GET',
+    dataType: 'json',
+    success: function(voci){ renderVoci(Array.isArray(voci)? voci : []); },
+    error: function(xhr){ toastErr('Errore nel caricamento voci'); console.error(xhr); }
+  });
+}
+
+function renderVoci(voci){
+  const $tb = $('#tblVoci tbody').empty();
+  let tot = 0;
+  voci.forEach(v=>{
+    tot += (+v.totale||0);
+    const um = v.um ?? '';
+    const qta = (v.qta === null || v.qta === undefined) ? '' : v.qta;
+    $tb.append(`
+      <tr>
+        <td>${escapeHtml(v.descrizione||'')}</td>
+        <td class="text-center"><span class="badge badge-soft">${escapeHtml(um)}</span></td>
+        <td class="text-right">${escapeHtml(qta)}</td>
+        <td class="text-right">${escapeHtml(fmtMoney(v.importo||0))}</td>
+        <td class="text-right"><strong>${escapeHtml(fmtMoney(v.totale||0))}</strong></td>
+      </tr>
+    `);
+  });
+  $('#vociTot').text(fmtMoney(tot));
+}
+
+/* SAL */
+function loadSAL(){
+  if(!commessaCorrenteId) return;
+  $.ajax({
+    url: server + 'secure/commesse/' + commessaCorrenteId + '/sal',
+    method: 'GET',
+    dataType: 'json',
+    success: function(rows){ renderSAL(Array.isArray(rows)? rows : []); },
+    error: function(xhr){ toastErr('Errore nel caricamento SAL'); console.error(xhr); }
+  });
+}
+
+function renderSAL(rows){
+  const $tb = $('#tblSAL tbody').empty();
+  $('#salHint').text(rows.length ? '' : 'Nessun SAL presente.');
+  let tot = 0;
+
+  rows.forEach((r, idx)=>{
+    const seq = r.sequenza ?? (idx+1);
+    const imp = (+r.importo||0);
+    tot += imp;
+    $tb.append(`
+      <tr data-id="${escapeHtml(r.idSal ?? '')}">
+        <td><input class="form-control input-sm sal-seq" value="${escapeHtml(seq)}"></td>
+        <td><input class="form-control input-sm sal-imp text-right" value="${imp}"></td>
+        <td><input class="form-control input-sm sal-data" placeholder="YYYY-MM-DD" value="${escapeHtml(r.data || '')}"></td>
+        <td class="text-center"><input type="checkbox" class="sal-fatt" ${r.fatturato ? 'checked' : ''}></td>
+        <td class="text-center"><input type="checkbox" class="sal-inc" ${r.incassato ? 'checked' : ''}></td>
+        <td class="text-center">
+          <button class="btn btn-xs btn-danger" onclick="removeSalRow(this); return false;" title="Rimuovi"><i class="fa fa-trash"></i></button>
+        </td>
+      </tr>
+    `);
+  });
+
+  $('#salTot').text(fmtMoney(tot));
+}
+
+function addSalRow(){
+  const $tb = $('#tblSAL tbody');
+  const next = $tb.find('tr').length + 1;
+  $tb.append(`
+    <tr data-id="">
+      <td><input class="form-control input-sm sal-seq" value="${next}"></td>
+      <td><input class="form-control input-sm sal-imp text-right" value="0"></td>
+      <td><input class="form-control input-sm sal-data" placeholder="YYYY-MM-DD" value=""></td>
+      <td class="text-center"><input type="checkbox" class="sal-fatt"></td>
+      <td class="text-center"><input type="checkbox" class="sal-inc"></td>
+      <td class="text-center">
+        <button class="btn btn-xs btn-danger" onclick="removeSalRow(this); return false;" title="Rimuovi"><i class="fa fa-trash"></i></button>
+      </td>
+    </tr>
+  `);
+}
+
+function removeSalRow(btn){ $(btn).closest('tr').remove(); }
+
+function saveSAL(){
+  if(!commessaCorrenteId) return;
+
+  const rows = [];
+  let hasErr = false;
+
+  $('#tblSAL tbody tr').each(function(){
+    const $tr = $(this);
+    const idSal = $tr.attr('data-id') || null;
+
+    const sequenza = parseInt($tr.find('.sal-seq').val(), 10);
+    const importo = parseFloat($tr.find('.sal-imp').val());
+    const data = ($tr.find('.sal-data').val() || '').trim();
+
+    if(isNaN(sequenza)) { hasErr = true; return false; }
+    if(isNaN(importo) || importo < 0) { hasErr = true; return false; }
+    if(data && !/^\d{4}-\d{2}-\d{2}$/.test(data)) { hasErr = true; return false; }
+
+    rows.push({
+      idSal: idSal ? idSal : null,
+      sequenza,
+      importo,
+      data: data || null,
+      fatturato: $tr.find('.sal-fatt').is(':checked') ? 1 : 0,
+      incassato: $tr.find('.sal-inc').is(':checked') ? 1 : 0
+    });
+  });
+
+  if(hasErr){
+    toastErr('Controlla i SAL: sequenza numerica, importo >= 0, data YYYY-MM-DD.');
+    return;
+  }
+
+  $.ajax({
+    url: server + 'secure/commesse/' + commessaCorrenteId + '/sal',
+    method: 'POST',
+    contentType: 'application/json',
+    dataType: 'json',
+    data: JSON.stringify(rows),
+    success: function(){
+      toastOk('SAL salvato');
+      reloadDettaglio(); // ricalcola % lato backend
+    },
+    error: function(xhr){
+      toastErr('Errore nel salvataggio SAL');
+      console.error(xhr);
+    }
+  });
+}
+
+/* CONSUNTIVO */
+function loadConsuntivi(){
+  if(!commessaCorrenteId) return;
+  $.ajax({
+    url: server + 'secure/commesse/' + commessaCorrenteId + '/consuntivi',
+    method: 'GET',
+    dataType: 'json',
+    success: function(rows){ renderCons(Array.isArray(rows)? rows : []); },
+    error: function(xhr){ toastErr('Errore nel caricamento consuntivi'); console.error(xhr); }
+  });
+}
+
+function renderCons(rows){
+  const $tb = $('#tblCons tbody').empty();
+  $('#consHint').text(rows.length ? '' : 'Nessun consuntivo presente.');
+  let totOre = 0;
+  let totCosto = 0;
+
+  rows.forEach(r=>{
+    totOre += (+r.ore||0);
+    totCosto += (+r.costo||0);
+
+    $tb.append(`
+      <tr>
+        <td>${escapeHtml(fmtDate(r.data))}</td>
+        <td>${escapeHtml(r.risorsa||'')}</td>
+        <td class="text-right">${escapeHtml(r.ore ?? '')}</td>
+        <td class="text-right">${escapeHtml(fmtMoney(r.costo||0))}</td>
+        <td>${escapeHtml(r.note||'')}</td>
+      </tr>
+    `);
+  });
+
+  $('#consTotOre').text(totOre);
+  $('#consTotCosto').text(fmtMoney(totCosto));
+
+  if(!rows.length){
+    $tb.append(`<tr><td colspan="5" class="muted">Nessun dato.</td></tr>`);
+  }
+}
+
+function openConsModal(){
+  $('#c_data').val(moment().format('YYYY-MM-DD'));
+  $('#c_risorsa').val('');
+  $('#c_ore').val(1);
+  $('#c_note').val('');
+  $('#modalCons').modal('show');
+}
+
+function saveConsuntivo(){
+  if(!commessaCorrenteId) return;
+
+  const data = ($('#c_data').val()||'').trim();
+  const risorsa = ($('#c_risorsa').val()||'').trim();
+  const ore = parseFloat($('#c_ore').val());
+  const note = ($('#c_note').val()||'').trim();
+
+  if(!/^\d{4}-\d{2}-\d{2}$/.test(data)){ toastErr('Data non valida (YYYY-MM-DD).'); return; }
+  if(!risorsa){ toastErr('Inserisci la risorsa.'); return; }
+  if(isNaN(ore) || ore <= 0){ toastErr('Ore non valide.'); return; }
+
+  $.ajax({
+    url: server + 'secure/commesse/' + commessaCorrenteId + '/consuntivi',
+    method: 'POST',
+    contentType: 'application/json',
+    dataType: 'json',
+    data: JSON.stringify({ data, risorsa, ore, note }),
+    success: function(){
+      $('#modalCons').modal('hide');
+      toastOk('Consuntivo salvato');
+      loadConsuntivi();
+    },
+    error: function(xhr){
+      toastErr('Errore nel salvataggio consuntivo');
+      console.error(xhr);
+    }
+  });
+}
+
+/* INTEGRAZIONI */
+function loadIntegrazioni(){
+  if(!commessaCorrenteId) return;
+
+  $.ajax({
+    url: server + 'secure/commesse/' + commessaCorrenteId + '/integrazioni',
+    method: 'GET',
+    dataType: 'json',
+    success: function(resp){
+      renderIntegrazioni(resp || {});
+    },
+    error: function(xhr){
+      // Non è errore bloccante: alcune commesse potrebbero non avere endpoint o dati
+      console.warn('Integrazioni non disponibili', xhr);
+      renderIntegrazioni({ children: [] });
+    }
+  });
+}
+
+function renderIntegrazioni(resp){
+  const children = Array.isArray(resp.children) ? resp.children : [];
+  const $tb = $('#tblInteg tbody').empty();
+
+  $('#integHint').text(children.length ? '' : 'Nessuna integrazione trovata.');
+  $('#integCount').text(children.length);
+
+  const tot = resp.totalChildren !== undefined ? (+resp.totalChildren||0) : children.reduce((a,c)=>a+(+c.totale||0),0);
+  const agg = resp.totalAggregated !== undefined ? (+resp.totalAggregated||0) : ( (+commessaCorrente?.totale||0) + tot );
+
+  $('#integTot').text(fmtMoney(tot));
+  $('#integAgg').text(fmtMoney(agg));
+
+  children.forEach(c=>{
+    $tb.append(`
+      <tr>
+        <td class="mono">${escapeHtml(c.code||'')}</td>
+        <td>${escapeHtml(c.oggetto||'')}</td>
+        <td><span class="label ${statoToLabel(c.stato)}">${escapeHtml(c.stato||'—')}</span></td>
+        <td class="text-right">${escapeHtml(fmtMoney(c.totale||0))}</td>
+        <td>${escapeHtml(fmtDate(c.data))}</td>
+        <td class="text-center">
+          <button class="btn btn-xs btn-default" onclick="openCommessa(${c.id}); return false;"><i class="fa fa-folder-open"></i></button>
+        </td>
+      </tr>
+    `);
+  });
+
+  if(!children.length){
+    $tb.append(`<tr><td colspan="6" class="muted">Nessun dato.</td></tr>`);
+  }
+}
+
+/* DOCUMENTI */
+function loadAllegati(){
+  if(!commessaCorrenteId) return;
+
+  $.ajax({
+    url: server + 'secure/allegati/elencoByOfferta?idOfferta=' + commessaCorrenteId,
+    method: 'GET',
+    dataType: 'json',
+    success: function(resp){
+      const list = resp && resp.data ? resp.data : [];
+      renderAllegati(list);
+    },
+    error: function(xhr){
+      toastErr('Errore nel caricamento documenti');
+      console.error(xhr);
+    }
+  });
+}
+
+function renderAllegati(list){
+  const $tb = $('#tblAllegati tbody').empty();
+
+  list.forEach(a=>{
+    const upd = (a.dataUpd && a.userUpd) ? (escapeHtml(a.dataUpd) + ' - ' + escapeHtml(a.userUpd)) : '';
+    const actions = `
+      <a class="btn btn-xs btn-default" href="${server}documenti/allegato/${a.id}" target="_self" title="Scarica">
+        <i class="fa fa-download"></i>
+      </a>
+    `;
+    $tb.append(`
+      <tr>
+        <td>${escapeHtml(a.documento||'')}</td>
+        <td>${escapeHtml(a.titolo||'')}</td>
+        <td class="mono">${escapeHtml(a.nomeFile||'')}</td>
+        <td>${upd}</td>
+        <td>${actions}</td>
+      </tr>
+    `);
+  });
+
+  if(!list.length){
+    $tb.append(`<tr><td colspan="5" class="muted">Nessun documento.</td></tr>`);
+  }
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,1 @@
+ssh -i api.pem ec2-user@3.73.219.28

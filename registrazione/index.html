@@ -1,0 +1,1610 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <script type="application/javascript">
+        if (!sessionStorage['token'])
+            window.location.replace("../");
+    </script>
+    <meta charset="UTF-8"> 
+    <meta http-equiv="cache-control" content="max-age=0"/>
+    <meta http-equiv="cache-control" content="no-cache"/>
+    <meta http-equiv="expires" content="0"/>
+    <meta http-equiv="expires" content="Tue, 01 Jan 1980 1:00:00 GMT"/>
+    <meta http-equiv="pragma" content="no-cache"/>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+
+    <title>PreAut | Registrazione Documenti Fiscali</title>
+    <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
+    <link href="../assets/css/bootstrap.css" rel="stylesheet" type="text/css"/>
+    <link href="../assets/css/paceFlash.css" rel="stylesheet" type="text/css">
+    <!-- link href="//cdn.datatables.net/1.10.19/css/jquery.dataTables.min.css" rel="stylesheet" type="text/css"/ -->
+    <link href="../plugins/datatables_1_10_19/css/jquery.dataTables.min.css" rel="stylesheet" type="text/css">
+    <link href="../plugins/datatables_1_10_19/extensions/FixedHeader/css/dataTables.fixedHeader.min.css" rel="stylesheet" type="text/css">
+
+    <link href="../assets/css/font-awesome.min.css" rel="stylesheet" type="text/css"/>
+    <link href="../assets/css/AdminLTE.min.css" rel="stylesheet" type="text/css"/>
+    <link href="../assets/css/skins/skin-blue.min.css" rel="stylesheet" type="text/css"/>
+    <link href="../assets/css/animate.css" rel="stylesheet" type="text/css">
+    <link href="../assets/css/sweetalert.css" rel="stylesheet" type="text/css">
+    <link href="../assets/css/select2.css" rel="stylesheet" type="text/css">
+    <link href="../assets/css/waves.min.css" rel="stylesheet" type="text/css">
+    <link href="../assets/css/dropzone.css" rel="stylesheet" type="text/css">
+    <link href="../assets/css/dropzone-modified.css" rel="stylesheet" type="text/css">
+    <link href="../assets/css/bootstrap-dialog.css" rel="stylesheet" type="text/css">
+    <link href="../assets/default-dark/style.min.css" rel="stylesheet" type="text/css">
+    <link href="../assets/default/style.min.css" rel="stylesheet" type="text/css">
+    <link href="../assets/css/handsontable.full.min.css" media="screen" rel="stylesheet" type="text/css">
+    <link href="../assets/css/google.css" media="screen" rel="stylesheet" type="text/css">
+    <link href="../assets/css/classic.css" media="screen" rel="stylesheet" type="text/css">
+    <link href="../assets/css/classic.date.css" media="screen" rel="stylesheet" type="text/css">
+    <link href="../assets/css/datepicker.css" media="screen" rel="stylesheet" type="text/css">
+    <link href="../plugins/iCheck/all.css" rel="stylesheet" type="text/css">
+    <script src="../plugins/chartjs260/Chart.js"></script>
+    <style>
+        #tabellaCommesseAcquisite_wrapper thead {
+            display: none;
+        }
+
+        .select2-container .select2-selection--single {
+            height: 30px !important;
+            border-color: #d2d6de !important;
+        }
+
+        .handsontable table th, .handsontable table td {
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .modal-dialog {
+            -webkit-animation-duration: 0.4s;
+            -moz-animation-duration: 0.4s;
+            -ms-animation-duration: 0.4s;
+        }
+
+        .modal-dialog, .modal-content {
+            /* 80% of window height */
+            height: 95%;
+        }
+
+        .modal-body {
+            /* 100% = dialog height, 120px = header + footer */
+            max-height: calc(100% - 180px);
+            overflow-y: scroll;
+
+        }
+
+        .rModal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            background-color: rgba(0, 0, 0, 0.4);
+        }
+
+        .rModal-content {
+            background-color: #fff;
+            margin: 5% auto;
+            padding: 18px;
+            border-radius: 8px;
+            width: 80vw; /* più largo per il grid */
+            height: 90vh;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .rModal-content input {
+            margin-bottom: 5px;
+            padding: 4px 4px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+        .rModal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+
+        .rModal-body {
+            flex: 1;
+            height: 100%;
+            overflow: hidden;
+        }
+
+        .rFormContainer {
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+            padding-right: 5px;
+            box-sizing: border-box;
+        }
+
+        .rFormContainer label { 
+            font-weight: bold;
+        }
+
+        #rModal-elencoSAL {
+            display: flex;
+            justify-content: center;
+
+        }
+        .tabella-regSAL tr {
+            padding: 0 !important;
+        }
+        .tabella-regSAL td,
+        .tabella-regSAL th {
+            height: 20px;
+            padding: 0 !important;
+            font-size: 15px;
+            line-height: 0.5;
+            text-align: center;
+            vertical-align: middle;
+        }
+        .rForm-body input[type="checkbox"] {
+            width: 16px;
+            height: 16px;
+            margin: 0;
+            border: 1px solid #999;
+            border-radius: 1px;
+            vertical-align: middle;
+        }
+
+        .rForm-body {
+            flex: 1;
+            overflow-y: auto;
+            overflow-x: hidden;
+            margin-top: 10px;
+            margin-bottom: 10px;
+        }
+
+        .rForm-body input[type="text"]{
+            height: 26px;
+        }
+
+        .rForm-footer {
+            flex-shrink: 0;
+            margin-top: auto;
+        }
+
+        .custom-cell-style {
+            font-size: 15px;
+            font-weight: 500;
+        }
+        .htCenter {
+            text-align: center !important;
+        }
+        .htMiddle {
+            vertical-align: middle !important;
+        }
+
+        #pdfPreviewContainer {
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            min-height: 0;
+        }
+        #pdfPreview {
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+        .pdf-container {
+            flex-grow: 1;
+            background-color: #333;
+            border: 2px solid #333;
+            overflow: hidden;
+        }
+        
+        .centerImage {
+			text-align: center;
+		}
+		
+		.rowPointer{
+			cursor: pointer;
+			cursor: hand;
+		}
+		
+		.rowPointerDef{
+			cursor: default;
+		}
+
+        .glyphicon.spinning {
+            animation: spin 1s infinite linear;
+            -webkit-animation: spin2 1s infinite linear;
+        }
+
+        @keyframes spin {
+            from { transform: scale(1) rotate(0deg); }
+            to { transform: scale(1) rotate(360deg); }
+        }
+
+        @-webkit-keyframes spin2 {
+            from { -webkit-transform: rotate(0deg); }
+            to { -webkit-transform: rotate(360deg); }
+        }
+
+    </style>
+    <!-- js -->
+<!--     <script src="../assets/js/jquery-2.1.4.min.js"></script> -->
+<script src="https://code.jquery.com/jquery-2.2.4.min.js" integrity="sha256-BbhdlvQf/xTY9gja0Dq3HiwQF8LaCRTXxZKRutelT44="
+  crossorigin="anonymous"></script>
+    <script src="../assets/js/bootstrap.min.js" type="text/javascript"></script>
+    <script src="../assets/js/pace.min.js" type="text/javascript"></script>
+    <script src="../assets/js/jquery.blockUI.js" type="text/javascript"></script>
+    <script src="../assets/js/app.min.js" type="text/javascript"></script>
+    <script src="../assets/js/sweetalert.min.js" type="text/javascript"></script>
+    <script src="../plugins/iCheck/icheck.min.js" type="text/javascript"></script>
+    <script src="../assets/js/select2.full.min.js" type="text/javascript"></script>
+    <script src="../assets/js/waves.min.js" type="text/javascript"></script>
+    <script src="../assets/js/jquery.noty.packaged.min.js" type="text/javascript"></script>
+    <script src="../assets/js/mustache.js" type="text/javascript"></script>
+    <script src="../assets/js/moment.js" type="text/javascript"></script>
+    <script src="../assets/js/dropzone.js" type="text/javascript"></script>
+    <script src="../assets/js/bootstrap-dialog.js" type="text/javascript"></script>
+    <script src="../assets/js/jquery.slimscroll.min.js" type="text/javascript"></script>
+    <script src="../assets/js/numeral.min.js" type="text/javascript"></script>
+    <script src="../assets/js/languages.min.js" type="text/javascript"></script>
+    <script src="../assets/js/handsontable.full.min.js" type="text/javascript"></script>
+    <script src="../assets/js/jstree.min.js" type="text/javascript"></script>
+    <script src="../assets/js/wow.min.js" type="text/javascript"></script>
+    <script src="../assets/js/pdfmake.min.js" type="text/javascript"></script>
+    <script src="../assets/js/vfs_fonts.js" type="text/javascript"></script>
+    <script src="../assets/js/autosize.min.js" type="text/javascript"></script>
+    <script src="../assets/js/picker.js" type="text/javascript"></script>
+    <script src="../assets/js/picker.date.js" type="text/javascript"></script>
+    <script src="../plugins/tinymce/js/tinymce/tinymce.min.js"></script>
+    <script src="../plugins/tinymce/js/tinymce/jquery.tinymce.min.js"></script>
+    <script src="../assets/js/preaut.js" type="text/javascript"></script>
+    <script src="../assets/js/bootstrap-datepicker.js" type="text/javascript"></script>
+    <!-- script src="//cdn.datatables.net/1.10.19/js/jquery.dataTables.min.js"></script -->
+    <script src="../plugins/datatables_1_10_19/js/jquery.dataTables.js"></script>
+    <script src="../plugins/datatables_1_10_19/extensions/FixedHeader/js/dataTables.fixedHeader.js"></script>
+</head>
+
+<body class="skin-blue sidebar-mini">
+<div class="wrapper">
+
+    <header class="main-header">
+        <a href="#" class="logo">
+            <span class="logo-lg"><img style="max-height: 45px;margin-bottom:5px;" src="../assets/img/logo.png"></span>
+            <span class="logo-mini">cSPIN</span>
+        </a>
+        <nav class="navbar navbar-static-top" role="navigation">
+            <a href="#" class="sidebar-toggle" data-toggle="offcanvas" role="button">
+                <span class="sr-only">Toggle navigation</span>
+            </a>
+            <div class="navbar-custom-menu">
+                <ul class="nav navbar-nav">
+                    <li><a href="../"> Logout <i class="fa fa-sign-out"></i>
+                    </a></li>
+                </ul>
+            </div>
+        </nav>
+    </header>
+
+    <aside id="themenu" class="main-sidebar"></aside>
+    <script language="javascript">
+
+        $.get("../templates/menu.mst?_"+(new Date()).getTime(), function (template) {
+            $('#themenu').html(Mustache.render(template, {
+
+                admins: sessionStorage['admins']=='true'?true:false,
+                vv: sessionStorage['vv'],active:{cg05: true},
+                    pme: sessionStorage['pme']=='true'?true:false
+            }));
+            eventMenu();
+        });
+    </script>
+
+    <div class="content-wrapper">
+        <!--
+        <section class="content-header">
+            <h1>
+                TITOLO PAGINA
+            </h1>
+        </section>
+        -->
+
+        <section class="content animated fadeIn">
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="box">
+                        <div class="box-header">
+                            <h3 class="box-title" style="margin-bottom: 20px;">Documenti Fiscali</h3>
+                            <div class="box-tools">
+                                <button onclick="registraDocumento(-1)" class="btn btn-primary btn-sm pull-right" style="margin-right: 5px;"><strong>Nuovo &nbsp;&nbsp;</strong><i class="fa fa-plus-circle"></i></button>
+                            </div>
+                        </div>
+                        <div class="box-body no-padding">
+                            <table id="tabella" class="table table-hover table-striped dataTable444 display compact" style="width:100%">
+                                <thead id="elencoHeader">
+                                    <tr>
+                                        <th style="text-align:left;">Documento</th>
+                                        <th style="text-align:center;">Data</th>
+                                        <th style="text-align:left;">Nr.</th>
+                                        <th style="text-align:left;">Sogetto</th>
+                                        <th style="text-align:right;">Imponibile</th>
+                                        <th style="text-align:right;">Iva</th>
+                                        <th style="text-align:right;">Ritenuta</th>
+                                        <th style="text-align:right;">Residuo Pag.</th>
+                                        <th style="text-align:left;">Commessa</th>
+                                        <th style="text-align:center;">PDF</th>
+                                        <th></th>
+                                    </tr>
+                                </thead>
+                                <tbody id="tabellaTbody">
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+    <footer id="thefooter" class="main-footer"></footer>
+
+    <!--TUTTI I MODAL-->
+    <div id="rModal" class="rModal">
+        <div class="rModal-content">
+            <div class="rModal-header">
+                <h4 style="margin:0;">Registrazione Documento Passivo</h4>
+                <button class="closeRModal" 
+                        style="background:none; border:none; font-size:20px; cursor:pointer;">&times;
+                </button>
+            </div>
+            <div class="rModal-body row">
+                <div class="rFormContainer col-md-6">
+                    <div class="rForm-body col-md-12">
+                        <div class="row g-2 align-items-center">
+                            <div class="col-md-4">
+                                <label style="width:100%;">Tipo</label>
+                                <select id="tipoDocumento" class="form-control input-sm" style="width:100%;">
+                                    <option value="">-</option>
+                                    <option value="Fattura">Fattura</option>
+                                    <option value="Ricevuta">Ricevuta</option>
+                                    <option value="Stipendi">Stipendi</option>
+                                    <option value="DM10">DM10</option>
+                                    <option value="Tributi">Tributi</option>
+                                    <option value="Proforma">Proforma</option>
+                                    <option value="Altro">Altro</option>
+                                </select>
+                            </div>
+                            <div class="col-md-4">
+                                <label style="width:100%;">Fornitore</label>
+                                <select id="fornitoreDocumento" class="form-control input-sm " style="width:100%;">
+                                </select>
+                            </div>
+                            <div class="col-md-4">
+                                <label style="width:100%;">C.Costo</label>
+                                <select id="ccostoDocumento" class="form-control input-sm " style="width:100%;">
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="row g-2 align-items-center">
+                            <div class="col-md-4">
+                                <label style="width:100%;">Data</label>
+                                 <input type="date" id="dataDocumento" class="form-control input-sm ">
+                            </div>
+                            <div class="col-md-4">
+                                <label style="width:100%;">Nr</label>
+                                <input type="text" id="numeroDocumento" class="form-control input-sm">
+                            </div>
+                            <div class="col-md-4">
+                                <label style="width:100%;">Imponibile</label>
+                                <input type="text" id="imponibileDocumento" class="form-control money">
+                            </div>
+                        </div>
+
+                        <div class="row g-2 align-items-center ivablock">
+                            <div class="col-md-3">
+                                <label>IVA 4%</label>
+                            </div>
+                            <div class="col-md-3">
+                                <label>IVA 5%</label>
+                            </div>
+                            <div class="col-md-3">
+                                <label>IVA 10%</label>
+                            </div>
+                            <div class="col-md-3">
+                                <label>IVA 22%</label>
+                            </div>
+                        </div>
+                        <div class="row g-2 align-items-center ivablock">
+                            <div class="col-md-3">
+                                <input type="text" id="iva4Documento" class="form-control money">
+                            </div>
+                            <div class="col-md-3">
+                                <input type="text" id="iva5Documento" class="form-control money">
+                            </div>
+                            <div class="col-md-3">
+                                <input type="text" id="iva10Documento" class="form-control money">
+                            </div>
+                            <div class="col-md-3">
+                                <input type="text" id="iva22Documento" class="form-control money">
+                            </div>
+                        </div>
+                        <div class="row g-2 align-items-center ivablock">
+                            <div class="col-md-6">
+                                <label style="width:100%;text-align:right;">Totale IVA:</label>
+                            </div>
+                            <div class="col-md-6">
+                                <input type="text" id="ivaDocumento" class="form-control money" disabled>
+                            </div>
+                        </div>
+                        <div class="row g-2 align-items-center raccblock">
+                            <div class="col-md-6">
+                                <label style="width:100%;text-align:right;">Ritenuta d'acconto:</label>
+                            </div>
+                            <div class="col-md-6">
+                                <input type="text" id="raccDocumento" class="form-control money" >
+                            </div>
+                        </div>
+                        <div class="row g-2 align-items-center">
+                            <div class="col-md-6">
+                                <label style="width:100%;text-align:right;">Netto a pagare:</label>
+                            </div>
+                            <div class="col-md-6">
+                                <input type="text" id="pagareDocumento" class="form-control money" disabled>
+                            </div>
+                        </div>
+                        <div class="col-12">
+                            <label style="width:100%;">Scadenze Pagamento</label>
+                            <div id="grigliaReg" style="margin-left:auto; margin-right: 0;"></div>
+                        </div>
+                        <div class="row g-2 align-items-center">
+                            <div class="col-md-12">
+                                <label style="width:100%;">Riferisci questa spesa a una Commessa</label>
+                                <select id="commessaDocumento" class="form-control input-sm" style="width:100%;">
+                                </select>
+                            </div>
+                        </div>
+                        <div class="row g-2 align-items-center riconciliaFornitore">
+                            <div class="col-md-12">
+                                <label style="width:100%;">Sostituisce una Scadenza Previsionale del Fornitore</label>
+                                <select id="previsionaleFornitore" class="form-control input-sm" style="width:100%;">
+                                </select>
+                            </div>
+                        </div>
+                        <div class="row g-2 align-items-center riconciliaFornitore">
+                            <div class="col-md-12">
+                                <label style="width:100%;">Sostituisce movimento Fatture Da Ricevere Fornitore</label>
+                                <select id="daricevereFornitore" class="form-control input-sm" style="width:100%;">
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="rForm-footer col-md-12">
+                        <div class="row g-2 pt-2">
+                            <div class="col-md-12">
+                                <input type="checkbox" id="previsionaleDocumento" class="form-check-input">
+                                <label>Previsionale</label>
+                                <button class="btn btn-success allegatoRModal pull-right" style="margin-left:15px;">Salva PDF</button>
+                                <button class="btn btn-success saveRModal pull-right" style="margin-left:15px;">Salva</button>
+                                <button class="btn btn-danger deleteRModal pull-right" style="margin-left:15px;">Elimina</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div id="pdfPreviewContainer" class="col-md-6" style="height: 100%;">
+                    <div class="row mb-2 align-items-center">
+                        <div class="col-md-4">
+                            <h4>Documento PDF:</h4>
+                        </div>
+                        <div id="uploadSection" class="col-md-8">
+                            <input type="file" id="pdfInput" class="form-control" accept="application/pdf">
+                        </div>
+                    </div>
+                    <div class="pdf-container col-md-12 flex-grow-1" style="height: 100%;">
+                        <iframe id="pdfPreview"></iframe>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <script language="javascript">
+        $.get("../templates/footer.mst?_"+(new Date()).getTime(), function (template) {
+            $('#thefooter').html(Mustache.render(template, {vv:sessionStorage['vv']}));
+        });
+    </script>
+</div>
+</body>
+<script>document.write("<script type='text/javascript' src='../server.js?v=" + Date.now() + "'><\/script>");</script>
+<script src="../assets/js/dropzoneSETUP.js" type="text/javascript"></script>
+<script src="../setupajax.js" type="text/javascript"></script>
+<script>
+var commesse = [];
+var tabella;
+var colReg = [{
+    data: 'importo',
+    type: 'numeric',
+    format: '$ 0,0.00',
+    language: 'it'
+}, {
+    data: 'data',
+    type: 'date',
+    dateFormat: 'DD-MM-YYYY',
+    correctFormat: true,
+    allowInvalid: false,
+    allowEmpty: true,
+    validator: function(value, callback) {
+        if (value === null || value === '') {
+        callback(true);
+        return;
+        }
+        var isValid = isValidDateDDMMYYYY(value);
+        callback(isValid);
+    }
+}, {
+    data: 'buttons',
+    renderer: function(instance, td, row, col, prop, value, cellProperties) {
+        td.innerHTML = '';
+        td.className = 'htCenter htMiddle';
+
+        if (row > 0) {
+            td.innerHTML =
+                '<button class="btn btn-danger btn-xs btn-block btn-flat waves-effect waves-float delScadenza" ' +
+                'data-row="' + row + '" ' +
+                'style="width: 22px; height:22px; border-radius:3px">' +
+                '<i class="fa fa-minus"></i></button>';
+        }
+    },
+    readOnly: true
+}];
+
+function isValidDateDDMMYYYY(dateStr) {
+    if (typeof dateStr !== 'string') return false;
+
+    var parts = dateStr.split("-");
+    if (parts.length !== 3) return false;
+
+    var [day, month, year] = parts.map(p => parseInt(p, 10));
+
+    if (
+        isNaN(day) || isNaN(month) || isNaN(year) ||
+        day < 1 || month < 1 || month > 12 || year < 1000
+    ) {
+        return false;
+    }
+
+    var date = new Date(year, month - 1, day);
+    return (
+        date.getFullYear() === year &&
+        date.getMonth() === month - 1 &&
+        date.getDate() === day
+    );
+}
+
+$(document).ready(function () {	
+    moment.locale('it');
+    numeral.language('it', {
+        delimiters: {
+            thousands: '.',
+            decimal: ','
+        },
+        abbreviations: {
+            thousand: 'mila',
+            million: 'mil',
+            billion: 'b',
+            trillion: 't'
+        },
+        ordinal: function (number) {
+            return 'º';
+        },
+        currency: {
+            symbol: '€'
+        }
+    });
+    numeral.language('it');
+
+	tabella = $('#tabella').DataTable({
+		"createdRow": function(row, data, dataIndex) {
+				$(row).addClass("rowPointer");
+			},
+		"language": {url: 'https://cdn.datatables.net/plug-ins/1.10.12/i18n/Italian.json'},
+
+        
+		"columnDefs" : [
+            {
+            "className": 'dt-left',
+			"targets" : [0,2,3,8],
+		    },
+            {
+            "className": 'dt-center',
+			"targets" : [1,9],
+		    },
+            {
+			"className": 'dt-right',
+			"targets" : [4,5,6,7],
+		    },
+            {
+			"targets" : [0,1,2,3,8,10],
+            "searchable": true
+		    },
+            {
+                "targets" : [11],
+                "visible": false
+            }
+            
+        ],
+        "autoWidth": true,
+        
+        //order: [[1, 'asc']],
+        paging: false,
+        ordering: false,
+        fixedHeader: {
+            header: true,
+            footer: true
+        },
+        scrollCollapse: true,
+        scrollX: true,
+        scrollY: 500
+	});
+	tabella.on( 'page.dt', function () {
+	    fillNewPage();
+	} );
+    tabella.on( 'length.dt', function ( e, settings, len ) {
+	    fillNewPage();
+    } );
+    $('#tabella th').click(function(e) {
+    		fillNewPageFromSorting(); 
+    });
+    
+    $('#tabella tbody').on('click', 'tr', function (evt) {
+    	var cell=$(evt.target).closest('td').index();
+        if(cell>0){
+        	var data = tabella.cell(this,11).data();
+			registraDocumento(data);
+        }
+    } );
+    
+
+	//var setHeight = $('#thefooter').offset().top - $('#thetable').offset().top;
+	//setHeight = setHeight - 0;
+//	$('#thetable').css({ 'height': setHeight + "px" });
+    
+
+    $('#filtroTipo').select2({
+        placeholder: 'Tipo'
+    });
+    $('#fornitoreDocumento').select2();
+    $('#ccostoDocumento').select2();
+    $('#tipoDocumento').select2();
+    $('#commessaDocumento').select2();
+
+    var data = {
+        pagina: 0,
+        morto: false
+    };
+    var elencoPreventivi = $.post(server + 'secure/commesse/db/filters/elenco', JSON.stringify(data));
+    elencoPreventivi.success(function (responseString) {
+        var responseJson = JSON.parse(responseString);
+        var response = responseJson.map( function(res) {
+            return res;
+        });
+        response.sort(function(a, b) {
+            //ascending
+            if (a.Code < b.Code) return -1;
+            if (a.Code > b.Code) return 1;
+            return 0;
+        });
+        commesse = response;
+        var select = '';
+        select += '<option value="">-</option>';
+        var length = response.length;
+        for (i = 0; i < length; i++)
+            select += '<option value="' + response[i].IDpreventivo + '">' + response[i].Code + '</option>';
+        $('#commessaDocumento').empty().append(select);
+
+        var richiestaCombo = $.getJSON(server + 'secure/service/comboPreventivo');
+
+        richiestaCombo.success(function (r) {
+            sessionStorage.setItem('comboRegistrazione',JSON.stringify(r));
+            
+            popolaCombo();
+            loadParametroTarget();
+            
+            //Carico elenco preventivi
+            refreshElenco();
+        });
+
+        
+    });
+
+
+    
+
+
+
+    
+
+    //Effetto onda sui tasti, stile material design
+    Waves.attach('.btn', ['waves-float']);
+    Waves.init();
+    new WOW().init();
+    
+});
+
+
+var rowsToLoad = [];
+var fornitori = [];
+var openedGestioneDcumento = false;
+var tipoSalva = "INS";
+
+function popolaCombo(){
+	
+	var r = JSON.parse(sessionStorage.getItem('comboRegistrazione'));
+
+    //FORNITORI
+    var select = '';
+    fornitori = r.fornitori;
+    fornitori.sort(function(a, b) {
+        //ascending
+        if (a.societa < b.societa) return -1;
+        if (a.societa > b.societa) return 1;
+        return 0;
+    });
+
+    var length = fornitori.length;
+    select += '<option value="0">(Non specificato)</option>';
+    for (i = 0; i < length; i++)
+        select += '<option value="' + fornitori[i].id + '">' + fornitori[i].societa + '</option>';
+    $('#fornitoreDocumento').empty().append(select);
+
+    //CENTRI DI COSTO
+    select = '';
+    var ccosto = r.ccosto;
+    ccosto.sort(function(a, b) {
+        //ascending
+        if (a.codice < b.codice) return -1;
+        if (a.codice > b.codice) return 1;
+        return 0;
+    });
+
+    length = ccosto.length;
+    for (i = 0; i < length; i++)
+        select += '<option value="' + ccosto[i].id + '">' + ccosto[i].codice + ' - ' + ccosto[i].descrizione + '</option>';
+    select += '<option value="">(Non specificato)</option>';
+    $('#ccostoDocumento').empty().append(select);
+
+    //TIPI
+    $('#filtroTipo').html(null);
+    var tipi = r.tipi;
+    length = tipi.length;
+    for (i = 0; i < length; i++){
+        $('#filtroTipo').append('<option value="' + tipi[i].idTipo + '">' + tipi[i].tipoPreventivo + '</option>');
+    }
+    $('#filtroTipo').trigger('change');
+
+}
+
+function refreshElenco() {
+
+	var data = {
+        tipo : $("#filtroTipo").val(),
+    };
+
+    Pace.restart();
+	Pace.track(function () {
+        var elencoCall = $.post(server + 'secure/registrazioni/db/filters/elenco', JSON.stringify(data));
+        elencoCall.success(function (responseString) {
+            tabella.clear().draw();
+            //tabellaCommesseAcquisite.clear().draw();
+            rowsToLoad = [];
+
+            var responseJson = JSON.parse(responseString);
+            var response = responseJson.map( function(res) {
+                return res;
+            });
+            
+            var elencoLength = response.length;
+            
+            //carica riga tabella con i dati dell'elenco commesse letto
+            for (i = 0; i < elencoLength; i++){
+                toLoadRigaTabella(response[i].IDdoc, response[i]);
+            }	
+            tabella.draw();
+            
+            //completa i dati dei SAL per ciascuna riga in elenco con i colori guida
+            for (i = 0; i < rowsToLoad.length; i++){
+                //toFillRigaTabella(rowsToLoad[i].index, rowsToLoad[i].jsonCommessa);
+            }
+
+        });
+    });
+}
+
+function noNaN( n ) { 
+	return isNaN( n ) ? 0 : n; 
+	}
+
+function fillNewPage() { 
+	var currentIndexes = tabella.rows({ page: 'current' })[0];
+    /*
+	currentIndexes.forEach(function(index) {
+	    var daRicaricare = tabella.cell(index,38).data();
+	    
+	    if (daRicaricare){
+		    var data = tabella.cell(index,37).data();
+		    
+			var find = '&quot;';
+			var re = new RegExp(find, 'g');
+			var actualPreventivoString = data.replace(re, '"');
+			var actualPreventivo=JSON.parse(actualPreventivoString);
+			var idPreventivo = actualPreventivo.id;
+			var idTipoPreventivo = actualPreventivo.idTipoPreventivo;
+			
+			toFillPreventivo(idPreventivo, idTipoPreventivo, actualPreventivo, index);
+	    }
+	});
+    */
+}
+function fillNewPageFromSorting() { 
+	var currentIndexes = tabella.rows()[0];
+    /*
+	currentIndexes.forEach(function(index) {
+	    var daRicaricare = tabella.cell(index,38).data();
+	    
+	    if (daRicaricare){
+		    var data = tabella.cell(index,37).data();
+		    
+			var find = '&quot;';
+			var re = new RegExp(find, 'g');
+			var actualPreventivoString = data.replace(re, '"');
+			var actualPreventivo=JSON.parse(actualPreventivoString);
+			var idPreventivo = actualPreventivo.id;
+			var idTipoPreventivo = actualPreventivo.idTipoPreventivo;
+			
+			toFillPreventivo(idPreventivo, idTipoPreventivo, actualPreventivo, index);
+	    }
+	});
+    */
+}
+
+function toLoadRigaTabella(idDoc, jRiga){
+
+	
+	var newRow;
+    newRow = tabella.row.add( [
+		jRiga.TipoDoc,
+        moment(jRiga.DataDoc).format('DD MMM YY'),
+        jRiga.NumeroDoc,
+        getFornitore(jRiga.clifoID),
+        numeral(jRiga.Imponibile).format('$ 0,0.00'),
+        jRiga.Iva>0?numeral(jRiga.Iva).format('$ 0,0.00'):'-',
+        jRiga.Ritenuta>0?numeral(jRiga.Ritenuta).format('$ 0,0.00'):'-',
+        jRiga.previsionale?'-':numeral((jRiga.TotalePagare - jRiga.ImportoPagato)).format('$ 0,0.00'),
+        getCommessa(jRiga.preventivoID),
+        jRiga.allegatoID?"<span class='glyphicon glyphicon-check' style='color:grey'></span>":"",
+        jRiga.previsionale?'<button class="btn btn-warning btn-xs">Previsionale</button>':'',
+        idDoc,
+
+	//] ).draw();
+    ] );
+
+    var loadableRow = {
+        "idDoc" : idDoc,
+        "jRiga" : jRiga,
+        "index" : newRow.index()			
+    }
+
+    rowsToLoad.push(loadableRow);
+
+    
+}
+
+function toFillRigaTabella(index,jsonCommessa) { 
+
+    //verifica congruenza SAL
+    //tutti gli importi dei Sal devono essere il 100% del totale commessa
+    var totaleSal = (jsonCommessa.sal1 ?? 0.0) + (jsonCommessa.sal2 ?? 0.0) + (jsonCommessa.sal3 ?? 0.0) + (jsonCommessa.sal4 ?? 0.0) + (jsonCommessa.sal5 ?? 0.0) + (jsonCommessa.sal6 ?? 0.0) + (jsonCommessa.sal7 ?? 0.0);
+    if(totaleSal<jsonCommessa.TotalePreventivo){
+        tabella.cell( index, 0 ).data('<span style="color:red;">'+getPercentuale(jsonCommessa.TotalePreventivo,totaleSal)+'</span>');
+    }else{
+        tabella.cell( index, 0 ).data('<span class="glyphicon glyphicon-check" style="color:green;"></span>');
+    }
+
+    //verifica se la commessa è completamente fatturata
+    var totaleFatturato = (((jsonCommessa.sal1 ?? 0.0)>0 && jsonCommessa.fatt1)?jsonCommessa.sal1:0.0) + (((jsonCommessa.sal2 ?? 0.0)>0 && jsonCommessa.fatt2)?jsonCommessa.sal2:0.0) + (((jsonCommessa.sal3 ?? 0.0)>0 && jsonCommessa.fatt3)?jsonCommessa.sal3:0.0) + (((jsonCommessa.sal4 ?? 0.0)>0 && jsonCommessa.fatt4)?jsonCommessa.sal4:0.0) + (((jsonCommessa.sal5 ?? 0.0)>0 && jsonCommessa.fatt5)?jsonCommessa.sal5:0.0) + (((jsonCommessa.sal6 ?? 0.0)>0 && jsonCommessa.fatt6)?jsonCommessa.sal6:0.0) + (((jsonCommessa.sal7 ?? 0.0)>0 && jsonCommessa.fatt7)?jsonCommessa.sal7:0.0);
+    if(totaleFatturato<jsonCommessa.TotalePreventivo){
+        var domcell = tabella.cell( index, 1 ).node();
+        $(domcell).css({"color":"darkred"});
+    }
+
+}
+
+    $('#fornitoreDocumento').on('change', function(e) {
+        var selected = $('#fornitoreDocumento').val();
+        $('#previsionaleFornitore').empty();
+        $('#daricevereFornitore').empty();
+        if(selected != null && selected.trim()!="" && selected.trim()!="0"){
+            if(tipoSalva=='INS'){
+                $(".riconciliaFornitore").show();
+                $.ajax({
+                    url: server + "secure/coge/docapertifornitore/" + selected,
+                    method: 'GET',
+                    success: function (dati) {
+                        if(dati!=null){
+                            previsionali = JSON.parse(dati.previsionali);
+                            daricevere = JSON.parse(dati.daricevere);
+
+                            var select = '';
+                            var ladata = new Date();
+                            var length = previsionali.length;
+                            select += '<option value="0">-</option>';
+                            for (i = 0; i < length; i++){
+                                ladata.setFullYear(previsionali[i].dataScadenza.year,(previsionali[i].dataScadenza.monthValue - 1),previsionali[i].dataScadenza.dayOfMonth);
+                                ftmdt = `${String(ladata.getDate()).padStart(2, '0')}/${String(ladata.getMonth() + 1).padStart(2, '0')}/${ladata.getFullYear()}`;
+                                var descrizione = ftmdt + " - " + numeral(previsionali[i].importoScadenza).format('$ 0,0.00');
+                                select += '<option value="' + previsionali[i].id + '">' + descrizione + '</option>';
+                            }
+                            $('#previsionaleFornitore').empty().append(select);
+
+                            select = '';
+                            length = daricevere.length;
+                            select += '<option value="0">-</option>';
+                            for (i = 0; i < length; i++){
+                                ladata.setFullYear(daricevere[i].data.year,(daricevere[i].data.monthValue - 1),daricevere[i].data.dayOfMonth);
+                                ftmdt = `${String(ladata.getDate()).padStart(2, '0')}/${String(ladata.getMonth() + 1).padStart(2, '0')}/${ladata.getFullYear()}`;
+                                var descrizione = ftmdt + " - " + numeral(daricevere[i].dare).format('$ 0,0.00');
+                                select += '<option value="' + daricevere[i].idPartita + '">' + descrizione + '</option>';
+                            }
+                            $('#daricevereFornitore').empty().append(select);
+
+
+                        }
+                    },
+                    error: function () {
+
+                    }
+                });
+            }
+        }else{
+            $(".riconciliaFornitore").hide();
+        }
+    });
+    $('#tipoDocumento').on('change', function() {
+        var selected = $('#tipoDocumento').val();
+        $(".ivablock").hide();
+        $(".raccblock").hide();
+        $("#fornitoreDocumento").next().show();
+        $("#previsionaleDocumento").prop('disabled', false);
+        $("#previsionaleDocumento").prop('checked', false);
+        var oggi2 = new Date();
+        var intOggi = parseInt(`${oggi2.getFullYear()}${String(oggi2.getMonth() + 1).padStart(2, '0')}${String(oggi2.getDate()).padStart(2, '0')}`);
+        var data2 = new Date($('#dataDocumento').val());
+        var intData = parseInt(`${data2.getFullYear()}${String(data2.getMonth() + 1).padStart(2, '0')}${String(data2.getDate()).padStart(2, '0')}`);
+        if(intData>intOggi){
+            $("#previsionaleDocumento").prop('checked', true);
+            $("#previsionaleDocumento").prop('disabled', true);
+        }
+
+
+        if(selected=='DM10' ||  selected=='Tributi'){
+            $("#fornitoreDocumento").next().hide();
+        }
+        if(selected=='Fattura'){
+            $(".ivablock").show();
+            $(".raccblock").show();
+        }
+        if(selected=='Ricevuta'){
+            $(".raccblock").show();
+        }
+        if(selected=='Proforma'){
+            $("#previsionaleDocumento").prop('checked', true);
+            $("#previsionaleDocumento").prop('disabled', true);
+        }
+
+    });
+    $("#previsionaleDocumento").on('change', function() {
+        if($("#previsionaleDocumento").prop('checked')){
+            $(".riconciliaFornitore").hide();
+        }else{
+            if(tipoSalva=='INS'){
+                $(".riconciliaFornitore").show();
+            }
+        }
+    });
+    $('.money').on('blur', function() {
+        var value = parseMoney($(this).val());
+        $(this).val(numeral(value).format('$ 0,0.00'));
+    });
+    $('#rModal').on('keyup', '#imponibileDocumento, #iva4Documento, #iva5Documento, #iva10Documento, #iva22Documento, #raccDocumento', function() {
+       calcolaImporti();
+    });
+    function calcolaImporti() {
+        var totaleImponibile = parseMoney($('#imponibileDocumento').val());
+        var totaleIva = parseMoney($('#iva4Documento').val()) + parseMoney($('#iva5Documento').val()) + parseMoney($('#iva10Documento').val()) + parseMoney($('#iva22Documento').val());
+        var ritenutaAcconto = parseMoney($('#raccDocumento').val());
+        $('#ivaDocumento').val(numeral(totaleIva).format('$ 0,0.00'));
+
+        totaleNetto = totaleImponibile * 1.0;
+        var tipodoc = $('#tipoDocumento').val();
+        if(tipodoc=='Fattura'){
+            totaleNetto = totaleNetto + totaleIva - ritenutaAcconto;
+        }
+        if(tipodoc=='Ricevuta'){
+            totaleNetto = totaleNetto - ritenutaAcconto;
+        }
+        $('#pagareDocumento').val(numeral(totaleNetto).format('$ 0,0.00'));
+
+        if(grigliaReg.getSourceData().length == 1){
+            var oldData = grigliaReg.getSourceData()[0].data;
+            dataReg = [
+                { importo: totaleNetto, data: oldData, buttons: 1}
+            ];
+            tabReg = {
+                data: dataReg,
+                columns: colReg,
+                rowHeaders: true,
+                colHeaders: [
+                    "Importo",
+                    "Scadenza",
+                    '<button id="addScadenza" class="btn btn-primary btn-xs btn-block btn-flat waves-effect waves-float" style="width: 100%"><i class="fa fa-plus"></i></button>'
+                ],
+                colWidths: [135,135,30],
+                fillHandle: false,
+                stretchH: 'all',
+                height: 100,
+                stretchH: 'none',
+                manualColumnResize: true,
+                contextMenu: false,
+                readOnly: (tipoSalva=='VIS'),
+                minRows: righeScadenze,
+                cells: function(row, col) {
+                    return {
+                        className: 'htCenter htMiddle custom-cell-style'
+                    };
+                }
+            };
+            try {
+                grigliaReg.destroy();
+            } catch (err) {}
+            grigliaReg = new Handsontable(document.getElementById('grigliaReg'), tabReg);
+        }
+    }
+    function parseMoney(val) {
+        if(val!=null){
+            val = val.replace(/€/g, '')
+                .replace(/\s/g, '')
+                .replace(/\./g, '')
+                .replace(',', '.');
+            return parseFloat(val) || 0;
+        }
+        return 0;
+        
+    }
+
+    $('#pdfInput').on('change', function(e) {
+        var file = e.target.files[0];
+        if (file && file.type === 'application/pdf') {
+            var reader = new FileReader();
+            reader.onload = function(e) {
+                $('#pdfPreview').attr('src', e.target.result);
+                if(tipoSalva=='VIS'){
+                    $('.allegatoRModal').show();
+                }
+            };
+        reader.readAsDataURL(file);
+        } else {
+            $("#pdfInput").val("");
+            $('#pdfPreview').attr('src', '');
+        }
+    });
+
+    $('.saveRModal').on('click', function() {
+        
+        if ($('#tipoDocumento').val() == "" || $('#tipoDocumento').val() === null) {
+            swal("", "Tipo Documento obbligatorio", "warning");
+            return;
+        }
+        if (parseMoney($('#pagareDocumento').val()) === 0) {
+            swal("", "Importo obbligatorio", "warning");
+            return;
+        }
+        if ($('#fornitoreDocumento').val() == "" || $('#fornitoreDocumento').val() === null) {
+            swal("", "Fornitore obbligatorio", "warning");
+            return;
+        }
+        
+        var datiTabellaReg = grigliaReg.getSourceData()
+        .filter(function(riga) {
+            return riga.importo !== null && riga.importo !== '' && riga.importo !== 0;
+        })
+        .map(function(riga) {
+            if (riga.data) {
+                let [giorno, mese, anno] = riga.data.split("-");
+                riga.data = `${anno}-${mese}-${giorno}`;
+            }
+            return riga;
+        });
+        var fileSel = $('#pdfInput')[0].files[0];
+
+        var payloadF = {
+            tipo: $('#tipoDocumento').val(),
+            fornitore: $('#fornitoreDocumento').val(),
+            ccosto: $('#ccostoDocumento').val(),
+            data: $('#dataDocumento').val(),
+            numero: $('#numeroDocumento').val(),
+            imponibile: parseMoney($('#imponibileDocumento').val()),
+            iva4: parseMoney($('#iva4Documento').val()),
+            iva5: parseMoney($('#iva5Documento').val()),
+            iva10: parseMoney($('#iva10Documento').val()),
+            iva22: parseMoney($('#iva22Documento').val()),
+            iva: parseMoney($('#ivaDocumento').val()),
+            racc: parseMoney($('#raccDocumento').val()),
+            netto: parseMoney($('#pagareDocumento').val()),
+            scadenze: datiTabellaReg,
+            commessa: $('#commessaDocumento').val(),
+            previsionale: $("#previsionaleDocumento").prop('checked'),
+            tipoSalva: tipoSalva,
+            idDoc: idReg,
+            previsionaleFornitore: $('#previsionaleFornitore').val(),
+            daricevereFornitore: $('#daricevereFornitore').val()
+        };
+	    $.ajax({
+            url: server + 'secure/coge/nuovoDocumento',
+            method: 'POST',
+            dataType: "json",
+            contentType: 'application/json',
+            data: JSON.stringify(payloadF),
+            success: function(response) {
+                if (fileSel) {
+                    var formData = new FormData();
+                    formData.append('titolo', $('#numeroDocumento').val()+" del "+$('#dataDocumento').val());
+                    formData.append('descrizione', "Documento Fiscale");
+                    formData.append('tipoDocumento', $('#tipoDocumento').val());
+                    formData.append('documentoId', response.idDocumento);
+                    formData.append('idOfferta', ($('#commessaDocumento').val() * 1));
+                    formData.append('includiStampa', false);
+                    formData.append('allegato', fileSel); 
+
+                    $.ajax({
+                        url: server + 'secure/allegati/upload',
+                        type: 'POST',
+                        data: formData,
+                        contentType: false,
+                        processData: false,
+                        error: function (xhr) {
+                            swal({
+                                title: 'Errore di file',
+                                type: 'error',
+                                text: xhr.responseText,
+                                allowEscapeKey: false,
+                                allowOutsideClick: false
+                            });
+                        }
+                    });
+                }
+
+                noty({
+                    text: 'Documento Registrato',
+                    layout: 'topCenter',
+                    type: 'success',
+                    killer: true,
+                    timeout: 5000,
+                    animation: {
+                        open: 'animated bounceInDown',
+                        close: 'animated bounceOutUp',
+                        speed: 500
+                    }
+                });
+                $('#rModal').hide();
+                $('#pdfPreview').attr('src', '');
+                $('body').removeClass('modal-open');
+                refreshElenco();
+            },
+            error: function(xhr, status, error) {
+                console.error("Errore nella richiesta:", error);
+                console.log("Dettagli:", xhr.responseText);
+                noty({
+                    text: JSON.parse(xhr.responseText).ERROR,
+                    layout: 'bottomCenter',
+                    type: 'error',
+                    killer: true,
+                    timeout: 5000,
+                    animation: {
+                        open: 'animated bounceInDown',
+                        close: 'animated bounceOutUp',
+                        speed: 500
+                    }
+                });
+            }
+        });
+        
+    });
+
+    $('.deleteRModal').on('click', function(e) {
+        e.preventDefault();
+        $.ajax({
+            url: server + "secure/coge/docpassivo/elimina/" + idReg,
+            method: 'GET',
+            success: function (response) {
+                noty({
+                    text: 'Registrazione eliminata',
+                    layout: 'topCenter',
+                    type: 'success',
+                    killer: true,
+                    timeout: 5000,
+                    animation: {
+                        open: 'animated bounceInDown',
+                        close: 'animated bounceOutUp',
+                        speed: 500
+                    }
+                });
+                $('#rModal').hide();
+                $('#pdfPreview').attr('src', '');
+                $('body').removeClass('modal-open');
+                refreshElenco();
+            },
+            error: function (xhr, status, error) {
+                console.log("Errore nella richiesta:", error);
+                console.log("Dettagli:", xhr.responseText);
+                noty({
+                    text: 'Errrore di sistema',
+                    layout: 'bottomCenter',
+                    type: 'error',
+                    killer: true,
+                    timeout: 5000,
+                    animation: {
+                        open: 'animated bounceInDown',
+                        close: 'animated bounceOutUp',
+                        speed: 500
+                    }
+                });
+            }
+        });
+    });
+
+    $('.allegatoRModal').on('click', function(e) {
+        e.preventDefault();
+        
+        var fileSel = $('#pdfInput')[0].files[0];
+        if (fileSel && idReg>0) {
+            var formData = new FormData();
+            formData.append('titolo', $('#tipoDocumento').val()+ " Nr. "+$('#numeroDocumento').val()+" del "+$('#dataDocumento').val());
+            formData.append('descrizione', "Documento Passivo");
+            formData.append('tipoDocumento', $('#tipoDocumento').val());
+            formData.append('documentoId', idReg);
+            formData.append('idOfferta', ($('#commessaDocumento').val() * 1));
+            formData.append('includiStampa', false);
+            formData.append('allegato', fileSel); 
+
+            $.ajax({
+                url: server + 'secure/allegati/upload',
+                type: 'POST',
+                data: formData,
+                contentType: false,
+                processData: false,
+                success: function(response) {
+                    noty({
+                        text: 'PDF Registrato',
+                        layout: 'topCenter',
+                        type: 'success',
+                        killer: true,
+                        timeout: 5000,
+                        animation: {
+                            open: 'animated bounceInDown',
+                            close: 'animated bounceOutUp',
+                            speed: 500
+                        }
+                    });
+                    $('#rModal').hide();
+                    $('#pdfPreview').attr('src', '');
+                    $('body').removeClass('modal-open');
+                    refreshElenco();
+                },
+                error: function (xhr) {
+                    swal({
+                        title: 'Errore file',
+                        type: 'error',
+                        text: xhr.responseText,
+                        allowEscapeKey: false,
+                        allowOutsideClick: false
+                    });
+                }
+            });
+        }
+    });
+
+    $('.closeRModal').on('click', function() {
+        $('#rModal').hide();
+        $('#pdfPreview').attr('src', '');
+        $('body').removeClass('modal-open');
+    });
+var righeScadenze = 1;
+var totaleNetto;
+var oggi;
+var formattedOggi;
+var formattedScadenza;
+var dataReg = [];
+var idReg = -1;
+function registraDocumento(idRegistrazione){
+    idReg = idRegistrazione;
+    tipoSalva = "INS";
+    righeScadenze = 1;
+    oggi = new Date();
+    formattedOggi = `${oggi.getFullYear()}-${String(oggi.getMonth() + 1).padStart(2, '0')}-${String(oggi.getDate()).padStart(2, '0')}`;
+    formattedScadenza = `${String(oggi.getDate()).padStart(2, '0')}-${String(oggi.getMonth() + 1).padStart(2, '0')}-${oggi.getFullYear()}`;
+
+    if(!openedGestioneDcumento){
+        openedGestioneDcumento = true;
+
+        //eventi jQuery da impostare una sola volta per evitare doppie chiamate in cache
+        $('#grigliaReg').on('click', '#addScadenza', function () {
+            if(tipoSalva!="VIS"){
+                grigliaReg.alter('insert_row', grigliaReg.countRows());
+                righeScadenze = grigliaReg.countRows();
+            }
+        });
+        $('#grigliaReg').on('click', '.delScadenza', function () {
+            if(tipoSalva!="VIS"){
+                var rowIndex = $(this).data('row');
+                grigliaReg.alter('remove_row', rowIndex);
+                righeScadenze = grigliaReg.countRows();
+            }
+        });
+    }
+
+    $("#pdfInput").val("");
+    $('#fornitoreDocumento').val("0").trigger('change');
+    $('#ccostoDocumento').val("").trigger('change');
+    $('#tipoDocumento').val("").trigger('change');
+    $("#previsionaleDocumento").prop("checked", false);
+    $('#commessaDocumento').val("").trigger('change');
+    $('#dataDocumento').val(formattedOggi);
+    $('#numeroDocumento').val("");
+    $('.money').val(numeral(0).format('$ 0,0.00')).trigger("change");
+    $('#previsionaleFornitore').empty();
+    $('#daricevereFornitore').empty();
+
+    //griglia pagamenti
+    dataReg = [
+        { importo: 0, data: formattedScadenza, buttons: 1}
+    ];
+    tabReg = {
+        data: dataReg,
+        columns: colReg,
+        rowHeaders: true,
+        colHeaders: [
+            "Importo",
+            "Scadenza",
+            '<button id="addScadenza" class="btn btn-primary btn-xs btn-block btn-flat waves-effect waves-float" style="width: 100%"><i class="fa fa-plus"></i></button>'
+        ],
+        colWidths: [135,135,30],
+        fillHandle: false,
+        stretchH: 'all',
+        height: 100,
+        stretchH: 'none',
+        manualColumnResize: true,
+        contextMenu: false,
+        minRows: righeScadenze,
+        cells: function(row, col) {
+            return {
+                className: 'htCenter htMiddle custom-cell-style'
+            };
+        }
+    };
+    try {
+        grigliaReg.destroy();
+    } catch (err) {}
+    grigliaReg = new Handsontable(document.getElementById('grigliaReg'), tabReg);
+
+    $('.deleteRModal').hide();
+    $('.allegatoRModal').hide();
+    $("#tipoDocumento, #fornitoreDocumento, #dataDocumento, #numeroDocumento, #commessaDocumento, #ccostoDocumento, #imponibileDocumento, #iva4Documento, #iva5Documento, #iva4Documento, #iva22Documento, #raccDocumento, #previsionaleDocumento").prop("disabled",false);
+    $(".riconciliaFornitore").hide();
+    //CARICAMENTO DATI QUANDO idReg >= 0
+    if(idReg>=0){
+        //legge documento
+        $.ajax({
+            url: server + "secure/coge/docpassivofull/" + idReg,
+            method: 'GET',
+            success: function (dati) {
+                if(dati!=null){
+                    $(".riconciliaFornitore").hide();
+                    tipoSalva = "UPD";
+                    reg_doc = JSON.parse(dati.documento);
+                    reg_scad = JSON.parse(dati.scadenze);
+
+                    if(reg_doc.importoPagato!=0 && !reg_doc.previsionale){
+                        tipoSalva = "VIS";
+                    }
+
+                    $('#tipoDocumento').val(reg_doc.tipoDoc).trigger("change");
+                    $('#tipoDocumento').prop("disabled",true);
+
+                    $('#fornitoreDocumento').val(reg_doc.clifoId).trigger("change");
+                    $('#fornitoreDocumento').prop("disabled",true);
+
+                    if(reg_doc.previsionale){
+                        $("#previsionaleDocumento").prop("checked", true);
+                    }else{
+                        $("#previsionaleDocumento").prop("checked", false);
+                    }
+                    $('#previsionaleDocumento').prop("disabled",true);
+
+                    oggi.setFullYear(reg_doc.dataDoc.year,(reg_doc.dataDoc.monthValue - 1),reg_doc.dataDoc.dayOfMonth);
+                    formattedOggi = `${oggi.getFullYear()}-${String(oggi.getMonth() + 1).padStart(2, '0')}-${String(oggi.getDate()).padStart(2, '0')}`;
+                    $('#dataDocumento').val(formattedOggi);
+                    $('#numeroDocumento').val(reg_doc.numeroDoc);
+                    if(reg_doc.preventivoId!=null){
+                        $('#commessaDocumento').val(reg_doc.preventivoId).trigger('change');
+                    }else{
+                        $('#commessaDocumento').val("").trigger('change');
+                    }
+                    if(reg_doc.ccostoId!=null){
+                        $('#ccostoDocumento').val(reg_doc.ccostoId).trigger('change');
+                    }else{
+                        $('#ccostoDocumento').val("").trigger('change');
+                    }
+                    $('#imponibileDocumento').val((reg_doc.imponibile+"").replace(".",",")).trigger('blur');
+                    $('#iva4Documento').val((reg_doc.iva4+"").replace(".",",")).trigger('blur');
+                    $('#iva5Documento').val((reg_doc.iva5+"").replace(".",",")).trigger('blur');
+                    $('#iva10Documento').val((reg_doc.iva10+"").replace(".",",")).trigger('blur');
+                    $('#iva22Documento').val((reg_doc.iva22+"").replace(".",",")).trigger('blur');
+                    $('#raccDocumento').val((reg_doc.ritenuta+"").replace(".",",")).trigger('blur');
+
+                    dataReg = [];
+                    righeScadenze = reg_scad.length;
+                    if(reg_scad.length>0){
+                        for(var ii=0;ii<reg_scad.length;ii++){
+                            var riga_scad = reg_scad[ii];
+                            var datatmp = new Date();
+                            datatmp.setFullYear(riga_scad.dataScadenza.year,(riga_scad.dataScadenza.monthValue - 1),riga_scad.dataScadenza.dayOfMonth);
+                            var formatotmp = `${String(datatmp.getDate()).padStart(2, '0')}-${String(datatmp.getMonth() + 1).padStart(2, '0')}-${datatmp.getFullYear()}`;
+                            dataReg.push({importo: (riga_scad.importoScadenza+"").replace(".",","), data: formatotmp, buttons: 1})
+                        }
+                    }
+                    tabReg = {
+                        data: dataReg,
+                        columns: colReg,
+                        rowHeaders: true,
+                        colHeaders: [
+                            "Importo",
+                            "Scadenza",
+                            '<button id="addScadenza" class="btn btn-primary btn-xs btn-block btn-flat waves-effect waves-float" style="width: 100%"><i class="fa fa-plus"></i></button>'
+                        ],
+                        colWidths: [135,135,30],
+                        fillHandle: false,
+                        stretchH: 'all',
+                        height: 100,
+                        stretchH: 'none',
+                        manualColumnResize: true,
+                        contextMenu: false,
+                        readOnly: (tipoSalva=='VIS'),
+                        minRows: righeScadenze,
+                        cells: function(row, col) {
+                            return {
+                                className: 'htCenter htMiddle custom-cell-style'
+                            };
+                        }
+                    };
+                    try {
+                        grigliaReg.destroy();
+                    } catch (err) {}
+                    grigliaReg = new Handsontable(document.getElementById('grigliaReg'), tabReg);
+
+                    calcolaImporti();
+                    
+                    
+                    if (reg_doc.allegatoId!=null) {
+                        const token = sessionStorage.getItem('token');
+                        const url = server + 'documenti/allegato/'+reg_doc.allegatoId;
+                        
+                        var data = {
+                            id: idReg,
+                            token: encodeURI(token),
+                            fileName: reg_doc.allegatoId + '.pdf',
+                            file: url
+                        }
+                        $('#pdfPreview').attr('src', '../assets/viewer.html?' + $.param(data));
+                    }
+
+                    if(tipoSalva=="VIS"){
+                        //disabilita tutti i campi - tranne l'allegato
+                        $("#tipoDocumento, #fornitoreDocumento, #dataDocumento, #numeroDocumento, #commessaDocumento, #ccostoDocumento, #imponibileDocumento, #iva4Documento, #iva5Documento, #iva4Documento, #iva22Documento, #raccDocumento, #previsionaleDocumento").prop("disabled",true);
+                    }
+
+                    if(tipoSalva=='UPD'){
+                        $('.deleteRModal').show();
+                    }
+
+                }else{
+                    alert('Errore nel caricamento del documento');
+                    $('#rModal').hide();
+                    $('#pdfPreview').attr('src', '');
+                    $('body').removeClass('modal-open');
+                }
+            },
+            error: function () {
+                alert('Errore nel caricamento del documento');
+                $('#rModal').hide();
+                $('#pdfPreview').attr('src', '');
+                $('body').removeClass('modal-open');
+            }
+        });
+    }
+
+    $('#rModal').show();
+    $('body').addClass('modal-open');
+
+}
+
+var animationEnd = 'webkitAnimationEnd mozAnimationEnd MSAnimationEnd oanimationend animationend';
+
+function textAreaAdjust(o) {
+    autosize(o);
+}
+
+$('#elabora-btn').on('click', function() {
+    refreshElenco();
+});
+
+function formattaDataDaSQLMMMYY(dataObj) {
+    if (!dataObj || typeof dataObj !== 'object') return null;
+    return moment([dataObj.year, dataObj.monthValue - 1, dataObj.dayOfMonth]).format('MMMM YY');
+}
+
+function getFornitore(id) {
+    if(id!=null){
+        for(var i=0;i<fornitori.length;i++){
+            if(fornitori[i].id==id){
+                return fornitori[i].societa;
+            }
+        }
+    }
+    return "-";
+}
+
+function getCommessa(id) {
+    if(id!=null){
+        for(var i=0;i<commesse.length;i++){
+            if(commesse[i].IDpreventivo==id){
+                var toreturn = "";
+                var tosplit = commesse[i].Code.split("_");
+                if(tosplit.length>=3){
+                    toreturn += tosplit[0]+"_"+tosplit[1]+"_"+tosplit[2];
+                } 
+                if(tosplit.length>=4){
+                    toreturn += "\n"+tosplit[3].replaceAll(" ","_");
+                }
+                if(tosplit.length>=5){
+                    toreturn += "\n"+tosplit[4];
+                }
+                if(tosplit.length>=6){
+                    toreturn += "_"+tosplit[5];
+                }
+                return toreturn;
+            }
+        }
+    }
+    return "-";
+}
+
+//LOAD TARGET
+function loadParametroTarget() {
+    $.getJSON(server + 'secure/parametri/getByParametro', { parametro: 'contabilita.target.mese' }, function (obj) {
+        if (!obj || !obj.valore || obj.valore === "") {
+            targetMensile = 0.0;
+        } else {
+            targetMensile = obj.valore * 1;
+        }
+    })
+}
+
+
+
+</script>
+
+</html>

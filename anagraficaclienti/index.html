@@ -1,0 +1,875 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <script type="application/javascript">
+        if (!sessionStorage['token'])
+            window.location.replace("../");
+    </script>
+    <link href="../assets/css/paceFlash.css" rel="stylesheet" type="text/css">
+    <script src="../assets/js/pace.min.js" type="text/javascript"></script>
+    <meta charset="UTF-8">
+    <meta http-equiv="cache-control" content="max-age=0" />
+    <meta http-equiv="cache-control" content="no-cache" />
+    <meta http-equiv="expires" content="0" />
+    <meta http-equiv="expires" content="Tue, 01 Jan 1980 1:00:00 GMT" />
+    <meta http-equiv="pragma" content="no-cache" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+
+    <title>Clienti</title>
+    <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
+    <link href="../assets/css/bootstrap.css" rel="stylesheet" type="text/css" />
+    <link href="../assets/css/font-awesome.min.css" rel="stylesheet" type="text/css" />
+    <link href="../assets/css/AdminLTE.min.css" rel="stylesheet" type="text/css" />
+    <link href="../assets/css/skins/skin-blue.min.css" rel="stylesheet" type="text/css" />
+    <link href="../assets/css/animate.css" rel="stylesheet" type="text/css">
+    <link href="../assets/css/sweetalert.css" rel="stylesheet" type="text/css">
+    <link href="../assets/css/google.css" media="screen" rel="stylesheet" type="text/css">
+    <link href="../assets/css/select2.css" rel="stylesheet" type="text/css">
+    <link href="../assets/css/waves.min.css" rel="stylesheet" type="text/css">
+    <link href="../assets/css/dropzone.css" rel="stylesheet" type="text/css">
+    <link href="../assets/css/dropzone-modified.css" rel="stylesheet" type="text/css">
+    <link href="../assets/css/bootstrap-dialog.css" rel="stylesheet" type="text/css">
+    <link href="../plugins/iCheck/all.css" rel="stylesheet" type="text/css">
+    <link href="../plugins/datatables_1_10_19/css/jquery.dataTables.min.css" rel="stylesheet" type="text/css">
+    <!-- js -->
+    <script src="../assets/js/jquery-2.1.4.min.js"></script>
+    <script src="../assets/js/bootstrap.min.js" type="text/javascript"></script>
+    <script src="../assets/js/app.min.js" type="text/javascript"></script>
+    <script src="../assets/js/sweetalert.min.js" type="text/javascript"></script>
+    <script src="../plugins/iCheck/icheck.min.js" type="text/javascript"></script>
+    <script src="../assets/js/select2.full.min.js" type="text/javascript"></script>
+    <script src="../assets/js/jquery.blockUI.js" type="text/javascript"></script>
+    <script src="../assets/js/waves.min.js" type="text/javascript"></script>
+    <script src="../assets/js/jquery.noty.packaged.min.js" type="text/javascript"></script>
+    <script src="../assets/js/mustache.js" type="text/javascript"></script>
+    <script src="../assets/js/moment.js" type="text/javascript"></script>
+    <script src="../assets/js/dropzone.js" type="text/javascript"></script>
+    <script src="../assets/js/bootstrap-dialog.js" type="text/javascript"></script>
+    <script src="../assets/js/jquery.slimscroll.min.js" type="text/javascript"></script>
+    <script src="../assets/js/autosize.min.js" type="text/javascript"></script>
+    <script src="../assets/js/preaut.js" type="text/javascript"></script>
+    <script src="../assets/js/wow.min.js" type="text/javascript"></script>
+    <script src="../plugins/datatables_1_10_19/js/jquery.dataTables.js"></script>
+
+    <style>
+    .input{
+      readonly: readonly;
+    }
+
+    .rowPointer{
+	    cursor: pointer;
+		cursor: hand;
+	}
+    </style>
+</head>
+
+<body class="skin-blue sidebar-mini">
+    <!-- Site wrapper -->
+    <div class="wrapper">
+        <header class="main-header" id="theheader"></header>
+        <script language="javascript">
+            if (!(sessionStorage.getItem("pme") === 'true')) {
+                $.get("../templates/header.mst?_" + (new Date()).getTime(), function (template) {
+                    $('#theheader').html(Mustache.render(template, {}));
+                });
+            }
+        </script>
+        <aside class="main-sidebar" id="themenu"></aside>
+        <script language="javascript">
+
+            $.get("../templates/menu.mst?_" + (new Date()).getTime(), function (template) {
+                $('#themenu').html(Mustache.render(template, {
+
+                    admins: sessionStorage['admins'] == 'true' ? true : false,
+                    vv: sessionStorage['vv'],
+                    active: { ganag: true },
+                    pme: sessionStorage['pme'] == 'true' ? true : false
+                }));
+                eventMenu();
+            });
+        </script>
+
+        <div class="content-wrapper">
+            <section class="content animated fadeIn">
+                <div class="row elencoClifo">
+                    <div class="col-md-12">
+                        <div class="box">
+                            <div class="box-header">
+                                <h3 class="box-title" style="margin-bottom: 20px;">Anagrafica Clienti</h3>
+                                <div class="box-tools">
+                                    <button onclick="nuovoClifo()" class="btn btn-primary btn-sm pull-right" style="margin-right: 5px;"><strong>Nuovo &nbsp;&nbsp;</strong><i class="fa fa-plus-circle"></i></button>
+                                </div>
+                            </div>
+                            <div class="box-body no-padding">
+                                <div class="box-header">
+                                    <table id="tabClienti" class="table table-hover table-striped dataTable444 display compact" style="width:100%">
+                                        <thead>
+                                            <tr>
+                                                <th style="text-align:left;">Società</th>
+                                                <th style="text-align:left;">Città</th>
+                                                <th style="text-align:left;">Referente</th>
+                                                <th style="text-align:left;">Tipo</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody></tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row mascheraClifo" style="display: none">
+                    <div class="col-md-9">
+                        
+                        <div class="nav-tabs-custom">
+                            <ul class="nav nav-tabs pull-right">
+
+
+                                <li class="active"><a href="#fornitore" onclick="dettagliGenerali()" id="tabgenerale" data-toggle="tab">Azienda</a></li>
+                                <li><a href="#cliente" onclick="dettagliGenerali()" data-toggle="tab">Referente</a></li>
+                                <li class="pull-left header"><i class="fa fa-list-ul"></i> Scheda Cliente</li>
+                            </ul>
+                            <div class="tab-content no-padding" id="dettagliClifo">
+
+                                <div class="tab-pane active" id="fornitore" style="padding-bottom: 15px;">
+                                    <div class="row" style="margin: 10px 3% 0 1%">
+                                        <div class="col-md-8">
+                                            <div class="form-group">
+                                                <label>Società</label>
+                                                <input id="societa" name="societa" class="form-control input-sm">
+                                                <span id="erroreSocieta" style="color:red; display:none;">campo obbligatorio</span>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-2">
+                                            <div class="form-group">
+                                                <label>Alias</label>
+                                                <input id="alias" name="alias" class="form-control input-sm">
+                                            </div>
+                                        </div>
+                                        <div class="col-md-2">
+                                            <div class="form-group">
+                                                <label>Tipo</label>
+                                                <input id="idTipoClifo" name="idTipoClifo" class="form-control input-sm" readonly>
+                                                <select id="idTipoClifo2" name="idTipoClifo2" class="form-control input-sm">
+                                                    <option value="CLIENTE">CLIENTE</option>
+                                                    <option value="CONTATTO">CONTATTO</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row" style="margin: 0px 3% 0 1%">
+
+                                        <div class="col-md-3">
+                                            <div class="form-group">
+                                                <label>Indirizzo</label>
+                                                <input id="indirizzo" name="indirizzo" class="form-control input-sm" readonly>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-2">
+                                            <div class="form-group">
+                                                <label>CAP</label>
+                                                <input id="cap" name="cap" class="form-control input-sm" readonly>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-3">
+                                            <div class="form-group">
+                                                <label>Città</label>
+                                                <input id="citta" name="citta" class="form-control input-sm" readonly>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-2">
+                                            <div class="form-group">
+                                                <label>Provincia</label>
+                                                <input id="provincia" name="provincia" class="form-control input-sm" maxlength="2" readonly>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-2">
+                                            <div class="form-group">
+                                                <label>Nazione</label>
+                                                <input id="nazione" name="nazione" class="form-control input-sm" readonly>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="row" style="margin: 0px 3% 0 1%">
+
+                                        <!-- PEC (campo largo) -->
+                                        <div class="col-md-5">
+                                            <div class="form-group">
+                                                <label>PEC</label>
+                                                <input id="pec" name="pec" class="form-control input-sm" readonly>
+                                            </div>
+                                        </div>
+
+                                        <!-- Telematico (accanto alla PEC) -->
+                                        <div class="col-md-3">
+                                            <div class="form-group">
+                                                <label>Indirizzo Telematico</label>
+                                                <input id="telematico" name="telematico" class="form-control input-sm" readonly>
+                                            </div>
+                                        </div>
+
+                                        <!-- Partita IVA -->
+                                        <div class="col-md-2">
+                                            <div class="form-group">
+                                                <label>Partita IVA</label>
+                                                <input id="piva" name="piva" class="form-control input-sm" readonly>
+                                            </div>
+                                        </div>
+
+                                        <!-- Codice Fiscale -->
+                                        <div class="col-md-2">
+                                            <div class="form-group">
+                                                <label>Codice Fiscale</label>
+                                                <input id="cfisc" name="cfisc" class="form-control input-sm" readonly>
+                                            </div>
+                                        </div>
+
+                                    </div>
+
+
+                                </div>
+
+
+                                <!-- Clienti -->
+                                <div class="tab-pane" id="cliente" style="padding-bottom: 15px;">
+                                    <div class="row" style="margin: 10px 3% 0 1%">
+                                        <div class="col-md-3">
+                                            <div class="form-group">
+                                                <label>Titolo</label>
+                                                <input id="titoloC" name="titoloC" class="form-control input-sm" readonly>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+
+                                        </div>
+                                    </div>
+                                    <div class="row" style="margin: 0px 3% 0 1%">
+                                        <div class="col-md-6">
+                                            <div class="form-group">
+                                                <label>Nome</label>
+                                                <input id="nomeC" name="nomeC" class="form-control input-sm" readonly>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="form-group">
+                                                <label>Cognome</label>
+                                                <input id="cognomeC" name="cognomeC" class="form-control input-sm" readonly>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row" style="margin: 0px 3% 0 1%">
+                                        <div class="col-md-4">
+                                            <div class="form-group">
+                                                <label>Telefono 1</label>
+                                                <input id="telefono" name="telefono" class="form-control input-sm" readonly>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <div class="form-group">
+                                                <label>Telefono 2</label>
+                                                <input id="cellulareC" name="cellulareC" class="form-control input-sm" readonly>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <div class="form-group">
+                                                <label>Fax</label>
+                                                <input id="fax" name="fax" class="form-control input-sm" readonly>
+                                            </div>
+                                        </div>
+
+                                    </div>
+                                    <div class="row" style="margin: 0px 3% 0 1%">
+                                        <div class="col-md-6">
+                                            <div class="form-group">
+                                                <label>E-Mail</label>
+                                                <input id="emailC" name="emailC" class="form-control input-sm" readonly>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+
+                                        </div>
+                                    </div>
+
+                                    <div class="row" style="margin: 0px 3% 0 1%">
+                                        <div class="col-md-12">
+                                            <div class="form-group">
+                                                <label>Note interne</label>
+                                                <textarea id="noteInterne" name="noteInterne" class="form-control" onchange="textAreaAdjust(this)" style="width: 100%; resize: none;" readonly></textarea>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+
+                                        </div>
+                                    </div>
+
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Informazioni laterali -->
+                    <div class="col-md-3">
+                        <button onclick="elencoClifo()" class="btn btn-primary btn-sm" style="margin-bottom: 10px;"><i class="fa fa-chevron-left"></i>&nbsp;&nbsp; Elenco</button>
+                        <div class="box box-success boxGenerali222">
+                            <div class="box-body">
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <button id="btnOpenUpd" class="btn btn-primary btn-flat btn-block" onclick="modificaCli()">
+                                            <i class="fa fa-floppy-o"></i> &nbsp;Modifica
+                                        </button>
+                                        <button onclick="eliminaCli()" id="btnEliminaCli" class="btn btn-danger btn-flat btn-block">
+                                            <i class="fa fa-trash" style="margin-right: 4px;"></i>Elimina &nbsp;&nbsp;
+                                        </button>
+                                        <!--
+                                        <button id="btnOpenDel" class="btn btn-danger btn-flat btn-block" onclick="eliminaCli()">
+                                            <i class="fa fa-floppy-o"></i> &nbsp;Elimina
+                                        </button>
+                                        -->
+                                        <button id="btnSaveUpd" class="btn btn-success btn-flat btn-block" onclick="salvaCli()">
+                                            <i class="fa fa-floppy-o"></i> &nbsp;Salva
+                                        </button>
+                                        <button id="btnCancelUpd" class="btn btn-default btn-flat btn-block" onclick="anullaCli()">
+                                            <i class="fa fa-floppy-o"></i> &nbsp;Annulla
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <!--
+                        <div class="box box-success boxGenerali" style="display: none;">
+                            <div class="box-header with-border">
+                                <h3 class="box-title">ID Clifo</h3>
+                            </div>
+                            <div class="box-body" id="idClifo">
+                            </div>
+                        </div>
+                        <div class="box box-success boxGenerali" style="display: none">
+                            <div class="box-header with-border">
+                                <h3 class="box-title">L2Mtipo</h3>
+                            </div>
+                            <div class="box-body" id="l2mtipo">
+                            </div>
+                        </div>
+                        <div class="box box-success boxGenerali" style="display: none">
+                            <div class="box-header with-border">
+                                <h3 class="box-title">L2McliFor</h3>
+                            </div>
+                            <div class="box-body" id="l2mcliFor">
+                            </div>
+                        </div>
+                        -->
+                    </div>
+                </div>
+            </section>
+        </div>
+
+        <footer id="thefooter" class="main-footer"></footer>
+        <script language="javascript">
+            $.get("../templates/footer.mst?_"+(new Date()).getTime(), function (template) {
+                $('#thefooter').html(Mustache.render(template, {vv:sessionStorage['vv']}));
+            });
+        </script>
+    </div>
+</body>
+
+
+<script>document.write("<script type='text/javascript' src='../server.js?v=" + Date.now() + "'><\/script>");</script>
+<script src="../assets/js/dropzoneSETUP.js" type="text/javascript"></script>
+<script src="../setupajax.js" type="text/javascript"></script>
+
+<script>
+var tabClienti;
+$(document).ready(function() {
+
+    moment.locale('it');
+
+    /* $('#filtroTipo').select2({
+        placeholder: 'Tipo'
+    });
+    $('#filtroSocieta').select2({
+        placeholder: 'Societa'
+    });
+
+    var richiesta = $.getJSON(server + 'secure/cliforapido/tipoClifo');
+    var richiestaS = $.getJSON(server + 'secure/cliforapido/societa');
+
+    richiesta.success(function(response) {
+
+
+        for (i = 0; i < response.length; i++)
+            $('#filtroTipo').append('<option value="' + response[i].id + '">' + response[i].tipoCliFo + '</option>');
+    });
+    richiestaS.success(function(response) {
+
+        for (i = 0; i < response.length; i++)
+            $('#filtroSocieta').append('<option value="' + response[i].id + '">' + response[i].societa + '</option>');
+    }); */
+
+    refreshClifo();
+
+    Waves.attach('.btn', ['waves-float']);
+    Waves.init();
+    new WOW().init();
+
+    tabClienti = $('#tabClienti').DataTable({
+		"createdRow": function(row, data, dataIndex) {
+				$(row).addClass("rowPointer");
+			},
+		"language": {url: 'https://cdn.datatables.net/plug-ins/1.10.12/i18n/Italian.json'},
+		"scrollX": false,
+        "columnDefs" : [{
+			"searchable": false,
+			"orderable": false, 
+			"targets" : [4],
+            "visible": false
+		}],
+        order: [[0, 'asc']]
+	});
+    $('#tabClienti tbody').on('click', 'tr', function (evt) {
+    	var cell=$(evt.target).closest('td').index();
+        if(cell>0){
+			dettagliClifo(tabClienti.cell(this,4).data());
+        }
+    } );
+
+});
+
+
+
+var filtri = false;
+var fine = false;
+var pagina = 0;
+
+
+function refreshClifo(filtroTipo, filtroSocieta) {
+  if (filtri) {
+    var data = {
+      pagina: pagina,
+      idTipoClifo: filtroTipo,
+      id: filtroSocieta
+    };
+
+    if (!data.idTipoClifo) delete data.idTipoClifo;
+
+    if (!data.id) delete data.id;
+
+    tabClienti.clear();
+    if (!fine)
+      var elencoClifo = $.post(server + 'secure/cliforapido/filters/lista', JSON.stringify(data));
+  } else
+    var elencoClifo = $.getJSON(server + 'secure/cliforapido/elenco?pagina=' + pagina);
+
+
+
+  elencoClifo.success(function(response) {
+    /* if (response.length < 100) */
+    fine = true;
+    /* if (pagina == 0) */
+    tabClienti.clear();
+    $('#elencoClifo').html('');
+    for (i = 0; i < response.length; i++) {
+      $('#elencoClifo').append('<tr class="wow fadeInUp" onclick="dettagliClifo(' + response[i].id + ')" style="cursor: pointer; cursor: hand"><td>' + response[i].societa + '</td><td>' + response[i].citta + '</td><td>' + response[i].referente + '</td><td>' + response[i].tipoClifo + '</td></tr>');
+      var newRow;
+      newRow = tabClienti.row.add( [
+        response[i].societa,
+        response[i].citta,
+        response[i].referente,
+        response[i].tipoClifo,
+        response[i].id
+      ] ).draw();
+    }
+  });
+}
+
+/* var start = false;
+$(window).scroll(function() {
+  if ($(window).scrollTop() == $(document).height() - $(window).height() && start && $('.elencoClifo').is(":visible")) {
+    avanti();
+  }
+  start = true;
+}); */
+function applicaFiltri() {
+  filtri = true;
+  pagina = 0;
+  fine = false;
+  refreshClifo($('#filtroTipo').val(), $('#filtroSocieta').val());
+}
+
+function resetFiltri() {
+  filtri = false;
+  pagina = 0;
+  fine = false;
+  $('#filtroTipo,#filtroSocieta').val(null).trigger('change');
+  refreshClifo();
+}
+/* function avanti() {
+  pagina++;
+  filtri ? refreshClifo($('#filtroTipo').val(), $('#filtroSocieta').val()) : refreshClifo();
+} */
+
+function textAreaAdjust(o) {
+    autosize(o);
+}
+var animationEnd = 'webkitAnimationEnd mozAnimationEnd MSAnimationEnd oanimationend animationend';
+
+function elencoClifo() {
+
+  $('.mascheraClifo').hide();
+  $('.elencoClifo').show().addClass('animated slideInLeft').one(animationEnd, function() {
+    $(this).removeClass('animated slideInLeft');
+  });
+  $('.boxGenerali').hide();
+  $('.boxFornitori').hide();
+}
+
+function dettagliGenerali() {
+  $('.boxFornitori').hide();
+  $('.boxGenerali').show().addClass('animated bounceInDown').one(animationEnd, function() {
+    $(this).removeClass('animated bounceInDown');
+  });
+}
+
+function dettagliClifo(id) {
+  _idClifo = id;
+  var richiestaClifo = $.getJSON(server + 'secure/cliforapido/readByKey?idClifo=' + id);
+
+  richiestaClifo.success(function(response) {
+    //    var richiestaDettagli = $.getJSON(server + 'secure/cliforapido/dettagli/readByKey?idClifo=' + id);
+
+
+    $('#idTipoClifo').val(response[0].tipoCliFo);
+    $('#societa').val(response[0].societa);
+    $('#alias').val(response[0].alias ?? '');
+    $('#idClifo').text(response[0].idClifo2);
+    $('#indirizzo').val(response[0].via);
+    $('#cap').val(response[0].cap);
+    $('#citta').val(response[0].citta);
+    $('#provincia').val(response[0].provincia);
+    $('#nazione').val(response[0].nazione);
+    $('#agente').val(response[0].agente);
+    //Cliente
+    $('#titoloC').val(response[0].titoloC);
+    $('#nomeC').val(response[0].nomeC);
+    $('#cognomeC').val(response[0].cognomeC);
+    $('#cellulareC').val(response[0].cellulareC);
+    $('#emailC').val(response[0].emailC);
+    $('#telefono').val(response[0].telefono);
+    $('#fax').val(response[0].fax);
+    $('#noteInterne').val(response[0].noteInterne);
+    $('#piva').val(response[0].piva);
+    $('#cfisc').val(response[0].cf);
+    $('#pec').val(response[0].pec);
+    $('#telematico').val(response[0].telematico);
+
+    /*
+    $('#canale').val(response[0].canale);
+    if (response[0].radiceCnt == 01011000) {
+      tipoMago = "Cliente Italia";
+    } else {
+      tipoMago = "Cliente Estero";
+    }
+    $('#tipo').val(tipoMago);
+    $('#cf').val(response[0].cf);
+    $('#piva').val(response[0].piva);
+    $('#bloccato').iCheck(response[0].bloccato ? 'check' : 'uncheck');
+    $('#l2mtipo').text(response[0].magoTipoCliFor);
+    $('#l2mcliFor').text(response[0].magoCliFor);
+    */
+
+    $('.elencoClifo').hide();
+    $('.mascheraClifo').show().addClass('animated slideInRight').one(animationEnd, function() {
+      $(this).removeClass('animated slideInRight');
+    });
+  });
+  if ($('#generale').hasClass('active')) {
+    setTimeout(function() {
+      $('.boxGenerali').show().addClass('animated bounceInDown').one(animationEnd, function() {
+        $(this).removeClass('animated bounceInDown');
+      });
+    }, 400);
+  } else {
+    $('#tabgenerale').click();
+  }
+  setupVisualizzazione();
+}
+
+function nuovoClifo() {
+    _idClifo = -1;
+    $('#idTipoClifo').val("CLIENTE");
+    $('#idTipoClifo2').val("CLIENTE");
+    $('#societa').val("");
+    $('#alias').val("");
+    $('#idClifo').text("");
+    $('#indirizzo').val("");
+    $('#cap').val("");
+    $('#citta').val("");
+    $('#provincia').val("");
+    $('#nazione').val("");
+    $('#agente').val("");
+    $('#titoloC').val("");
+    $('#nomeC').val("");
+    $('#cognomeC').val("");
+    $('#cellulareC').val("");
+    $('#emailC').val("");
+    $('#telefono').val("");
+    $('#fax').val("");
+    $('#noteInterne').val("");
+
+    $('#piva').val("");
+    $('#cfisc').val("");
+    $('#pec').val("");
+    $('#telematico').val("");
+
+    $('.elencoClifo').hide();
+    $('.mascheraClifo').show().addClass('animated slideInRight').one(animationEnd, function () {
+        $(this).removeClass('animated slideInRight');
+    });
+
+    if ($('#generale').hasClass('active')) {
+        setTimeout(function () {
+            $('.boxGenerali').show().addClass('animated bounceInDown').one(animationEnd, function () {
+                $(this).removeClass('animated bounceInDown');
+            });
+        }, 400);
+    } else {
+        $('#tabgenerale').click();
+    }
+
+    setupModifica();
+}
+
+
+function setupModifica() {
+    isUpdate = true;
+
+    // Sblocca tutto tranne #idTipoClifo
+    /*
+    $('input,textarea,select').not('#idTipoClifo,#filter-panel *,#modalStampaPreventivo *')
+        .prop('disabled', false)
+        .prop('readonly', false);
+    */
+   $('.mascheraClifo').find('input, textarea, select').prop('disabled', false).prop('readonly', false);
+   $('#idTipoClifo').prop('disabled', true).prop('readonly', true);
+
+    $('.btn-enable').prop('disabled', false).prop('readonly', false);
+    //$('select').select2('enable', true);
+
+    // tipo cliente mostro input o select in base a modifica/inserimento
+    $("#idTipoClifo2").hide();
+    $('#idTipoClifo').hide();
+    if (_idClifo<0) {
+        $('#idTipoClifo2').show();
+    } else {
+        $('#idTipoClifo').show();
+    }
+
+    $("#btnOpenUpd").hide();
+    $('#btnEliminaCli').hide();
+    $("#btnSaveUpd").show();
+    $("#btnCancelUpd").show();
+}
+
+
+
+function setupVisualizzazione() {
+    isUpdate = false;
+    $('.mascheraClifo').find('input, textarea, select')
+    .not('#filter-panel *, #modalStampaPreventivo *')
+    .prop('disabled', true);
+    $('.btn-enable').prop('disabled', true);
+    $("#btnOpenUpd").show();
+    $("#btnEliminaCli").show();
+    if(_idClifo < 0){
+      $('#btnEliminaCli').hide();
+    }
+    $("#btnSaveUpd").hide();
+    $("#btnCancelUpd").hide();
+    $('#idTipoClifo').show();
+    $("#idTipoClifo2").hide();
+}
+
+
+
+function modificaCli() {
+  setupModifica();
+}
+
+
+function anullaCli() {
+  if(_idClifo<0){
+    //Ritorno ad elenco perchè INSERIMENTO
+    elencoClifo();
+  } else {
+    dettagliClifo(_idClifo);
+  }
+}
+
+/**
+ * Salva o aggiorna un CliFo.
+ * – _idClifo = -1   inserimento
+ * – _idClifo >= 0   modifica
+ */
+function salvaCli() {
+    var tipo = $("#idTipoClifo").val();
+    if(_idClifo<0){
+      tipo = $("#idTipoClifo2").val();
+    }
+    const societa = $('#societa').val().trim();
+    if (!societa) {
+        $('#erroreSocieta').show();
+        return;
+    }
+    $('#erroreSocieta').hide();
+
+    //se cliente, verifica campi obbligatori
+    if (tipo == 'CLIENTE') {
+        const piva       = $('#piva').val();
+        const cfisc   = $('#cfisc').val();
+        const pec        = $('#pec').val();
+        const telematico = $('#telematico').val();
+        const via        = $('#indirizzo').val();
+        const citta      = $('#citta').val();
+        const cap        = $('#cap').val();
+        const provincia  = $('#provincia').val();
+
+        if (!piva && !cfisc) {
+            swal("Errore", "Inserire almeno Partita IVA o Codice Fiscale", "warning");
+            return;
+        }
+        if (!pec && !telematico) {
+            swal("Errore", "Inserire almeno PEC o Indirizzo Telematico", "warning");
+            return;
+        }
+        if (!via || !citta || !cap || !provincia) {
+            swal("Errore",
+                 "Compilare l'indirizzo completo: via, città, CAP e provincia",
+                 "warning");
+            return;
+        }
+    }
+
+    const data = {
+      id: _idClifo,
+      tipoCliFo: tipo,
+      societa: societa,
+      alias: $('#alias').val().trim(),
+      via: $('#indirizzo').val(),
+      cap: $('#cap').val(),
+      citta: $('#citta').val(),
+      provincia: $('#provincia').val(),
+      nazione: $('#nazione').val(),
+      titoloC: $('#titoloC').val(),
+      nomeC: $('#nomeC').val(),
+      cognomeC: $('#cognomeC').val(),
+      cellulareC: $('#cellulareC').val(),
+      emailC: $('#emailC').val(),
+      telefono: $('#telefono').val(),
+      fax: $('#fax').val(),
+      noteInterne: $('#noteInterne').val(),
+      pec:         $('#pec').val(),
+      telematico:  $('#telematico').val(),
+      piva:        $('#piva').val(),
+      cfisc:       $('#cfisc').val()
+
+    };
+
+
+    $.ajax({
+        url: server + 'secure/cliforapido/update',
+        type: 'POST',
+        contentType: 'application/json',
+        headers: { 
+          'Authorization': 'Bearer ' + localStorage.getItem('jwt') 
+        },
+        data: JSON.stringify(data),
+
+        success: function () {
+            noty({
+                text:   (_idClifo<0) 
+                  ? tipo + ' inserito con successo'
+                  : 'Modifiche salvate con successo',
+                layout: 'topCenter',
+                type:   'success',
+                killer: true,
+                timeout: 2000,
+                animation: {
+                    open:  'animated bounceInDown',
+                    close: 'animated bounceOutUp',
+                    speed: 500
+                }
+            });
+            $("#btnOpenUpd").show();
+            $('#btnEliminaCli').show();
+            $("#btnSaveUpd").hide();
+            $("#btnCancelUpd").hide();
+            refreshClifo($('#filtroTipo').val(), $('#filtroSocieta').val());
+            if(_idClifo>=0){
+              dettagliClifo(_idClifo);
+            }
+        },
+
+        error: function (xhr) {
+            swal("Errore", "Errore nel salvataggio", "error");
+        }
+    });
+
+}
+
+
+
+function eliminaCli() {
+    swal({
+        title: "",
+        text: "L’operazione eliminerà definitivamente questa anagrafica dall’archivio. Si prega di confermare.",
+        type: "warning",
+        showCancelButton: true,
+        confirmButtonColor: "#d9534f",
+        confirmButtonText: "Sì, elimina",
+        cancelButtonText: "Annulla",
+        closeOnConfirm: true,
+        allowEscapeKey: false,
+        allowOutsideClick: false
+    }, function (isConfirm) {
+        if (!isConfirm) return;
+
+        $.ajax({
+            url: server + 'secure/cliforapido/elimina',
+            type: 'POST',
+            data: JSON.stringify({ id: _idClifo }),
+            contentType: 'application/json',
+            success: function () {
+              noty({
+                text:   'Anagrafica rimossa correttamente.',
+                layout: 'topCenter',
+                type:   'success',
+                killer: true,
+                timeout: 2000,
+                animation: {
+                    open:  'animated bounceInDown',
+                    close: 'animated bounceOutUp',
+                    speed: 500
+                }
+              });
+              refreshClifo($('#filtroTipo').val(), $('#filtroSocieta').val());
+              elencoClifo();
+            },
+            error: function (r) {
+                var msg = "Errore generico.";
+                try { msg = JSON.parse(r.responseText).ERROR || msg; } catch (e) {}
+                swal({
+                    title: "Errore",
+                    text: msg,
+                    type: "error",
+                    allowEscapeKey: false,
+                    allowOutsideClick: false
+                });
+            }
+        });
+    });
+}
+
+</script>
+
+
+</html>

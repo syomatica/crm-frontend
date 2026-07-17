@@ -1,0 +1,107 @@
+<section class="sidebar">
+    <div class="user-panel">
+        <div class="pull-left image">
+            <img src="../assets/img/user-silhouette-icon.png" class="img-circle" alt="User Image"/>
+        </div>
+        <div class="pull-left info">
+            <div class="pull-left info">
+                          <p id="nominativoUser"></p>
+                          <script>
+                            document.getElementById("nominativoUser").innerHTML = sessionStorage.getItem('nominativo');
+                          </script>
+                        </div>
+        </div>
+    </div>
+    <ul class="sidebar-menu" id="menulaterale">
+    	<li class="header" style="color: white"><i class="fa fa-home"></i> GESTIONALE</li>
+    	<li class="{{#active.pprev}}active{{/active.pprev}}"><a href="{{#active.pprev}}#{{/active.pprev}}{{^active.pprev}}../gestionepipeline/{{/active.pprev}}"><span>Sales Pipeline</span></a></li>
+    	<li class="{{#active.gprev}}active{{/active.gprev}}"><a href="{{#active.gprev}}#{{/active.gprev}}{{^active.gprev}}../gestionepreventivi/{{/active.gprev}}"><span>Offerte</span></a></li>
+        <li class="{{#active.gprevc}}active{{/active.gprevc}}"><a href="{{#active.gprev}}#{{/active.gprev}}{{^active.gprev}}../gestionecommesse/{{/active.gprev}}"><span>Commesse PME</span></a></li>
+        <li class="treeview">
+            <a href="#"><span>Gestione</span><i class="fa fa-angle-left pull-right"></i></a>
+            <ul class="treeview-menu">
+                <li class="{{#active.ganag}}active{{/active.ganag}}"><a href="{{#active.ganag}}#{{/active.ganag}}{{^active.ganag}}../anagraficaclienti/{{/active.ganag}}"><span>Anagrafica Clienti/Fornitori</span></a></li>
+                <li class="{{#active.gprod}}active{{/active.gprod}}"><a href="{{#active.gprod}}#{{/active.gprod}}{{^active.gprod}}../gestioneprodotti/{{/active.gprod}}"><span>Prodotti</span></a></li>
+                <li class="{{#active.cv}}active{{/active.cv}}"><a href="{{#active.cv}}#{{/active.cv}}{{^active.cv}}../gestionevaloridefault/{{/active.cv}}"><span>Valori di default</span></a></li>
+            </ul>
+        </li>
+        
+        <li class="header" style="color: white"><i class="fa fa-bar-chart"></i> CONTABILITÀ</li>
+        
+        <li class="treeview">
+            <a href="#"><span>Contabilità</span><i class="fa fa-angle-left pull-right"></i></a>
+           	<ul class="treeview-menu">
+            	<li class="{{#active.co}}active{{/active.co}}"><a href="{{#active.co}}#{{/active.co}}{{^active.co}}../commesseordini/{{/active.co}}"><span> R00</span></a></li>
+               	<li class="{{#active.cpc}}active{{/active.cpc}}"><a href="{{#active.cpc}}#{{/active.cpc}}{{^active.cpc}}../consuntivipercommessa/{{/active.cpc}}"><span> Commesse Acquisite</span></a></li>
+           	    <li class="{{#active.cpc}}active{{/active.cpc}}"><a href="{{#active.cpc}}#{{/active.cpc}}{{^active.cpc}}../consuntivipercommessa/{{/active.cpc}}"><span> Ricavi</span></a></li>
+                <li class="{{#active.cpc}}active{{/active.cpc}}"><a href="{{#active.cpc}}#{{/active.cpc}}{{^active.cpc}}../consuntivipercommessa/{{/active.cpc}}"><span> Riepilogo</span></a></li>
+            </ul>
+        </li>
+        <li class="treeview">
+            <a href="#"><span>CASSA</span><i class="fa fa-angle-left pull-right"></i></a>
+           	<ul class="treeview-menu">
+               	<li class="{{#active.cpc}}active{{/active.cpc}}"><a href="{{#active.cpc}}#{{/active.cpc}}{{^active.cpc}}../consuntivipercommessa/{{/active.cpc}}"><span> Cassa</span></a></li>
+           	    <li class="{{#active.cpc}}active{{/active.cpc}}"><a href="{{#active.cpc}}#{{/active.cpc}}{{^active.cpc}}../consuntivipercommessa/{{/active.cpc}}"><span> Liquidità</span></a></li>
+                <li class="{{#active.cpc}}active{{/active.cpc}}"><a href="{{#active.cpc}}#{{/active.cpc}}{{^active.cpc}}../consuntivipercommessa/{{/active.cpc}}"><span> Flusso di Cassa R00</span></a></li>
+                <li class="{{#active.cpc}}active{{/active.cpc}}"><a href="{{#active.cpc}}#{{/active.cpc}}{{^active.cpc}}../consuntivipercommessa/{{/active.cpc}}"><span> Bilancio R00</span></a></li>
+                <li class="{{#active.cpc}}active{{/active.cpc}}"><a href="{{#active.cpc}}#{{/active.cpc}}{{^active.cpc}}../consuntivipercommessa/{{/active.cpc}}"><span> Voci non E/C</span></a></li>
+            </ul>
+        </li>
+        <li class="treeview">
+            <a href="#"><span>Carte</span><i class="fa fa-angle-left pull-right"></i></a>
+           	<ul class="treeview-menu">
+            	<li class="{{#active.co}}active{{/active.co}}"><a href="{{#active.co}}#{{/active.co}}{{^active.co}}../commesseordini/{{/active.co}}"><span> NEXI</span></a></li>
+               	<li class="{{#active.cpc}}active{{/active.cpc}}"><a href="{{#active.cpc}}#{{/active.cpc}}{{^active.cpc}}../consuntivipercommessa/{{/active.cpc}}"><span> N26</span></a></li>
+           	</ul>
+        </li>
+        <li class="treeview">
+            <a href="#"><span>Fatture</span><i class="fa fa-angle-left pull-right"></i></a>
+           	<ul class="treeview-menu">
+            	<li class="{{#active.co}}active{{/active.co}}"><a href="{{#active.co}}#{{/active.co}}{{^active.co}}../commesseordini/{{/active.co}}"><span> Fatture</span></a></li>
+               	<li class="{{#active.cpc}}active{{/active.cpc}}"><a href="{{#active.cpc}}#{{/active.cpc}}{{^active.cpc}}../consuntivipercommessa/{{/active.cpc}}"><span> Uso Interno</span></a></li>
+           	</ul>
+        </li>
+        <li class="{{#active.anco}}active{{/active.anco}}"><a href="{{#active.anco}}#{{/active.anco}}{{^active.anco}}../giorniritardomedioarticolimagoperfornitore/{{/active.anco}}"><span>F24</span></a></li>
+        
+        <li class="header" style="color: white"><i class="fa fa-info-circle"></i> INFORMAZIONI COMPLEMENTARI</li>
+        <li class="treeview">
+            <a href="#"><span>Anagrafiche</span><i class="fa fa-angle-left pull-right"></i>                                     </a>
+            <ul class="treeview-menu">
+                <li class="{{#active.gtc}}active{{/active.gtc}}"><a href="{{#active.gtc}}#{{/active.gtc}}{{^active.gtc}}../gestionetipiclifo/{{/active.gtc}}"><span> Gestione tipo CliFo</span></a></li>
+                <li class="{{#active.gc}}active{{/active.gc}}"><a href="{{#active.gc}}#{{/active.gc}}{{^active.gc}}../gestionecanali/{{/active.gc}}"><span> Gestione Canali</span></a></li>
+                <li class="{{#active.ga}}active{{/active.ga}}"><a href="{{#active.ga}}#{{/active.ga}}{{^active.ga}}../gestioneagenti/{{/active.ga}}"><span> Gestione Agenti</span></a></li>
+                <li class="{{#active.irc}}active{{/active.irc}}"><a href="{{#active.irc}}#{{/active.irc}}{{^active.irc}}../inserimentorapidocontatto/{{/active.irc}}"><span> Inserimento Rapido Contatto</span></a></li>
+                <li><a href="#"><span> Imposta Agente Mago</span></a></li>
+            </ul>
+        </li>
+        <li class="treeview">
+            <a href="#"><span>Tab. Offerte</span><i class="fa fa-angle-left pull-right"></i>                                     </a>
+            <ul class="treeview-menu {{#active.gtppr}}active{{/active.gtppr}}{{#active.gcat}}active{{/active.gcat}}{{#active.gtprod}}active{{/active.gtprod}}{{#active.gmar}}active{{/active.gmar}}{{#active.gum}}active{{/active.gum}}{{#active.gvoci}}active{{/active.gvoci}}">
+                <li class="{{#active.gvoci}}active{{/active.gvoci}}"><a href="{{#active.gvoci}}#{{/active.gvoci}}{{^active.gvoci}}../gestionevoci/{{/active.gvoci}}"><span> Voci Prodotto</span></a></li>
+                <li class="{{#active.gtppr}}active{{/active.gtppr}}"><a href="{{#active.gtppr}}#{{/active.gtppr}}{{^active.gtppr}}../gestionetipipreventivi/{{/active.gtppr}}"><span> Tipi Offerta</span></a></li>
+                <li class="{{#active.gcat}}active{{/active.gcat}}"><a href="{{#active.gcat}}#{{/active.gcat}}{{^active.gcat}}../gestionecategorie/{{/active.gcat}}"><span> Gestione categorie<br>merceologiche</span></a></li>
+                <li class="{{#active.gtprod}}active{{/active.gtprod}}"><a href="{{#active.gtprod}}#{{/active.gtprod}}{{^active.gtprod}}../gestionetipiprodotti/{{/active.gtprod}}"><span> Gestione Tipi Prodotti</span></a></li>
+                <li class="{{#active.gmar}}active{{/active.gmar}}"><a href="{{#active.gmar}}#{{/active.gmar}}{{^active.gmar}}../gestionemarche/{{/active.gmar}}"><span> Gestione Marche</span></a></li>
+                <li class="{{#active.gum}}active{{/active.gum}}"><a href="{{#active.gum}}#{{/active.gum}}{{^active.gum}}../gestioneum/{{/active.gum}}"><span> Gestione Unità di misura</span></a></li>
+            </ul>
+        </li>
+        <li class="treeview">
+            <a href="#"><span>Tab. Contabilità</span><i class="fa fa-angle-left pull-right"></i>                                     </a>
+            <ul class="treeview-menu {{#active.gip2}}active{{/active.gip2}}">
+                <li class="{{#active.gcp}}active{{/active.gcp}}"><a href="{{#active.gcp}}#{{/active.gcp}}{{^active.gcp}}../gestionecategoriapreventivi/{{/active.gcp}}"><span>Gestione categorie<br>preventivi</span></a></li>
+                <li class="{{#active.gip2}}active{{/active.gip2}}"><a href="{{#active.gip2}}#{{/active.gip2}}{{^active.gip2}}../gestionetipipreventivi/{{/active.gip2}}"><span> Tipi di Preventivo</span></a></li>
+                <li class="{{#active.gma}}active{{/active.gma}}"><a href="{{#active.gma}}#{{/active.gma}}{{^active.gma}}../gestionemansioni/{{/active.gma}}"><span> Mansioni</span></a></li>
+                <li class="{{#active.gm}}active{{/active.gm}}"><a href="{{#active.gm}}#{{/active.gm}}{{^active.gm}}../gestionemorti/{{/active.gm}}"><span>Scadenze</span></a></li>
+            </ul>
+        </li>
+        
+          {{#admins}}
+            <li class="header" style="color: white" id="admin"><i class="fa fa-wrench"></i> AMMINISTRAZIONE</li>
+            <li class="{{#active.gu}}active{{/active.gu}}" id="sezioneUtenti"><a href="{{#active.gu}}#{{/active.gu}}{{^active.gu}}../gestioneutenti/{{/active.gu}}"><span>Gestione Accessi</span></a></li>
+            <li class="{{#active.gad}}active{{/active.gad}}" id="sezioneAddetti"><a href="{{#active.gad}}#{{/active.gad}}{{^active.gad}}../gestioneaddetti/{{/active.gad}}"><span>Gestione Addetti</span></a></li>
+          {{/admins}}
+
+</section>
+
+
+
