@@ -779,9 +779,7 @@ function salvaCli() {
         url: server + 'secure/cliforapido/update',
         type: 'POST',
         contentType: 'application/json',
-        headers: { 
-          'Authorization': 'Bearer ' + localStorage.getItem('jwt') 
-        },
+        // CS-272: header Authorization gestito globalmente da setupajax.js (sessionStorage token)
         data: JSON.stringify(data),
 
         success: function () {

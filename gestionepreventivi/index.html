@@ -5099,9 +5099,7 @@ function caricaFornitori() {
     $.ajax({
         url: server + 'secure/cliforapido/elencof?pagina=0',
         type: 'GET',
-        headers: {
-            'Authorization': 'Bearer ' + localStorage.getItem('jwt')
-        },
+        // CS-272: header Authorization gestito globalmente da setupajax.js (sessionStorage token)
 success: function (res) {
     const fornitori = res.filter(f => f.idTipoClifo === 3);
     setTimeout(() => {
