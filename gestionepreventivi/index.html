@@ -2493,6 +2493,21 @@ function dettagliPreventivo(idPreventivo) {
         $('#oggetto').val(response.note).trigger("change");
 
         
+        // CS-271: se il cliente dell'offerta non è tra le option (combo in cache stale),
+        // aggiunge l'option mancante prima della select: altrimenti val() non seleziona
+        // nulla e al salvataggio l'update azzererebbe IDclifo sul DB.
+        if (response.idClifo && response.idClifo > 0 &&
+            $('#intestatoa option[value="' + response.idClifo + '"]').length === 0) {
+            var optMancante = $('<option>', { value: response.idClifo, text: 'Cliente #' + response.idClifo });
+            $('#intestatoa').append(optMancante);
+            $.getJSON(server + 'secure/cliforapido/readByKey?idClifo=' + response.idClifo)
+                .success(function (cli) {
+                    if (cli && cli.societa) {
+                        optMancante.text(cli.societa);
+                        $('#intestatoa').trigger('change');
+                    }
+                });
+        }
         $('#intestatoa').val(response.idClifo).trigger('change');
 
         $('#luogoIntervento').val(response.luogoIntervento);
@@ -3275,6 +3290,11 @@ function salvaModPrev() {
 
     var importo_totale = numeral($('#totale_offerta').val()) * 1.0;
 
+    // CS-271: guard-rail — se la select cliente è vuota (option mancante/cache stale)
+    // NON inviare idClifo: il backend lascia invariata la colonna (chiave assente),
+    // mentre NaN->null la azzererebbe definitivamente.
+    var idClifoSel = parseInt($('#intestatoa').val());
+
     var data = {
         id: parseInt(idGlobale),
         data: moment($('#data').val(), 'DD MMMM, YYYY').format('YYYY-MM-DD'),
@@ -3284,7 +3304,9 @@ function salvaModPrev() {
 
         note: $('#oggetto').val(),
 
-        idClifo: parseInt($('#intestatoa').val()),
+        // NaN = nessuna selezione (option mancante) -> chiave omessa, colonna invariata.
+        // 0 = "(Non specificato)" scelto esplicitamente -> viene inviato come oggi.
+        idClifo: !isNaN(idClifoSel) ? idClifoSel : undefined,
 
         luogoIntervento: $('#luogoIntervento').val(),
         tipologiaAttivita: $('#tipologiaAttivita').val(),
