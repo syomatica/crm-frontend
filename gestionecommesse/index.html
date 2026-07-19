@@ -1832,22 +1832,23 @@ $(document).ready(function () {
     });
 
 
+    // CS-276: combo sempre ricaricata a ogni ingresso nel modulo (cache mai invalidata
+    // prima: anagrafiche nuove invisibili). La cache resta come fallback immediato.
     if(sessionStorage.getItem('comboPreventivi')!=null){
-    	popolaCombo();
-    	//Carico elenco preventivi
+        popolaCombo();
+        //Carico elenco preventivi
         refreshPreventivi();
-    }else{
-    	var richiestaCombo = $.getJSON(server + 'secure/service/comboPreventivo');
-
-        richiestaCombo.success(function (r) {
-        	sessionStorage.setItem('comboPreventivi',JSON.stringify(r));
-        	
-        	popolaCombo();
-        	
-        	//Carico elenco preventivi
-            refreshPreventivi();
-        });
     }
+    var richiestaCombo = $.getJSON(server + 'secure/service/comboPreventivo');
+    richiestaCombo.success(function (r) {
+        var giaCaricato = sessionStorage.getItem('comboPreventivi')!=null;
+        sessionStorage.setItem('comboPreventivi',JSON.stringify(r));
+        popolaCombo();
+        if(!giaCaricato){
+            //Carico elenco preventivi
+            refreshPreventivi();
+        }
+    });
 
     
 
