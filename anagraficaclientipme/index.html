@@ -479,12 +479,6 @@
             </div>
         </div>
 
-        <footer id="thefooter" class="main-footer"></footer>
-        <script language="javascript">
-            $.get("../templates/footer.mst?_"+(new Date()).getTime(), function (template) {
-                $('#thefooter').html(Mustache.render(template, {vv:sessionStorage['vv']}));
-            });
-        </script>
     </div>
 </body>
 
@@ -527,10 +521,11 @@ $(document).ready(function() {
 		}],
         order: [[0, 'asc']]
 	});
-    $('#tabClienti tbody').on('click', 'tr', function (evt) {
-    	var cell=$(evt.target).closest('td').index();
-        if(cell>0){
-			dettagliClifo(tabClienti.cell(this,4).data());
+    $('#tabClienti tbody').on('click', 'tr', function () {
+        // CS-272: id dalla riga DataTables (col 4 nascosta); click valido su qualsiasi colonna, inclusa Societa
+        var rowData = tabClienti.row(this).data();
+        if (rowData) {
+            dettagliClifo(rowData[4]);
         }
     } );
 
@@ -799,9 +794,7 @@ function salvaNuovoSettore() {
     url: server + settoriApiBase + '/insert',
     type: 'POST',
     contentType: 'application/json',
-    headers: {
-      'Authorization': 'Bearer ' + localStorage.getItem('jwt')
-    },
+        // CS-272: header Authorization gestito globalmente da setupajax.js (sessionStorage token)
     data: JSON.stringify(payload),
     success: function () {
       $('#btnSalvaSettore').prop('disabled', false);
@@ -1181,9 +1174,7 @@ function salvaCli() {
         url: server + 'secure/cliforapido/update',
         type: 'POST',
         contentType: 'application/json',
-        headers: { 
-          'Authorization': 'Bearer ' + localStorage.getItem('jwt') 
-        },
+        // CS-272: header Authorization gestito globalmente da setupajax.js (sessionStorage token)
         data: JSON.stringify(data),
 
         success: function (response) {
