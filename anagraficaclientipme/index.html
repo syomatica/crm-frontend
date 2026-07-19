@@ -799,9 +799,7 @@ function salvaNuovoSettore() {
     url: server + settoriApiBase + '/insert',
     type: 'POST',
     contentType: 'application/json',
-    headers: {
-      'Authorization': 'Bearer ' + localStorage.getItem('jwt')
-    },
+        // CS-272: header Authorization gestito globalmente da setupajax.js (sessionStorage token)
     data: JSON.stringify(payload),
     success: function () {
       $('#btnSalvaSettore').prop('disabled', false);
@@ -1181,9 +1179,7 @@ function salvaCli() {
         url: server + 'secure/cliforapido/update',
         type: 'POST',
         contentType: 'application/json',
-        headers: { 
-          'Authorization': 'Bearer ' + localStorage.getItem('jwt') 
-        },
+        // CS-272: header Authorization gestito globalmente da setupajax.js (sessionStorage token)
         data: JSON.stringify(data),
 
         success: function (response) {
