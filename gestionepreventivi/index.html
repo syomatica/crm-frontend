@@ -352,6 +352,9 @@
                             <div class="box-header">
                                 <h3 class="box-title" style="margin-bottom: 20px;">Elenco Offerte</h3>
                                 <div class="box-tools">
+                                    <button class="btn btn-default btn-sm pull-right" onclick="refreshPreventivi()"
+                                        style="margin-right: 5px;" title="Ricarica elenco"><strong>Aggiorna</strong> <i
+                                            class="fa fa-refresh"></i></button>
                                     <button class="btn btn-primary btn-sm pull-right" onclick="nuovoProtocollo()"
                                         style="margin-right: 5px;"><strong>Nuovo   </strong><i
                                             class="fa fa-plus-circle"></i></button>
@@ -489,6 +492,23 @@
                                                             <label class="confCategoria2"></label>
                                                             <input class="form-control input-sm" id="tipologiaAttivita"
                                                                 type="text" />
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <!-- CS-275: % probabilita' di successo (implementazione leggera).
+                                                     Facoltativa. I valori qui devono restare allineati alla multiselect
+                                                     della Sales Pipeline (gestionepipeline). -->
+                                                <div class="row" style="margin: 10px 3% 0 1%">
+                                                    <div class="col-md-4">
+                                                        <div class="form-group">
+                                                            <label>% Probabilit&agrave; di successo</label>
+                                                            <select class="form-control input-sm" id="vendita"
+                                                                style="width: 100%">
+                                                                <option value="">-</option>
+                                                                <option value="10">Gioco (10%)</option>
+                                                                <option value="50">Ci credo (50%)</option>
+                                                                <option value="80">Sono sicuro (80%)</option>
+                                                            </select>
                                                         </div>
                                                     </div>
                                                 </div>
@@ -1476,7 +1496,7 @@ $(document).ready(function () {
 		"columnDefs" : [{
 			"searchable": false,
 			"orderable": false, 
-			"targets" : [6,7,10]  ,
+			"targets" : [6,7,10,11]  ,
             "visible": false
 		}],
         order: [[10, 'desc']]
@@ -2131,19 +2151,8 @@ function toFillPreventivo(idPreventivo, idTipoPreventivo, actualPreventivo, inde
 		        		tabella.cell( index, 10 ).data(dataIpotesiFatturazione).draw(false);
 	        		}
 	        	    
-	    			var percentualeSuccesso = "";
-	        	    if(response.percentualeSuccesso!=null){
-                        if(response.percentualeSuccesso > 0 && response.percentualeSuccesso < 50){
-                            percentualeSuccesso = response.percentualeSuccesso + " - Gioco";
-                        }
-                        if(response.percentualeSuccesso >= 50 && response.percentualeSuccesso < 80){
-                            percentualeSuccesso = response.percentualeSuccesso + " - Ci credo";
-                        }
-                        if(response.percentualeSuccesso >= 80){
-                            percentualeSuccesso = response.percentualeSuccesso + " - Sono sicuro";
-                        }
-	            	    tabella.cell( index, 11 ).data(percentualeSuccesso).draw(false);
-	        	    }
+	    			// CS-275: la % non e' piu' esposta nella lista offerte (colonna 11 nascosta).
+	    			// Il dato resta in percentualeSuccesso ed e' visibile nella maschera e nella pipeline.
 	        	    
 	    			var percentualeCompletamento = "";
 	        	    if(response.percentualeCompletamento!=null){
@@ -4180,11 +4189,13 @@ function duplicaPreventivo(){
             var data = {
                 data: moment().format('YYYY-MM-DD'),
                 numero: inputValue,
+                code: "" + inputValue, // CS-270: stesso pattern dell'insert (nuovoProtocollo)
                 idPreventivo: idGlobale
             };
             var nuovoPrev = $.post(server + 'secure/preventivi/preventivo/duplica', JSON.stringify(data));
             nuovoPrev.success(function (r) {
                 swal.close();
+                refreshPreventivi(); // CS-270: la nuova offerta duplicata compare in elenco al ritorno
                 dettagliPreventivo(r.id);
                 noty({
                     text: 'Preventivo creato',
@@ -4219,10 +4230,12 @@ function duplicaCommessa(nCommessa){
     var data = {
         data: moment().format('YYYY-MM-DD'),
         numero: nCommessa,
+        code: "" + nCommessa, // CS-270: stesso pattern dell'insert (nuovoProtocollo)
         idPreventivo: idGlobale
     };
     var nuovoPrev = $.post(server + 'secure/preventivi/preventivo/duplica', JSON.stringify(data));
     nuovoPrev.success(function (r) {
+        refreshPreventivi(); // CS-270: la nuova offerta duplicata compare in elenco al ritorno
         dettagliPreventivo(r.id);
         noty({
             text: 'Preventivo creato',
@@ -5089,9 +5102,7 @@ function caricaFornitori() {
     $.ajax({
         url: server + 'secure/cliforapido/elencof?pagina=0',
         type: 'GET',
-        headers: {
-            'Authorization': 'Bearer ' + localStorage.getItem('jwt')
-        },
+        // CS-272: header Authorization gestito globalmente da setupajax.js (sessionStorage token)
 success: function (res) {
     const fornitori = res.filter(f => f.idTipoClifo === 3);
     setTimeout(() => {
