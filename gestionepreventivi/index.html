@@ -352,6 +352,9 @@
                             <div class="box-header">
                                 <h3 class="box-title" style="margin-bottom: 20px;">Elenco Offerte</h3>
                                 <div class="box-tools">
+                                    <button class="btn btn-default btn-sm pull-right" onclick="refreshPreventivi()"
+                                        style="margin-right: 5px;" title="Ricarica elenco"><strong>Aggiorna</strong> <i
+                                            class="fa fa-refresh"></i></button>
                                     <button class="btn btn-primary btn-sm pull-right" onclick="nuovoProtocollo()"
                                         style="margin-right: 5px;"><strong>Nuovo   </strong><i
                                             class="fa fa-plus-circle"></i></button>
@@ -4183,11 +4186,13 @@ function duplicaPreventivo(){
             var data = {
                 data: moment().format('YYYY-MM-DD'),
                 numero: inputValue,
+                code: "" + inputValue, // CS-270: stesso pattern dell'insert (nuovoProtocollo)
                 idPreventivo: idGlobale
             };
             var nuovoPrev = $.post(server + 'secure/preventivi/preventivo/duplica', JSON.stringify(data));
             nuovoPrev.success(function (r) {
                 swal.close();
+                refreshPreventivi(); // CS-270: la nuova offerta duplicata compare in elenco al ritorno
                 dettagliPreventivo(r.id);
                 noty({
                     text: 'Preventivo creato',
@@ -4222,10 +4227,12 @@ function duplicaCommessa(nCommessa){
     var data = {
         data: moment().format('YYYY-MM-DD'),
         numero: nCommessa,
+        code: "" + nCommessa, // CS-270: stesso pattern dell'insert (nuovoProtocollo)
         idPreventivo: idGlobale
     };
     var nuovoPrev = $.post(server + 'secure/preventivi/preventivo/duplica', JSON.stringify(data));
     nuovoPrev.success(function (r) {
+        refreshPreventivi(); // CS-270: la nuova offerta duplicata compare in elenco al ritorno
         dettagliPreventivo(r.id);
         noty({
             text: 'Preventivo creato',
