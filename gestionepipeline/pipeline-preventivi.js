@@ -194,6 +194,7 @@
     if ($.fn.select2) {
       $('#fAgents').select2({ width: '100%', placeholder: 'Tutti', allowClear: true });
       $('#fPartners').select2({ width: '100%', placeholder: 'Tutti', allowClear: true });
+      $('#fProb').select2({ width: '100%', placeholder: 'Tutte', allowClear: true }); // CS-275: multiselect a chip
       $('#fQuarter').select2({ width: '100%', minimumResultsForSearch: 10 });
       $('#fView').select2({ width: '100%' });
       $('#fCustomerType').select2({ width: '100%' });
