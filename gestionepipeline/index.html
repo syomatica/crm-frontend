@@ -179,8 +179,14 @@
                         </div>
 
                         <div class="col-md-3">
-                            <label>Probabilità min</label>
-                            <input id="fMinProb" type="number" class="form-control" min="0" max="100" value="0">
+                            <label>Probabilità</label>
+                            <!-- CS-275: multiselect sui valori della select in gestione offerta (10/50/80).
+                                 Nessuna selezione = tutte. -->
+                            <select id="fProb" class="form-control" multiple size="3">
+                                <option value="10">Gioco (10%)</option>
+                                <option value="50">Ci credo (50%)</option>
+                                <option value="80">Sono sicuro (80%)</option>
+                            </select>
                         </div>
 
                         <div class="col-md-3" style="padding-top:24px;">

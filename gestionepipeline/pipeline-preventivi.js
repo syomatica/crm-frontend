@@ -107,10 +107,15 @@
       status = 'OPEN';
     }
 
-    // Probabilità: se hai già un campo Probabilita/Probability usalo, altrimenti default per stato
+    // Probabilità: CS-275 - usa il valore reale percentualeSuccesso dell'offerta
+    // (esposto dalla vista syo_v_preventivi_elenco). Fallback per stato se non valorizzato.
     var prob = null;
-    if (o && (o.Probabilita != null || o.Probability != null)) {
-      prob = Number(o.Probabilita != null ? o.Probabilita : o.Probability);
+    var rawProb = (o && o.PercentualeSuccesso != null) ? o.PercentualeSuccesso
+                : (o && o.percentualeSuccesso != null) ? o.percentualeSuccesso
+                : (o && o.Probabilita != null) ? o.Probabilita
+                : (o && o.Probability != null) ? o.Probability : null;
+    if (rawProb != null) {
+      prob = Number(rawProb);
       if (isNaN(prob)) prob = null;
     }
     if (prob == null) {
@@ -230,7 +235,7 @@
       $('#fPartners').val(null).trigger('change');
       $('#fCustomerType').val('').trigger('change');
       $('#fStatus').val('').trigger('change');
-      $('#fMinProb').val(0);
+      $('#fProb').val([]).trigger('change');
 
       // trimestre corrente
       $('#fQuarter').val(moment().year() + '-Q' + moment().quarter()).trigger('change');
@@ -282,8 +287,8 @@
     var selectedPartners = $('#fPartners').val() || [];
     var customerType = $('#fCustomerType').val(); // non presente nei dati -> placeholder
     var statusFilter = $('#fStatus').val(); // OPEN/WON/LOST/EXPIRED
-    var minProb = Number($('#fMinProb').val() || 0);
-    if (isNaN(minProb)) minProb = 0;
+    // CS-275: multiselect probabilità. Nessuna selezione = tutte.
+    var selProb = $('#fProb').val() || []; // array di stringhe ("10","50","80")
 
     // NOTE: customerType non esiste nella response; lo lascio pronto se aggiungerai campo (es: CustomerType)
     App.filtered = App.all.filter(function (o) {
@@ -309,8 +314,8 @@
         if (o.status !== statusFilter) return false;
       }
 
-      // min prob
-      if (o.probability < minProb) return false;
+      // probabilità (multiselect): se selezionati, tieni solo i valori scelti
+      if (selProb.length > 0 && selProb.indexOf(String(o.probability)) === -1) return false;
 
       // customer type (se in futuro lo hai)
       if (customerType) {
