@@ -1566,20 +1566,23 @@ $(document).ready(function () {
         checkboxClass : 'icheckbox_flat-blue'
     });
 
+    // CS-276: la combo (clienti/stati/tipi/...) viene SEMPRE ricaricata a ogni ingresso
+    // nel modulo: la cache sessionStorage non veniva mai invalidata e le anagrafiche
+    // create altrove non comparivano (e isClienteIntestazione dava falsi blocchi).
+    // La cache resta come fallback immediato se la chiamata fallisce.
     if(sessionStorage.getItem('comboPreventivi')!=null){
-    	popolaCombo();
+        popolaCombo();
         refreshPreventivi();
-    }else{
-    	var richiestaCombo = $.getJSON(server + 'secure/service/comboPreventivo');
-
-        richiestaCombo.success(function (r) {
-        	sessionStorage.setItem('comboPreventivi',JSON.stringify(r));
-        	
-        	popolaCombo();
-        	
-            refreshPreventivi();
-        });
     }
+    var richiestaCombo = $.getJSON(server + 'secure/service/comboPreventivo');
+    richiestaCombo.success(function (r) {
+        var giaCaricato = sessionStorage.getItem('comboPreventivi')!=null;
+        sessionStorage.setItem('comboPreventivi',JSON.stringify(r));
+        popolaCombo();
+        if(!giaCaricato){
+            refreshPreventivi();
+        }
+    });
 
     Waves.attach('.btn', ['waves-float']);
     Waves.init();
