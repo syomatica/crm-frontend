@@ -160,17 +160,14 @@
                         <div class="row" style="margin-top:10px;">
                         <div class="col-md-3">
                             <label>Cliente</label>
-                            <select id="fCustomerType" class="form-control">
-                            <option value="">Tutti</option>
-                            <option value="PROSPECT">Prospect</option>
-                            <option value="ACQUIRED">Cliente acquisito</option>
-                            </select>
+                            <!-- CS-275: multiselect popolato dai clienti presenti nei dati. -->
+                            <select id="fCustomer" class="form-control" multiple></select>
                         </div>
 
                         <div class="col-md-3">
                             <label>Stato offerta</label>
-                            <select id="fStatus" class="form-control">
-                            <option value="">Tutte</option>
+                            <!-- CS-275: multiselect. Nessuna selezione = tutti gli stati. -->
+                            <select id="fStatus" class="form-control" multiple>
                             <option value="OPEN">Aperte</option>
                             <option value="WON">Vinte</option>
                             <option value="LOST">Perse</option>
@@ -179,8 +176,14 @@
                         </div>
 
                         <div class="col-md-3">
-                            <label>Probabilità min</label>
-                            <input id="fMinProb" type="number" class="form-control" min="0" max="100" value="0">
+                            <label>Probabilità</label>
+                            <!-- CS-275: multiselect sui valori della select in gestione offerta (10/50/80).
+                                 Nessuna selezione = tutte. -->
+                            <select id="fProb" class="form-control" multiple>
+                                <option value="10">Gioco (10%)</option>
+                                <option value="50">Ci credo (50%)</option>
+                                <option value="80">Sono sicuro (80%)</option>
+                            </select>
                         </div>
 
                         <div class="col-md-3" style="padding-top:24px;">
