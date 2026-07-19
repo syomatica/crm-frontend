@@ -11,13 +11,12 @@ set -euo pipefail
 KEY="${KEY:-$HOME/percorso/api.pem}"           # chiave SSH dell'istanza PC
 HOST="${HOST:-ec2-user@3.73.219.28}"           # utente@host dell'istanza PC
 REMOTE="${REMOTE:-/usr/share/nginx/html/crm-frontend}"   # docroot nginx del CRM
-API_URL="${API_URL:-https://crm.planning-connect.com/api/}"
 
 SRC="$(cd "$(dirname "$0")" && pwd)"
 cd "$SRC"
 
-echo "==> server.js -> $API_URL"
-printf "server = '%s';\n" "$API_URL" > server.js
+echo "==> server.js da server_prod.js (URL prod + versione vv)"
+cp server_prod.js server.js
 
 echo "==> Creo il pacchetto (escludo git/script/chiavi/zip)"
 TARBALL="$(mktemp -t crm-frontend).tgz"
