@@ -4660,7 +4660,8 @@ function caricaAllegatiPreventivo() {
             if(r.tipoFile == 'pdf'){
                 tr.append('<td><i class="fa fa-print"></i>&nbsp;<a href="#" onclick="previewAllegato(' + r.id + ',\'' + r.nomeFile + '\')"><small style="color:black;">Stampa</small></td>');
             }else{
-                tr.append('<td><i class="fa fa-download"></i>&nbsp;<a href="'+ server + 'documenti/allegato/' + r.id + '" target="_self"><small style="color:black;">Scarica</small></td>');
+                // CS-274: token in query per tenant/autenticazione sul download
+                tr.append('<td><i class="fa fa-download"></i>&nbsp;<a href="'+ server + 'documenti/allegato/' + r.id + '?token=' + encodeURIComponent(sessionStorage.getItem('token')) + '" target="_self"><small style="color:black;">Scarica</small></td>');
             }
             
 
@@ -4793,8 +4794,11 @@ function previewAllegato(id,nomefile) {
     const token = sessionStorage.getItem('token');
     const url = server + 'documenti/allegato/' + id;
 
+    // CS-274: il viewer appende l'intera querystring all'URL del file:
+    // il token serve al backend per risolvere tenant e autenticazione su /api/documenti/**
     var data = {
         fileName: nomefile,
+        token: encodeURI(token),
         file: url
     }
 
