@@ -4682,6 +4682,17 @@ function caricaAllegatiPreventivo() {
 
 function nuovoAllegato() {
 
+    // CS-273: gli allegati richiedono un'offerta già salvata (il backend salva il file
+    // in una cartella per idOfferta): prima del salvataggio idGlobale non esiste.
+    if (!idGlobale || isNaN(idGlobale)) {
+        swal({
+            title: '',
+            type: 'warning',
+            text: "Salvare prima l'offerta per poter allegare file."
+        });
+        return;
+    }
+
     $('#modalAllegato input[name="idAllegato"]').val('-1');
     $('#modalAllegato input[name="titolo"]').val('');
     $('#modalAllegato textarea[name="descrizione"]').val('');
