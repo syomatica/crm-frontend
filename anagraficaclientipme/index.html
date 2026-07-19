@@ -479,12 +479,6 @@
             </div>
         </div>
 
-        <footer id="thefooter" class="main-footer"></footer>
-        <script language="javascript">
-            $.get("../templates/footer.mst?_"+(new Date()).getTime(), function (template) {
-                $('#thefooter').html(Mustache.render(template, {vv:sessionStorage['vv']}));
-            });
-        </script>
     </div>
 </body>
 
@@ -527,10 +521,11 @@ $(document).ready(function() {
 		}],
         order: [[0, 'asc']]
 	});
-    $('#tabClienti tbody').on('click', 'tr', function (evt) {
-    	var cell=$(evt.target).closest('td').index();
-        if(cell>0){
-			dettagliClifo(tabClienti.cell(this,4).data());
+    $('#tabClienti tbody').on('click', 'tr', function () {
+        // CS-272: id dalla riga DataTables (col 4 nascosta); click valido su qualsiasi colonna, inclusa Societa
+        var rowData = tabClienti.row(this).data();
+        if (rowData) {
+            dettagliClifo(rowData[4]);
         }
     } );
 
