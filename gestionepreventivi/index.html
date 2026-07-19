@@ -4177,6 +4177,7 @@ function duplicaPreventivo(){
             var data = {
                 data: moment().format('YYYY-MM-DD'),
                 numero: inputValue,
+                code: "" + inputValue, // CS-270: stesso pattern dell'insert (nuovoProtocollo)
                 idPreventivo: idGlobale
             };
             var nuovoPrev = $.post(server + 'secure/preventivi/preventivo/duplica', JSON.stringify(data));
@@ -4216,6 +4217,7 @@ function duplicaCommessa(nCommessa){
     var data = {
         data: moment().format('YYYY-MM-DD'),
         numero: nCommessa,
+        code: "" + nCommessa, // CS-270: stesso pattern dell'insert (nuovoProtocollo)
         idPreventivo: idGlobale
     };
     var nuovoPrev = $.post(server + 'secure/preventivi/preventivo/duplica', JSON.stringify(data));
