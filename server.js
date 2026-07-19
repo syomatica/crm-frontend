@@ -1,6 +1,5 @@
-////server = 'https://crm-api.planning-connect.com:8443/api/';
-server = 'https://crm.planning-connect.com/api/';
-vv = "1.8.0";
+server = 'http://localhost:8081/api/';
+vv = "1.7.7";
 $(document).ready(function () {
     $("#vv").html("V "+vv);
 });

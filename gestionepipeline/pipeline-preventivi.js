@@ -107,10 +107,15 @@
       status = 'OPEN';
     }
 
-    // Probabilità: se hai già un campo Probabilita/Probability usalo, altrimenti default per stato
+    // Probabilità: CS-275 - usa il valore reale percentualeSuccesso dell'offerta
+    // (esposto dalla vista syo_v_preventivi_elenco). Fallback per stato se non valorizzato.
     var prob = null;
-    if (o && (o.Probabilita != null || o.Probability != null)) {
-      prob = Number(o.Probabilita != null ? o.Probabilita : o.Probability);
+    var rawProb = (o && o.PercentualeSuccesso != null) ? o.PercentualeSuccesso
+                : (o && o.percentualeSuccesso != null) ? o.percentualeSuccesso
+                : (o && o.Probabilita != null) ? o.Probabilita
+                : (o && o.Probability != null) ? o.Probability : null;
+    if (rawProb != null) {
+      prob = Number(rawProb);
       if (isNaN(prob)) prob = null;
     }
     if (prob == null) {
@@ -189,10 +194,11 @@
     if ($.fn.select2) {
       $('#fAgents').select2({ width: '100%', placeholder: 'Tutti', allowClear: true });
       $('#fPartners').select2({ width: '100%', placeholder: 'Tutti', allowClear: true });
+      $('#fProb').select2({ width: '100%', placeholder: 'Tutte', allowClear: true }); // CS-275: multiselect a chip
       $('#fQuarter').select2({ width: '100%', minimumResultsForSearch: 10 });
       $('#fView').select2({ width: '100%' });
-      $('#fCustomerType').select2({ width: '100%' });
-      $('#fStatus').select2({ width: '100%' });
+      $('#fCustomer').select2({ width: '100%', placeholder: 'Tutti', allowClear: true }); // CS-275: multiselect cliente
+      $('#fStatus').select2({ width: '100%', placeholder: 'Tutti', allowClear: true });   // CS-275: multiselect stato
     }
 
     // Quarter list: ultimi 8 trimestri + corrente
@@ -228,9 +234,9 @@
       $('#fView').val('total').trigger('change');
       $('#fAgents').val(null).trigger('change');
       $('#fPartners').val(null).trigger('change');
-      $('#fCustomerType').val('').trigger('change');
-      $('#fStatus').val('').trigger('change');
-      $('#fMinProb').val(0);
+      $('#fCustomer').val([]).trigger('change');
+      $('#fStatus').val([]).trigger('change');
+      $('#fProb').val([]).trigger('change');
 
       // trimestre corrente
       $('#fQuarter').val(moment().year() + '-Q' + moment().quarter()).trigger('change');
@@ -280,12 +286,12 @@
     var view = $('#fView').val(); // total | agent | partner
     var selectedAgents = $('#fAgents').val() || [];
     var selectedPartners = $('#fPartners').val() || [];
-    var customerType = $('#fCustomerType').val(); // non presente nei dati -> placeholder
-    var statusFilter = $('#fStatus').val(); // OPEN/WON/LOST/EXPIRED
-    var minProb = Number($('#fMinProb').val() || 0);
-    if (isNaN(minProb)) minProb = 0;
+    // CS-275: Cliente e Stato offerta come multiselect. Nessuna selezione = tutti.
+    var selCustomers = $('#fCustomer').val() || []; // array di nomi cliente
+    var selStatus = $('#fStatus').val() || [];      // array di stati (OPEN/WON/LOST/EXPIRED)
+    var selProb = $('#fProb').val() || [];          // array di stringhe ("10","50","80")
 
-    // NOTE: customerType non esiste nella response; lo lascio pronto se aggiungerai campo (es: CustomerType)
+
     App.filtered = App.all.filter(function (o) {
       // quarter
       if (range && o.date) {
@@ -304,19 +310,14 @@
         if (!o.partnerId || selectedPartners.indexOf(String(o.partnerId)) === -1) return false;
       }
 
-      // status
-      if (statusFilter) {
-        if (o.status !== statusFilter) return false;
-      }
+      // stato offerta (multiselect)
+      if (selStatus.length > 0 && selStatus.indexOf(o.status) === -1) return false;
 
-      // min prob
-      if (o.probability < minProb) return false;
+      // probabilità (multiselect): se selezionati, tieni solo i valori scelti
+      if (selProb.length > 0 && selProb.indexOf(String(o.probability)) === -1) return false;
 
-      // customer type (se in futuro lo hai)
-      if (customerType) {
-        var ct = (o.raw && (o.raw.CustomerType || o.raw.customerType)) ? String(o.raw.CustomerType || o.raw.customerType) : '';
-        if (ct !== customerType) return false;
-      }
+      // cliente (multiselect)
+      if (selCustomers.length > 0 && selCustomers.indexOf(o.customer) === -1) return false;
 
       return true;
     });
@@ -699,15 +700,28 @@
   function populateDynamicFilters() {
     App.maps.agents = {};
     App.maps.partners = {};
+    App.maps.customers = {}; // CS-275: clienti presenti nei dati
 
     for (var i = 0; i < App.all.length; i++) {
       var o = App.all[i];
       if (o.agentId && o.agentId !== '0') uniqPush(App.maps.agents, o.agentId, o.agent);
       if (o.partnerId && o.partnerId !== '0') uniqPush(App.maps.partners, o.partnerId, o.partner);
+      if (o.customer) uniqPush(App.maps.customers, o.customer, o.customer); // chiave = nome cliente
     }
 
     var $a = $('#fAgents');
     var $p = $('#fPartners');
+
+    // CS-275: Clienti (multiselect, ordinati alfabeticamente)
+    var $c = $('#fCustomer');
+    $c.empty();
+    var customerKeys = Object.keys(App.maps.customers).sort(function (x, y) {
+      return String(x).localeCompare(String(y));
+    });
+    for (var c = 0; c < customerKeys.length; c++) {
+      $c.append($('<option/>').val(customerKeys[c]).text(App.maps.customers[customerKeys[c]]));
+    }
+    if ($.fn.select2) $c.trigger('change.select2');
 
     // Agents
     $a.empty();
