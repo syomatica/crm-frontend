@@ -1301,6 +1301,10 @@
                         a buon fine
                     </label>
                 </div>
+                <div style="margin-bottom: 10px;">
+                    <label>Causa (per "Non a buon fine")</label>
+                    <select id="causaMorteModal" class="form-control input-sm"></select>
+                </div>
             </div>
             <div class="sModal-footer">
                 <button class="btn btn-primary" onclick="salvaModalScaduto()">Salva</button> 
@@ -1534,6 +1538,9 @@ $(document).ready(function () {
     
     $('#opz_prodotto').select2({multiple: false,placeholder: 'Seleziona un servizio opzionale',width: '100%'});
 
+    // CS-279: giorni di scadenza offerta da configvalues (offerta.gg.scadenza)
+    window.__ggOfferta = window.__ggOfferta || 0;
+    try { $.get(server + 'secure/preventivi/config/gg-scadenza', function(r){ if(r && r.gg!=null) window.__ggOfferta = Number(r.gg)||0; }); } catch(e){}
     $('#termineconsegnapreventivo,#datascaduto,#data').pickadate({
         monthsFull: ['Gennaio', 'Febbraio', 'Marzo', 'Aprile', 'Maggio', 'Giugno', 'Luglio', 'Agosto', 'Settembre', 'Ottobre', 'Novembre', 'Dicembre'],
         weekdaysShort: ['Dom', 'Lun', 'Mar', 'Mer', 'Gio', 'Ven', 'Sab'],
@@ -1687,10 +1694,10 @@ $('#data').on('change', function () {
     if(!isPme){
         if(isForUpdateData){
             $('#codice').val("OFF" + moment($('#data').val(), 'DD MMMM, YYYY').format('YYMM') + "_R_" + $('#numero').val());
-            $('#datascaduto').val(moment($('#data').val(), 'DD MMMM, YYYY').add(30, 'd').format('DD MMMM, YYYY'));
+            $('#datascaduto').val(moment($('#data').val(), 'DD MMMM, YYYY').add((window.__ggOfferta||0), 'd').format('DD MMMM, YYYY')); // CS-279: gg da config
         }else{
             if(isForRevisione){
-                $('#datascaduto').val(moment($('#data').val(), 'DD MMMM, YYYY').add(30, 'd').format('DD MMMM, YYYY'));
+                $('#datascaduto').val(moment($('#data').val(), 'DD MMMM, YYYY').add((window.__ggOfferta||0), 'd').format('DD MMMM, YYYY')); // CS-279: gg da config
             }
         }
     }
@@ -1967,6 +1974,7 @@ function popolaCombo(){
     $('#responsabiliMansione1,#responsabiliMansione2,#responsabiliMansione3').empty().append(dati.mansioni);
     $('#stato').empty().append(dati.stati);
     $('#causa').empty().append(dati.causemorti);
+    $('#causaMorteModal').empty().append(dati.causemorti); // CS-279
     $('#categoria').empty().append(dati.categorie);
     $('#tipo').empty().append(dati.tipi);
     $('#intestatoa').empty().append(dati.clienti);
@@ -2030,7 +2038,7 @@ function refreshPreventivi() {
                     "idTipoPreventivo" : res.IDtipoPreventivo,
                     "code" : res.Code,
                     "data" : res.Data,
-                    "scadenza" : res.DataMorte,
+                    "scadenza" : res.Scadenza, // CS-279
                     "tipoPreventivo" : res.TipoPreventivo,
                     "societa" : res.societa,
                     "totale" : res.TotalePreventivo,
@@ -2405,7 +2413,7 @@ function toLoadPreventivo(idPreventivo, idTipoPreventivo, actualPreventivo){
 		actualPreventivo.tipoPreventivo,
 		actualPreventivo.societa,
         numeral(actualPreventivo.totale).format('$ 0,0.00'),
-		moment(actualPreventivo.scadenza).format('DD MMM YYYY'),
+		(actualPreventivo.scadenza ? moment(actualPreventivo.scadenza).format('DD MMM YYYY') : ''), // CS-279
         actualPreventivoString,
         true,
         actualPreventivo.luogoIntervento,
@@ -2488,7 +2496,7 @@ function dettagliPreventivo(idPreventivo) {
         }
 
         $('#codice').val(response.code);
-        $('#datascaduto').val(response.dataMorte ? moment(response.dataMorte).format('DD MMMM, YYYY') : '');
+        $('#datascaduto').val(response.scadenza ? moment(response.scadenza).format('DD MMMM, YYYY') : ''); // CS-279: scadenza
         $('#data').val(response.data ? moment(response.data).format('DD MMMM, YYYY') : '').trigger('change');
         $('#tipo').val(response.idTipoPreventivo).trigger('change');
         
@@ -3289,7 +3297,37 @@ function anullaModPrev() {
     dettagliPreventivo(idGlobale);
 }
 
-function salvaModPrev() {
+function salvaModPrev(confermato) {
+
+    // CS-279: validazioni Data Scadenza Offerta
+    var _scadStr = $('#datascaduto').val();
+    var _dataOff = moment($('#data').val(), 'DD MMMM, YYYY');
+    var _scad = moment(_scadStr, 'DD MMMM, YYYY');
+    // (a) obbligatoria
+    if (!_scadStr || !_scad.isValid()) {
+        swal({ title: '', type: 'warning', text: 'Indicare la Data Scadenza Offerta prima di salvare.' });
+        return;
+    }
+    // (b) non precedente alla Data Offerta
+    if (_dataOff.isValid() && _scad.isBefore(_dataOff, 'day')) {
+        swal({ title: '', type: 'warning', text: 'La Data Scadenza non puo\' essere precedente alla Data Offerta.' });
+        return;
+    }
+    // (c) se diversa da quella ipotizzata (Data + gg da parametro) -> conferma
+    if (!confermato && _dataOff.isValid()) {
+        var _attesa = _dataOff.clone().add((window.__ggOfferta || 0), 'd');
+        if (!_scad.isSame(_attesa, 'day')) {
+            swal({
+                title: 'Scadenza non standard',
+                text: 'La Data Scadenza (' + _scad.format('DD/MM/YYYY') + ') e\' diversa da quella ipotizzata (' + _attesa.format('DD/MM/YYYY') + ' = Data + ' + (window.__ggOfferta || 0) + ' gg). Confermi il salvataggio?',
+                type: 'warning',
+                showCancelButton: true,
+                confirmButtonText: 'Conferma',
+                cancelButtonText: 'Annulla'
+            }, function (isConfirm) { if (isConfirm) { salvaModPrev(true); } });
+            return;
+        }
+    }
 
     var importo_totale = numeral($('#totale_offerta').val()) * 1.0;
 
@@ -3303,7 +3341,7 @@ function salvaModPrev() {
         data: moment($('#data').val(), 'DD MMMM, YYYY').format('YYYY-MM-DD'),
         code: $('#codice').val(),
         idTipoPreventivo: parseInt($('#tipo').val()),
-        dataMorte: moment($('#datascaduto').val(), 'DD MMMM, YYYY').format('YYYY-MM-DD'),
+        scadenza: moment($('#datascaduto').val(), 'DD MMMM, YYYY').format('YYYY-MM-DD'), // CS-279
 
         note: $('#oggetto').val(),
 
@@ -4469,6 +4507,7 @@ function salvaModalScaduto() {
     if (valore === 'stato-scaduto') {
         var cambiaPrev = $.post(server + 'secure/preventivi/preventivo/scaduto', JSON.stringify(data));
     } else if (valore === 'stato-rifiutato') {
+        data.idCausaMorte = parseInt($('#causaMorteModal').val()) || null; // CS-279: causa Persa
         var cambiaPrev = $.post(server + 'secure/preventivi/preventivo/rifiutato', JSON.stringify(data));
     }
     cambiaPrev.success(function (r) {

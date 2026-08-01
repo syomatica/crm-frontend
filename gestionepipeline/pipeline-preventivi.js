@@ -8,13 +8,13 @@
   // -----------------------------
   // Config / Helpers
   // -----------------------------
-  var API_PATH = 'api/secure/preventivi/db/filters/elenco'; // come da tua descrizione
+  var API_PATH = 'api/secure/preventivi/pipeline/elenco'; // CS-279: query dedicata su preventivi
   function resolveApiUrl() {
     // Se hai server.js che espone "server" (base url), usa quello. Altrimenti usa relativo.
     if (typeof window.server === 'string' && window.server.length > 0) {
       // In altri tuoi file usi: server + 'secure/...'
       // Quindi qui rimuoviamo 'api/' e usiamo pattern coerente.
-      return window.server + 'secure/preventivi/db/filters/elenco';
+      return window.server + 'secure/preventivi/pipeline/elenco';
     }
     return API_PATH;
   }
@@ -89,23 +89,25 @@
   // -----------------------------
   function normalizeOffer(o) {
     var dt = parseDate(o.Data);
-    var dtMorte = parseDate(o.DataMorte);
+    var dtScad = parseDate(o.Scadenza);
 
-    // Heuristica stato (dato che nella response vediamo Status e Morto)
-    // - WON: Status==2 e Morto=false
-    // - EXPIRED: Morto=true e DataMorte < oggi
-    // - LOST: Morto=true ma senza DataMorte o DataMorte >= oggi
-    // - OPEN: default
+    // CS-279 (PC-152): stati offerta. Regola d'oro: offerte IDpme=0, commesse IDpme<>0.
+    //  WON (Vinta)=IDpme<>0; LOST (Persa)=DataMorte+IDCausaMorte; EXPIRED (Scaduta)=Status=3
+    //  OPEN (Aperta)=Status=2; PROV (Provvisoria)=Status=1. Priorita': Vinta>Persa>Scaduta>Aperta>Provvisoria.
     var today = moment().startOf('day');
-    var status = 'OPEN';
-    if (o && o.Morto === true) {
-      if (dtMorte && dtMorte.isBefore(today)) status = 'EXPIRED';
-      else status = 'LOST';
-    } else if (o && Number(o.Status) === 2) {
-      status = 'WON';
-    } else {
-      status = 'OPEN';
-    }
+    var idpme = Number(o && o.IDpme != null ? o.IDpme : 0);
+    var hasCommessa = !isNaN(idpme) && idpme !== 0;
+    var hasDataMorte = !!(o && o.DataMorte);
+    var hasCausa = (o && o.IDCausaMorte != null && Number(o.IDCausaMorte) > 0);
+    var st = Number(o && o.Status);
+    var status;
+    if (hasCommessa) status = 'WON';
+    else if (hasDataMorte && hasCausa) status = 'LOST';
+    else if (st === 3) status = 'EXPIRED';
+    else if (st === 2) status = 'OPEN';
+    else status = 'PROV';
+    // Alert informativo (non uno stato): offerta ancora aperta/provvisoria con termini scaduti
+    var scadutaInfo = (status === 'OPEN' || status === 'PROV') && dtScad && dtScad.isBefore(today);
 
     // Probabilità: CS-275 - usa il valore reale percentualeSuccesso dell'offerta
     // (esposto dalla vista syo_v_preventivi_elenco). Fallback per stato se non valorizzato.
@@ -121,8 +123,11 @@
     if (prob == null) {
       if (status === 'WON') prob = 100;
       else if (status === 'OPEN') prob = 50;
+      else if (status === 'PROV') prob = 30;
       else prob = 0;
     }
+    // CS-279: termini scaduti su offerta ancora aperta -> probabilita' molto bassa (alert)
+    if (scadutaInfo) prob = Math.min(prob, 5);
 
     var amount = Number(o && o.TotalePreventivo != null ? o.TotalePreventivo : 0);
     if (isNaN(amount)) amount = 0;
@@ -143,7 +148,7 @@
 
     // “Stage” per chart pipeline per fase: qui uso lo stato come fase base
     // Se vuoi fasi più dettagliate (lead/qualification/proposal/negotiation) serve un campo dedicato.
-    var stage = status; // OPEN/WON/LOST/EXPIRED
+    var stage = status; // PROV/OPEN/WON/LOST/EXPIRED
 
     // Quarter basato su Data
     var qk = dt ? quarterKey(dt) : 'N/A';
@@ -161,6 +166,7 @@
       partnerId: partnerId,
       partner: partnerName,
       status: status,
+      scadutaInfo: scadutaInfo,
       stage: stage,
       probability: prob,
       amount: amount,
@@ -261,9 +267,8 @@
     var payload = {};
 
     $.ajax({
-      method: 'POST',
+      method: 'GET',
       url: resolveApiUrl(),
-      data: JSON.stringify(payload),
       contentType: 'application/json; charset=utf-8'
       // Nota: gli header token di solito li gestisci in setupajax.js
     }).done(function (resp) {
@@ -346,7 +351,7 @@
       if (list[i].status === 'WON') won += list[i].amount;
     }
 
-    var openCount = list.filter(function (x) { return x.status === 'OPEN'; }).length;
+    var openCount = list.filter(function (x) { return x.status === 'OPEN' || x.status === 'PROV'; }).length;
     var closedCount = list.filter(function (x) { return x.status === 'WON' || x.status === 'LOST' || x.status === 'EXPIRED'; }).length;
     var winRate = (closedCount > 0) ? (list.filter(function (x) { return x.status === 'WON'; }).length / closedCount) : 0;
 
@@ -418,14 +423,15 @@
   function renderStageChart() {
   var list = App.filtered;
 
-  var stages = { OPEN: 0, WON: 0, LOST: 0, EXPIRED: 0 };
+  var stages = { PROV: 0, OPEN: 0, WON: 0, LOST: 0, EXPIRED: 0 };
   for (var i = 0; i < list.length; i++) {
     var k = list[i].stage;
     stages[k] = (stages[k] || 0) + list[i].weighted;
   }
 
-  var labels = ['OPEN', 'WON', 'LOST', 'EXPIRED'];
-  var values = labels.map(function (k) {
+  var keys = ['PROV', 'OPEN', 'WON', 'LOST', 'EXPIRED'];
+  var labels = ['Provvisorie', 'Aperte', 'Vinte', 'Perse', 'Scadute'];
+  var values = keys.map(function (k) {
     return Math.round((stages[k] || 0) * 100) / 100;
   });
 
@@ -608,7 +614,7 @@
   function renderOpenTable() {
     // Top offerte aperte: ordina per weighted desc, solo status OPEN
     var rows = App.filtered
-      .filter(function (o) { return o.status === 'OPEN'; })
+      .filter(function (o) { return o.status === 'OPEN' || o.status === 'PROV'; })
       .sort(function (a, b) { return b.weighted - a.weighted; })
       .slice(0, 10);
 
