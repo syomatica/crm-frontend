@@ -3297,13 +3297,36 @@ function anullaModPrev() {
     dettagliPreventivo(idGlobale);
 }
 
-function salvaModPrev() {
+function salvaModPrev(confermato) {
 
-    // CS-279: la Data Scadenza Offerta e' obbligatoria (niente Scadenza null)
+    // CS-279: validazioni Data Scadenza Offerta
     var _scadStr = $('#datascaduto').val();
-    if (!_scadStr || !moment(_scadStr, 'DD MMMM, YYYY').isValid()) {
+    var _dataOff = moment($('#data').val(), 'DD MMMM, YYYY');
+    var _scad = moment(_scadStr, 'DD MMMM, YYYY');
+    // (a) obbligatoria
+    if (!_scadStr || !_scad.isValid()) {
         swal({ title: '', type: 'warning', text: 'Indicare la Data Scadenza Offerta prima di salvare.' });
         return;
+    }
+    // (b) non precedente alla Data Offerta
+    if (_dataOff.isValid() && _scad.isBefore(_dataOff, 'day')) {
+        swal({ title: '', type: 'warning', text: 'La Data Scadenza non puo\' essere precedente alla Data Offerta.' });
+        return;
+    }
+    // (c) se diversa da quella ipotizzata (Data + gg da parametro) -> conferma
+    if (!confermato && _dataOff.isValid()) {
+        var _attesa = _dataOff.clone().add((window.__ggOfferta || 0), 'd');
+        if (!_scad.isSame(_attesa, 'day')) {
+            swal({
+                title: 'Scadenza non standard',
+                text: 'La Data Scadenza (' + _scad.format('DD/MM/YYYY') + ') e\' diversa da quella ipotizzata (' + _attesa.format('DD/MM/YYYY') + ' = Data + ' + (window.__ggOfferta || 0) + ' gg). Confermi il salvataggio?',
+                type: 'warning',
+                showCancelButton: true,
+                confirmButtonText: 'Conferma',
+                cancelButtonText: 'Annulla'
+            }, function (isConfirm) { if (isConfirm) { salvaModPrev(true); } });
+            return;
+        }
     }
 
     var importo_totale = numeral($('#totale_offerta').val()) * 1.0;
