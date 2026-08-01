@@ -2413,7 +2413,7 @@ function toLoadPreventivo(idPreventivo, idTipoPreventivo, actualPreventivo){
 		actualPreventivo.tipoPreventivo,
 		actualPreventivo.societa,
         numeral(actualPreventivo.totale).format('$ 0,0.00'),
-		moment(actualPreventivo.scadenza).format('DD MMM YYYY'),
+		(actualPreventivo.scadenza ? moment(actualPreventivo.scadenza).format('DD MMM YYYY') : ''), // CS-279
         actualPreventivoString,
         true,
         actualPreventivo.luogoIntervento,
