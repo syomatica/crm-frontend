@@ -3299,6 +3299,13 @@ function anullaModPrev() {
 
 function salvaModPrev() {
 
+    // CS-279: la Data Scadenza Offerta e' obbligatoria (niente Scadenza null)
+    var _scadStr = $('#datascaduto').val();
+    if (!_scadStr || !moment(_scadStr, 'DD MMMM, YYYY').isValid()) {
+        swal({ title: '', type: 'warning', text: 'Indicare la Data Scadenza Offerta prima di salvare.' });
+        return;
+    }
+
     var importo_totale = numeral($('#totale_offerta').val()) * 1.0;
 
     // CS-271: guard-rail — se la select cliente è vuota (option mancante/cache stale)
