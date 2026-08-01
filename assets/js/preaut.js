@@ -1,4 +1,28 @@
 function eventMenu(){
+
+    // CS-280 (PC-152): nasconde le voci di menu dei moduli disabilitati per il tenant corrente
+    // (config backend crm.tenant.disabled-modules.<company>, es. Scadenzario su Schindler).
+    (function(){
+        function applyHide(csv){
+            if(!csv) return;
+            csv.split(',').forEach(function(m){
+                m = (m||'').trim();
+                if(m) $('#themenu a[href*="'+m+'"]').closest('li').hide();
+            });
+        }
+        try {
+            var dm = sessionStorage.getItem('disabledModules');
+            if (dm !== null) { applyHide(dm); }
+            else if (typeof server !== 'undefined') {
+                $.get(server + 'secure/crm/features').done(function(r){
+                    var list = (r && r.disabledModules) ? r.disabledModules.join(',') : '';
+                    sessionStorage.setItem('disabledModules', list);
+                    applyHide(list);
+                });
+            }
+        } catch(e){}
+    })();
+
    
    
     var objs = $(".treeview a");

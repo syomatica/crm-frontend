@@ -134,6 +134,7 @@
             doLogin.success(function (response) {
                 sessionStorage.setItem('pme', true);
                 sessionStorage.setItem('token', response.token);
+                sessionStorage.removeItem('disabledModules'); // CS-280: nuovo login -> ricarica i moduli disabilitati del tenant
                 //sessionStorage.setItem('nominativo', response.nominativo);
                 sessionStorage.setItem('nominativo', user);
                 sessionStorage.setItem('admins', response.admins);
@@ -211,6 +212,7 @@
             doLogin.success(function (response) {
 
                 sessionStorage.setItem('token', response.token);
+                sessionStorage.removeItem('disabledModules'); // CS-280: nuovo login -> ricarica i moduli disabilitati del tenant
                 //sessionStorage.setItem('nominativo', response.nominativo);
                 sessionStorage.setItem('nominativo', user);
                 sessionStorage.setItem('admins', response.admins);
