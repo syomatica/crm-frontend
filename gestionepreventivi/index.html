@@ -86,11 +86,10 @@
             box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
             display: flex;
             flex-direction: column;
-            width: 300px;
-            height: 120px;
-            /* width: 500px;
-            height: 300px; */
-            overflow-y: hidden;
+            width: 340px;
+            height: auto;
+            max-height: 90vh;
+            overflow-y: auto;
         }
 
         .sModal-body {
@@ -373,7 +372,7 @@
                                                 <th style="text-align:left;">Importo</th>
                                                 <th style="text-align:left;">Scadenza</th>
                                                 <th style="text-align:left;">-ActualPreventivo-</th>
-                                                <th style="text-align:left;">-DaRicaricare-</th>
+                                                <th style="text-align:left;">Stato</th>
                                                 <th class="confCategoria1" style="text-align:left;"></th>
                                                 <th class="confCategoria2" style="text-align:left;"></th>
                                                 <th style="text-align:left;">-data numerica-</th>
@@ -762,7 +761,7 @@
                                                             <div class="row">
                                                                 <div class="col-md-12">
                                                                     <div id="grigliaProdotti"
-                                                                        style="width: 100%;height: 100%; overflow: auto">
+                                                                        style="width: 100%; height: calc(100vh - 300px); overflow: auto;">
                                                                     </div>
                                                                 </div>
                                                             </div>
@@ -891,7 +890,7 @@
                                                             <div class="row">
                                                                 <div class="col-md-12">
                                                                     <div id="grigliaOpzionali"
-                                                                        style="width: 100%;height: 100%; overflow: auto">
+                                                                        style="width: 100%; height: calc(100vh - 300px); overflow: auto;">
                                                                     </div>
                                                                 </div>
                                                             </div>
@@ -968,7 +967,7 @@
                                                             <div class="row">
                                                                 <div class="col-md-12">
                                                                     <div id="grigliaPagamenti"
-                                                                        style="width: 100%;height: 100%; overflow: auto">
+                                                                        style="width: 100%; height: calc(100vh - 300px); overflow: auto;">
                                                                     </div>
                                                                 </div>
                                                             </div>
@@ -1012,7 +1011,7 @@
                                                             <div class="row">
                                                                 <div class="col-md-12">
                                                                     <div id="grigliaSpese"
-                                                                        style="width: 100%;height: 100%; overflow: auto">
+                                                                        style="width: 100%; height: calc(100vh - 300px); overflow: auto;">
                                                                     </div>
                                                                 </div>
                                                             </div>
@@ -1162,6 +1161,9 @@
                                             <button class="btn btn-danger btn-flat btn-block" id="eliminaPreventivo"
                                                 onclick="eliminaPreventivo()"><strong>Elimina Offerta
                                                     dall'archivio</strong></button>
+                                            <div id="causaMorteInfo" class="text-danger" style="display:none; margin: 6px 0; font-weight:bold;"></div>
+                                            <button class="btn btn-warning btn-flat btn-block" id="stornaPreventivo"
+                                                onclick="stornaPreventivo()" style="display:none;"><strong>Storna (riporta a Consolidata)</strong></button>
                                         </div>
                                     </div>
                                 </div>
@@ -1180,8 +1182,7 @@
                                     <button class="btn btn-block btn-primary btn-flat" id="btIntegrazioneCommessa"
                                         onclick="integrazioneCommessa()"><strong>Integrazione Commessa</strong></button>
                                     <button class="btn btn-block btn-danger btn-flat nonBlock" id="btScaduto"
-                                        onclick="scadutoProtocollo()"><strong>Offerta Scaduta/Non a buon
-                                            fine</strong></button>
+                                        onclick="scadutoProtocollo()"><strong>Non a buon fine</strong></button>
                                 </div>
                                 <div class="box-footer">
                                     <i class="fa fa-print"></i> <a href="#" onclick="stampaPreventivoNew()"><small
@@ -1258,6 +1259,7 @@
                             <td>
                                 <input class="form-control" id="fileUpload" name="fileUpload" type="file" />
                                 <label class="form-control-static" id="fileNameLabel"></label>
+                                <small class="help-block" id="allegatoMaxHint" style="margin:2px 0 0;color:#888;">Dimensione massima: 10 MB</small>
                             </td>
                         </tr>
                         <tr id="rigaInseritoDa">
@@ -1292,17 +1294,10 @@
         <div class="sModal-content">
             <div class="sModal-body">
                 <div style="margin-bottom: 10px;">
-                    <label style="display: inline-block; margin-right: 20px;">
-                        <input class="campi-modale-scaduto" id="stato-scaduto" name="statoOfferta" type="radio" />
-                        Scaduto
-                    </label>
-                    <label style="display: inline-block;">
-                        <input class="campi-modale-scaduto" id="stato-rifiutato" name="statoOfferta" type="radio" /> Non
-                        a buon fine
-                    </label>
+                    <strong>Segna l'offerta come "Non a buon fine"</strong>
                 </div>
                 <div style="margin-bottom: 10px;">
-                    <label>Causa (per "Non a buon fine")</label>
+                    <label>Causa</label>
                     <select id="causaMorteModal" class="form-control input-sm"></select>
                 </div>
             </div>
@@ -1500,7 +1495,7 @@ $(document).ready(function () {
 		"columnDefs" : [{
 			"searchable": false,
 			"orderable": false, 
-			"targets" : [6,7,10,11]  ,
+			"targets" : [6,10,11]  ,
             "visible": false
 		}],
         order: [[10, 'desc']]
@@ -1541,6 +1536,19 @@ $(document).ready(function () {
     // CS-279: giorni di scadenza offerta da configvalues (offerta.gg.scadenza)
     window.__ggOfferta = window.__ggOfferta || 0;
     try { $.get(server + 'secure/preventivi/config/gg-scadenza', function(r){ if(r && r.gg!=null) window.__ggOfferta = Number(r.gg)||0; }); } catch(e){}
+
+    // CS-287: limite dimensione allegato dal backend, per hint e pre-controllo lato client
+    window.__allegatoMaxBytes = window.__allegatoMaxBytes || (10 * 1024 * 1024);
+    window.__allegatoMaxLabel = window.__allegatoMaxLabel || '10 MB';
+    try {
+        $.get(server + 'secure/allegati/config', function(r){
+            if (r) {
+                if (r.maxFileSizeBytes && r.maxFileSizeBytes > 0) window.__allegatoMaxBytes = Number(r.maxFileSizeBytes);
+                if (r.maxFileSizeLabel) window.__allegatoMaxLabel = r.maxFileSizeLabel;
+                $('#allegatoMaxHint').text('Dimensione massima: ' + window.__allegatoMaxLabel);
+            }
+        });
+    } catch(e){}
     $('#termineconsegnapreventivo,#datascaduto,#data').pickadate({
         monthsFull: ['Gennaio', 'Febbraio', 'Marzo', 'Aprile', 'Maggio', 'Giugno', 'Luglio', 'Agosto', 'Settembre', 'Ottobre', 'Novembre', 'Dicembre'],
         weekdaysShort: ['Dom', 'Lun', 'Mar', 'Mer', 'Gio', 'Ven', 'Sab'],
@@ -2044,7 +2052,8 @@ function refreshPreventivi() {
                     "totale" : res.TotalePreventivo,
                     "luogoIntervento" :  res.LuogoIntervento,
                     "tipologiaAttivita" :  res.TipologiaAttivita,
-                    "status" :  res.Status
+                    "status" :  res.Status,
+                    "causaMorte" : res.CausaMorte
                 }
 
                 return preventivo;
@@ -2406,6 +2415,19 @@ function toLoadPreventivo(idPreventivo, idTipoPreventivo, actualPreventivo){
         default:
             btstato = '<button class="btn btn-warning btn-xs"><i class="fa fa-unlock" aria-hidden="true"></i>&nbsp; Provvisorio</button>';
     }
+    // CS-288: badge stato per la lista (colonna indice 7, subito dopo Scadenza)
+    var _st = Number(actualPreventivo.status);
+    var _scadPassata = actualPreventivo.scadenza && moment(actualPreventivo.scadenza).isBefore(moment().startOf('day'));
+    var badgeLista;
+    if (_st === 4) {
+        badgeLista = '<span class="label label-danger">' + (actualPreventivo.causaMorte || 'Non a buon fine') + '</span>';
+    } else if (_scadPassata) {
+        badgeLista = '<span class="label label-warning">Scaduta</span>';
+    } else if (_st === 2 || _st === 3) {
+        badgeLista = '<span class="label label-success">Consolidata</span>';
+    } else {
+        badgeLista = '<span class="label label-default">Provvisoria</span>';
+    }
 	var newRow;
     newRow = tabella.row.add( [
 		moment(actualPreventivo.data).format('DD MMM YYYY'),
@@ -2415,7 +2437,7 @@ function toLoadPreventivo(idPreventivo, idTipoPreventivo, actualPreventivo){
         numeral(actualPreventivo.totale).format('$ 0,0.00'),
 		(actualPreventivo.scadenza ? moment(actualPreventivo.scadenza).format('DD MMM YYYY') : ''), // CS-279
         actualPreventivoString,
-        true,
+        badgeLista,
         actualPreventivo.luogoIntervento,
         actualPreventivo.tipologiaAttivita,
         moment(actualPreventivo.data).format('x'),
@@ -2475,24 +2497,30 @@ function dettagliPreventivo(idPreventivo) {
         $('#email_hidden').hide();
         
         locked = response.status;
-        switch (locked) {
-            case 1:
-               $('#lockPreventivo').attr('class', 'btn btn-block btn-xs btn-warning').html('<i class="fa fa-unlock" aria-hidden="true"></i>&nbsp; Provvisorio');
-
-                break;
-            case 3:
-                $('#lockPreventivo').attr('class', 'btn btn-block btn-xs btn-danger').html('<i class="fa fa-times" aria-hidden="true"></i>&nbsp; Scaduto');
-
-                break;
-            case 4:
-                $('#lockPreventivo').attr('class', 'btn btn-block btn-xs btn-danger').html('<i class="fa fa-times" aria-hidden="true"></i>&nbsp; Non a buon fine');
-
-                break;
-            default:
-                $('#lockPreventivo').attr('class', 'btn btn-block btn-xs btn-success').html('<i class="fa fa-lock" aria-hidden="true"></i>&nbsp; Consolidato');
-                if(!isPme){
-                    $('#email_hidden').show();
+        // CS-288: badge stato coerente con la lista. Non a buon fine (4)=rosso; oltre scadenza=arancione; consolidata (2/3)=verde; provvisoria (1)=grigio.
+        var _scadPassataDet = response.scadenza && moment(response.scadenza).isBefore(moment().startOf('day'));
+        if (locked === 4) {
+            $('#lockPreventivo').attr('class', 'btn btn-block btn-xs btn-danger').html('<i class="fa fa-times" aria-hidden="true"></i>&nbsp; Non a buon fine');
+        } else if (_scadPassataDet) {
+            $('#lockPreventivo').attr('class', 'btn btn-block btn-xs btn-warning').html('<i class="fa fa-clock-o" aria-hidden="true"></i>&nbsp; Scaduta');
+            if(!isPme){ $('#email_hidden').show(); }
+        } else if (locked === 2 || locked === 3) {
+            $('#lockPreventivo').attr('class', 'btn btn-block btn-xs btn-success').html('<i class="fa fa-lock" aria-hidden="true"></i>&nbsp; Consolidata');
+            if(!isPme){ $('#email_hidden').show(); }
+        } else {
+            $('#lockPreventivo').attr('class', 'btn btn-block btn-xs btn-default').html('<i class="fa fa-unlock" aria-hidden="true"></i>&nbsp; Provvisoria');
+        }
+        // CS-288: mostra la Causa morte quando l'offerta e' "Non a buon fine" (Status 4)
+        $('#causaMorteInfo').hide().text('');
+        if (response.status === 4 && response.idCausaMorte != null) {
+            var _causaLbl = '';
+            try {
+                var _cm = (decodifiche && decodifiche.causemorti) ? decodifiche.causemorti : [];
+                for (var _i = 0; _i < _cm.length; _i++) {
+                    if (String(_cm[_i].idCausa) === String(response.idCausaMorte)) { _causaLbl = _cm[_i].causaMorte; break; }
                 }
+            } catch (e) {}
+            $('#causaMorteInfo').text('Causa: ' + (_causaLbl || '')).show();
         }
 
         $('#codice').val(response.code);
@@ -2568,6 +2596,17 @@ function dettagliPreventivo(idPreventivo) {
         }else{
             inizializzaTabellaSpese([]);
         }
+
+        // CS-286: forza render + ricalcolo dimensioni delle griglie dopo il load del dettaglio
+        // (Handsontable mostrava solo la prima riga finche' non si interagiva con la tabella)
+        setTimeout(function () {
+            [grigliaProdotti, grigliaOpzionali, grigliaPagamenti, grigliaSpese].forEach(function (g) {
+                try {
+                    if (g && typeof g.render === 'function') g.render();
+                    if (g && typeof g.refreshDimensions === 'function') g.refreshDimensions();
+                } catch (e) {}
+            });
+        }, 50);
 
         $('#ore_stimate').val(response.oreStimate);
 
@@ -3248,19 +3287,27 @@ function setupVisualizzazione(){
     $(".text-locked").hide();
     $(".text-unlocked").hide();
     $("#consolidaPreventivo").hide();
-    switch (locked) {
-        case 1:
-            $("#eliminaPreventivo").show();
-            $(".text-unlocked").show();
-            $("#consolidaPreventivo").show();
-            break;
-        case 2:
-            $("#btScaduto").show();
-            $(".text-locked").show();
-            break;
-        default:
-            $("#boxPulsantiOperazioni").hide();
-            $(".text-box-footer").hide();
+    $("#stornaPreventivo").hide();
+    // CS-288: stato chiuso = solo Non a buon fine (4). Sola lettura + Storna (se stesso trimestre).
+    if (locked === 4) {
+        $("#btnOpenUpd").hide();
+        $("#boxPulsantiOperazioni").hide();
+        $(".text-box-footer").hide();
+        if (preventivo && preventivo.data && moment(preventivo.data).isSame(moment(), 'quarter')) {
+            $("#stornaPreventivo").show();
+        }
+    } else {
+        switch (locked) {
+            case 1:
+                $("#eliminaPreventivo").show();
+                $(".text-unlocked").show();
+                $("#consolidaPreventivo").show();
+                break;
+            default:
+                // Consolidata (2) e legacy scaduto (3): operabile, incluso il pulsante "Non a buon fine"
+                $("#btScaduto").show();
+                $(".text-locked").show();
+        }
     }
 
     tabConf.contextMenu = false;
@@ -4485,6 +4532,29 @@ function consolidaPreventivo() {
     });
 }
 
+function stornaPreventivo(){
+    swal({
+        title: '',
+        text: "Storna la chiusura e riporta l'offerta a Consolidata?",
+        type: 'warning',
+        showCancelButton: true,
+        confirmButtonText: 'Conferma',
+        cancelButtonText: 'Annulla'
+    }, function(isConfirm){
+        if(!isConfirm) return;
+        var data = { id: idGlobale };
+        var res = $.post(server + 'secure/preventivi/preventivo/storno', JSON.stringify(data));
+        res.success(function (r) {
+            refreshPreventivi();
+            dettagliPreventivo(idGlobale);
+            noty({ text: 'Offerta stornata', layout: 'topCenter', type: 'success', killer: true, timeout: 2000 });
+        });
+        res.error(function (r) {
+            swal({ title: '', type: 'error', text: "Errore nello storno dell'offerta" });
+        });
+    });
+}
+
 function scadutoProtocollo() {
     $('.campi-modale-scaduto').prop('disabled', false);
     $('#offertaScaduta').css({
@@ -4499,20 +4569,12 @@ function chiudiModalScaduto() {
 }
 
 function salvaModalScaduto() {
-    var valore = $('input[name="statoOfferta"]:checked').attr('id');
     var data = {
-        id: idGlobale
+        id: idGlobale,
+        idCausaMorte: parseInt($('#causaMorteModal').val()) || null
     };
-
-    if (valore === 'stato-scaduto') {
-        var cambiaPrev = $.post(server + 'secure/preventivi/preventivo/scaduto', JSON.stringify(data));
-    } else if (valore === 'stato-rifiutato') {
-        data.idCausaMorte = parseInt($('#causaMorteModal').val()) || null; // CS-279: causa Persa
-        var cambiaPrev = $.post(server + 'secure/preventivi/preventivo/rifiutato', JSON.stringify(data));
-    }
+    var cambiaPrev = $.post(server + 'secure/preventivi/preventivo/rifiutato', JSON.stringify(data));
     cambiaPrev.success(function (r) {
-        $('input[name="statoOfferta"]').prop('checked', false);
-        
         $('#offertaScaduta').fadeOut();
         refreshPreventivi();
         dettagliPreventivo(idGlobale);
@@ -4894,6 +4956,15 @@ function previewAllegato(id,nomefile) {
 
 }
 
+// CS-287: messaggio d'errore allegato con il limite di dimensione (413) invece del testo grezzo
+function messaggioErroreAllegato(xhr) {
+    if (xhr && xhr.status === 413) {
+        try { var j = JSON.parse(xhr.responseText); if (j && j.message) return j.message; } catch (e) {}
+        return 'Il file supera la dimensione massima consentita di ' + (window.__allegatoMaxLabel || '10 MB') + '.';
+    }
+    return (xhr && xhr.responseText) ? xhr.responseText : 'Errore durante il caricamento del documento.';
+}
+
 function salvaAllegato() {
     const idAllegato = +$('#modalAllegato input[name="idAllegato"]').val();
     const titolo = $('#modalAllegato input[name="titolo"]').val().trim();
@@ -4917,6 +4988,18 @@ function salvaAllegato() {
             title: '',
             type: 'error',
             text: 'File documento obbligatorio',
+            allowEscapeKey: false,
+            allowOutsideClick: false
+        });
+        return;
+    }
+
+    // CS-287: pre-controllo dimensione lato client (evita un upload destinato a fallire)
+    if (fileSel && window.__allegatoMaxBytes && fileSel.size > window.__allegatoMaxBytes) {
+        swal({
+            title: '',
+            type: 'error',
+            text: 'Il file supera la dimensione massima consentita di ' + (window.__allegatoMaxLabel || '10 MB') + '.',
             allowEscapeKey: false,
             allowOutsideClick: false
         });
@@ -4957,9 +5040,9 @@ function salvaAllegato() {
             },
             error: function (xhr) {
                 swal({
-                    title: 'Errore di sistema',
+                    title: 'Errore',
                     type: 'error',
-                    text: xhr.responseText,
+                    text: messaggioErroreAllegato(xhr),
                     allowEscapeKey: false,
                     allowOutsideClick: false
                 });
@@ -5012,9 +5095,9 @@ function salvaAllegato() {
                     },
                     error: function (xhr) {
                         swal({
-                            title: 'Errore di sistema',
+                            title: 'Errore',
                             type: 'error',
-                            text: xhr.responseText,
+                            text: messaggioErroreAllegato(xhr),
                             allowEscapeKey: false,
                             allowOutsideClick: false
                         });
@@ -5022,7 +5105,7 @@ function salvaAllegato() {
                 });
             } else {
                 $('#modalAllegato').modal('hide');
-                caricaAllegatiPreventivo(); 
+                caricaAllegatiPreventivo();
 
                 noty({
                     text: 'Aggiornamento eseguito',
