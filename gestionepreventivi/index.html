@@ -1259,6 +1259,7 @@
                             <td>
                                 <input class="form-control" id="fileUpload" name="fileUpload" type="file" />
                                 <label class="form-control-static" id="fileNameLabel"></label>
+                                <small class="help-block" id="allegatoMaxHint" style="margin:2px 0 0;color:#888;">Dimensione massima: 10 MB</small>
                             </td>
                         </tr>
                         <tr id="rigaInseritoDa">
@@ -1535,6 +1536,19 @@ $(document).ready(function () {
     // CS-279: giorni di scadenza offerta da configvalues (offerta.gg.scadenza)
     window.__ggOfferta = window.__ggOfferta || 0;
     try { $.get(server + 'secure/preventivi/config/gg-scadenza', function(r){ if(r && r.gg!=null) window.__ggOfferta = Number(r.gg)||0; }); } catch(e){}
+
+    // CS-287: limite dimensione allegato dal backend, per hint e pre-controllo lato client
+    window.__allegatoMaxBytes = window.__allegatoMaxBytes || (10 * 1024 * 1024);
+    window.__allegatoMaxLabel = window.__allegatoMaxLabel || '10 MB';
+    try {
+        $.get(server + 'secure/allegati/config', function(r){
+            if (r) {
+                if (r.maxFileSizeBytes && r.maxFileSizeBytes > 0) window.__allegatoMaxBytes = Number(r.maxFileSizeBytes);
+                if (r.maxFileSizeLabel) window.__allegatoMaxLabel = r.maxFileSizeLabel;
+                $('#allegatoMaxHint').text('Dimensione massima: ' + window.__allegatoMaxLabel);
+            }
+        });
+    } catch(e){}
     $('#termineconsegnapreventivo,#datascaduto,#data').pickadate({
         monthsFull: ['Gennaio', 'Febbraio', 'Marzo', 'Aprile', 'Maggio', 'Giugno', 'Luglio', 'Agosto', 'Settembre', 'Ottobre', 'Novembre', 'Dicembre'],
         weekdaysShort: ['Dom', 'Lun', 'Mar', 'Mer', 'Gio', 'Ven', 'Sab'],
@@ -4942,6 +4956,15 @@ function previewAllegato(id,nomefile) {
 
 }
 
+// CS-287: messaggio d'errore allegato con il limite di dimensione (413) invece del testo grezzo
+function messaggioErroreAllegato(xhr) {
+    if (xhr && xhr.status === 413) {
+        try { var j = JSON.parse(xhr.responseText); if (j && j.message) return j.message; } catch (e) {}
+        return 'Il file supera la dimensione massima consentita di ' + (window.__allegatoMaxLabel || '10 MB') + '.';
+    }
+    return (xhr && xhr.responseText) ? xhr.responseText : 'Errore durante il caricamento del documento.';
+}
+
 function salvaAllegato() {
     const idAllegato = +$('#modalAllegato input[name="idAllegato"]').val();
     const titolo = $('#modalAllegato input[name="titolo"]').val().trim();
@@ -4965,6 +4988,18 @@ function salvaAllegato() {
             title: '',
             type: 'error',
             text: 'File documento obbligatorio',
+            allowEscapeKey: false,
+            allowOutsideClick: false
+        });
+        return;
+    }
+
+    // CS-287: pre-controllo dimensione lato client (evita un upload destinato a fallire)
+    if (fileSel && window.__allegatoMaxBytes && fileSel.size > window.__allegatoMaxBytes) {
+        swal({
+            title: '',
+            type: 'error',
+            text: 'Il file supera la dimensione massima consentita di ' + (window.__allegatoMaxLabel || '10 MB') + '.',
             allowEscapeKey: false,
             allowOutsideClick: false
         });
@@ -5005,9 +5040,9 @@ function salvaAllegato() {
             },
             error: function (xhr) {
                 swal({
-                    title: 'Errore di sistema',
+                    title: 'Errore',
                     type: 'error',
-                    text: xhr.responseText,
+                    text: messaggioErroreAllegato(xhr),
                     allowEscapeKey: false,
                     allowOutsideClick: false
                 });
@@ -5060,9 +5095,9 @@ function salvaAllegato() {
                     },
                     error: function (xhr) {
                         swal({
-                            title: 'Errore di sistema',
+                            title: 'Errore',
                             type: 'error',
-                            text: xhr.responseText,
+                            text: messaggioErroreAllegato(xhr),
                             allowEscapeKey: false,
                             allowOutsideClick: false
                         });
@@ -5070,7 +5105,7 @@ function salvaAllegato() {
                 });
             } else {
                 $('#modalAllegato').modal('hide');
-                caricaAllegatiPreventivo(); 
+                caricaAllegatiPreventivo();
 
                 noty({
                     text: 'Aggiornamento eseguito',
