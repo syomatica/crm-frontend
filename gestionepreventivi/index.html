@@ -761,7 +761,7 @@
                                                             <div class="row">
                                                                 <div class="col-md-12">
                                                                     <div id="grigliaProdotti"
-                                                                        style="width: 100%;height: 100%; overflow: auto">
+                                                                        style="width: 100%; height: calc(100vh - 300px); overflow: auto;">
                                                                     </div>
                                                                 </div>
                                                             </div>
@@ -890,7 +890,7 @@
                                                             <div class="row">
                                                                 <div class="col-md-12">
                                                                     <div id="grigliaOpzionali"
-                                                                        style="width: 100%;height: 100%; overflow: auto">
+                                                                        style="width: 100%; height: calc(100vh - 300px); overflow: auto;">
                                                                     </div>
                                                                 </div>
                                                             </div>
@@ -967,7 +967,7 @@
                                                             <div class="row">
                                                                 <div class="col-md-12">
                                                                     <div id="grigliaPagamenti"
-                                                                        style="width: 100%;height: 100%; overflow: auto">
+                                                                        style="width: 100%; height: calc(100vh - 300px); overflow: auto;">
                                                                     </div>
                                                                 </div>
                                                             </div>
@@ -1011,7 +1011,7 @@
                                                             <div class="row">
                                                                 <div class="col-md-12">
                                                                     <div id="grigliaSpese"
-                                                                        style="width: 100%;height: 100%; overflow: auto">
+                                                                        style="width: 100%; height: calc(100vh - 300px); overflow: auto;">
                                                                     </div>
                                                                 </div>
                                                             </div>
@@ -2582,6 +2582,17 @@ function dettagliPreventivo(idPreventivo) {
         }else{
             inizializzaTabellaSpese([]);
         }
+
+        // CS-286: forza render + ricalcolo dimensioni delle griglie dopo il load del dettaglio
+        // (Handsontable mostrava solo la prima riga finche' non si interagiva con la tabella)
+        setTimeout(function () {
+            [grigliaProdotti, grigliaOpzionali, grigliaPagamenti, grigliaSpese].forEach(function (g) {
+                try {
+                    if (g && typeof g.render === 'function') g.render();
+                    if (g && typeof g.refreshDimensions === 'function') g.refreshDimensions();
+                } catch (e) {}
+            });
+        }, 50);
 
         $('#ore_stimate').val(response.oreStimate);
 
