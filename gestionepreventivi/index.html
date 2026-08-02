@@ -371,7 +371,6 @@
                                                 <th style="text-align:left;">Cliente</th>
                                                 <th style="text-align:left;">Importo</th>
                                                 <th style="text-align:left;">Scadenza</th>
-                                                <th style="text-align:left;">Stato</th>
                                                 <th style="text-align:left;">-ActualPreventivo-</th>
                                                 <th style="text-align:left;">-DaRicaricare-</th>
                                                 <th class="confCategoria1" style="text-align:left;"></th>
@@ -1503,10 +1502,10 @@ $(document).ready(function () {
 		"columnDefs" : [{
 			"searchable": false,
 			"orderable": false, 
-			"targets" : [7,8,11,12]  ,
+			"targets" : [6,7,10,11]  ,
             "visible": false
 		}],
-        order: [[11, 'desc']]
+        order: [[10, 'desc']]
 	});
 	tabella.on( 'page.dt', function () {
 	    fillNewPage();
@@ -2047,8 +2046,7 @@ function refreshPreventivi() {
                     "totale" : res.TotalePreventivo,
                     "luogoIntervento" :  res.LuogoIntervento,
                     "tipologiaAttivita" :  res.TipologiaAttivita,
-                    "status" :  res.Status,
-                    "causaMorte" : res.CausaMorte
+                    "status" :  res.Status
                 }
 
                 return preventivo;
@@ -2410,19 +2408,6 @@ function toLoadPreventivo(idPreventivo, idTipoPreventivo, actualPreventivo){
         default:
             btstato = '<button class="btn btn-warning btn-xs"><i class="fa fa-unlock" aria-hidden="true"></i>&nbsp; Provvisorio</button>';
     }
-    // CS-288: badge stato per la lista (colonna dopo Scadenza)
-    var _st = Number(actualPreventivo.status);
-    var _scadPassata = actualPreventivo.scadenza && moment(actualPreventivo.scadenza).isBefore(moment().startOf('day'));
-    var badgeLista;
-    if (_st === 4) {
-        badgeLista = '<span class="label label-danger">' + (actualPreventivo.causaMorte || 'Non a buon fine') + '</span>';
-    } else if (_scadPassata) {
-        badgeLista = '<span class="label label-warning">Scaduta</span>';
-    } else if (_st === 2) {
-        badgeLista = '<span class="label label-success">Consolidata</span>';
-    } else {
-        badgeLista = '<span class="label label-default">Provvisoria</span>';
-    }
 	var newRow;
     newRow = tabella.row.add( [
 		moment(actualPreventivo.data).format('DD MMM YYYY'),
@@ -2431,7 +2416,6 @@ function toLoadPreventivo(idPreventivo, idTipoPreventivo, actualPreventivo){
 		actualPreventivo.societa,
         numeral(actualPreventivo.totale).format('$ 0,0.00'),
 		(actualPreventivo.scadenza ? moment(actualPreventivo.scadenza).format('DD MMM YYYY') : ''), // CS-279
-        badgeLista, // CS-288: badge stato
         actualPreventivoString,
         true,
         actualPreventivo.luogoIntervento,
