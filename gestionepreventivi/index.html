@@ -1162,6 +1162,8 @@
                                             <button class="btn btn-danger btn-flat btn-block" id="eliminaPreventivo"
                                                 onclick="eliminaPreventivo()"><strong>Elimina Offerta
                                                     dall'archivio</strong></button>
+                                            <button class="btn btn-warning btn-flat btn-block" id="stornaPreventivo"
+                                                onclick="stornaPreventivo()" style="display:none;"><strong>Storna (riporta a Consolidata)</strong></button>
                                         </div>
                                     </div>
                                 </div>
@@ -2494,6 +2496,10 @@ function dettagliPreventivo(idPreventivo) {
                     $('#email_hidden').show();
                 }
         }
+        // CS-288: Persa = DataMorte + IDCausaMorte -> badge "Non a buon fine" (rifiutato non usa piu' Status=4)
+        if (response.dataMorte && response.idCausaMorte) {
+            $('#lockPreventivo').attr('class', 'btn btn-block btn-xs btn-danger').html('<i class="fa fa-times" aria-hidden="true"></i>&nbsp; Non a buon fine');
+        }
 
         $('#codice').val(response.code);
         $('#datascaduto').val(response.scadenza ? moment(response.scadenza).format('DD MMMM, YYYY') : ''); // CS-279: scadenza
@@ -3248,19 +3254,30 @@ function setupVisualizzazione(){
     $(".text-locked").hide();
     $(".text-unlocked").hide();
     $("#consolidaPreventivo").hide();
-    switch (locked) {
-        case 1:
-            $("#eliminaPreventivo").show();
-            $(".text-unlocked").show();
-            $("#consolidaPreventivo").show();
-            break;
-        case 2:
-            $("#btScaduto").show();
-            $(".text-locked").show();
-            break;
-        default:
-            $("#boxPulsantiOperazioni").hide();
-            $(".text-box-footer").hide();
+    $("#stornaPreventivo").hide();
+    // CS-288: stato chiuso = Scaduto (status 3) o Persa (DataMorte + IDCausaMorte).
+    // Offerta non modificabile: nascondo Modifica e mostro solo lo Storno.
+    var _persa = !!(preventivo && preventivo.dataMorte && preventivo.idCausaMorte);
+    if (locked === 3 || _persa) {
+        $("#btnOpenUpd").hide();
+        $("#boxPulsantiOperazioni").hide();
+        $(".text-box-footer").hide();
+        $("#stornaPreventivo").show();
+    } else {
+        switch (locked) {
+            case 1:
+                $("#eliminaPreventivo").show();
+                $(".text-unlocked").show();
+                $("#consolidaPreventivo").show();
+                break;
+            case 2:
+                $("#btScaduto").show();
+                $(".text-locked").show();
+                break;
+            default:
+                $("#boxPulsantiOperazioni").hide();
+                $(".text-box-footer").hide();
+        }
     }
 
     tabConf.contextMenu = false;
@@ -4482,6 +4499,29 @@ function consolidaPreventivo() {
             });
         });
 
+    });
+}
+
+function stornaPreventivo(){
+    swal({
+        title: '',
+        text: "Storna la chiusura e riporta l'offerta a Consolidata?",
+        type: 'warning',
+        showCancelButton: true,
+        confirmButtonText: 'Conferma',
+        cancelButtonText: 'Annulla'
+    }, function(isConfirm){
+        if(!isConfirm) return;
+        var data = { id: idGlobale };
+        var res = $.post(server + 'secure/preventivi/preventivo/storno', JSON.stringify(data));
+        res.success(function (r) {
+            refreshPreventivi();
+            dettagliPreventivo(idGlobale);
+            noty({ text: 'Offerta stornata', layout: 'topCenter', type: 'success', killer: true, timeout: 2000 });
+        });
+        res.error(function (r) {
+            swal({ title: '', type: 'error', text: "Errore nello storno dell'offerta" });
+        });
     });
 }
 
