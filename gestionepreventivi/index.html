@@ -371,6 +371,7 @@
                                                 <th style="text-align:left;">Cliente</th>
                                                 <th style="text-align:left;">Importo</th>
                                                 <th style="text-align:left;">Scadenza</th>
+                                                <th style="text-align:left;">Stato</th>
                                                 <th style="text-align:left;">-ActualPreventivo-</th>
                                                 <th style="text-align:left;">-DaRicaricare-</th>
                                                 <th class="confCategoria1" style="text-align:left;"></th>
@@ -1161,6 +1162,7 @@
                                             <button class="btn btn-danger btn-flat btn-block" id="eliminaPreventivo"
                                                 onclick="eliminaPreventivo()"><strong>Elimina Offerta
                                                     dall'archivio</strong></button>
+                                            <div id="causaMorteInfo" class="text-danger" style="display:none; margin: 6px 0; font-weight:bold;"></div>
                                             <button class="btn btn-warning btn-flat btn-block" id="stornaPreventivo"
                                                 onclick="stornaPreventivo()" style="display:none;"><strong>Storna (riporta a Consolidata)</strong></button>
                                         </div>
@@ -1501,10 +1503,10 @@ $(document).ready(function () {
 		"columnDefs" : [{
 			"searchable": false,
 			"orderable": false, 
-			"targets" : [6,7,10,11]  ,
+			"targets" : [7,8,11,12]  ,
             "visible": false
 		}],
-        order: [[10, 'desc']]
+        order: [[11, 'desc']]
 	});
 	tabella.on( 'page.dt', function () {
 	    fillNewPage();
@@ -2045,7 +2047,8 @@ function refreshPreventivi() {
                     "totale" : res.TotalePreventivo,
                     "luogoIntervento" :  res.LuogoIntervento,
                     "tipologiaAttivita" :  res.TipologiaAttivita,
-                    "status" :  res.Status
+                    "status" :  res.Status,
+                    "causaMorte" : res.CausaMorte
                 }
 
                 return preventivo;
@@ -2407,6 +2410,19 @@ function toLoadPreventivo(idPreventivo, idTipoPreventivo, actualPreventivo){
         default:
             btstato = '<button class="btn btn-warning btn-xs"><i class="fa fa-unlock" aria-hidden="true"></i>&nbsp; Provvisorio</button>';
     }
+    // CS-288: badge stato per la lista (colonna dopo Scadenza)
+    var _st = Number(actualPreventivo.status);
+    var _scadPassata = actualPreventivo.scadenza && moment(actualPreventivo.scadenza).isBefore(moment().startOf('day'));
+    var badgeLista;
+    if (_st === 4) {
+        badgeLista = '<span class="label label-danger">' + (actualPreventivo.causaMorte || 'Non a buon fine') + '</span>';
+    } else if (_scadPassata) {
+        badgeLista = '<span class="label label-warning">Scaduta</span>';
+    } else if (_st === 2) {
+        badgeLista = '<span class="label label-success">Consolidata</span>';
+    } else {
+        badgeLista = '<span class="label label-default">Provvisoria</span>';
+    }
 	var newRow;
     newRow = tabella.row.add( [
 		moment(actualPreventivo.data).format('DD MMM YYYY'),
@@ -2415,6 +2431,7 @@ function toLoadPreventivo(idPreventivo, idTipoPreventivo, actualPreventivo){
 		actualPreventivo.societa,
         numeral(actualPreventivo.totale).format('$ 0,0.00'),
 		(actualPreventivo.scadenza ? moment(actualPreventivo.scadenza).format('DD MMM YYYY') : ''), // CS-279
+        badgeLista, // CS-288: badge stato
         actualPreventivoString,
         true,
         actualPreventivo.luogoIntervento,
@@ -2495,9 +2512,17 @@ function dettagliPreventivo(idPreventivo) {
                     $('#email_hidden').show();
                 }
         }
-        // CS-288: Persa = DataMorte + IDCausaMorte -> badge "Non a buon fine" (rifiutato non usa piu' Status=4)
-        if (response.dataMorte && response.idCausaMorte) {
-            $('#lockPreventivo').attr('class', 'btn btn-block btn-xs btn-danger').html('<i class="fa fa-times" aria-hidden="true"></i>&nbsp; Non a buon fine');
+        // CS-288: mostra la Causa morte quando l'offerta e' "Non a buon fine" (Status 4)
+        $('#causaMorteInfo').hide().text('');
+        if (response.status === 4 && response.idCausaMorte != null) {
+            var _causaLbl = '';
+            try {
+                var _cm = (decodifiche && decodifiche.causemorti) ? decodifiche.causemorti : [];
+                for (var _i = 0; _i < _cm.length; _i++) {
+                    if (String(_cm[_i].idCausa) === String(response.idCausaMorte)) { _causaLbl = _cm[_i].causaMorte; break; }
+                }
+            } catch (e) {}
+            $('#causaMorteInfo').text('Causa: ' + (_causaLbl || '')).show();
         }
 
         $('#codice').val(response.code);
@@ -3254,14 +3279,15 @@ function setupVisualizzazione(){
     $(".text-unlocked").hide();
     $("#consolidaPreventivo").hide();
     $("#stornaPreventivo").hide();
-    // CS-288: stato chiuso = Scaduto (status 3) o Persa (DataMorte + IDCausaMorte).
-    // Offerta non modificabile: nascondo Modifica e mostro solo lo Storno.
-    var _persa = !!(preventivo && preventivo.dataMorte && preventivo.idCausaMorte);
-    if (locked === 3 || _persa) {
+    // CS-288: stato chiuso = Scaduto (3) o Non a buon fine (4). Offerta in sola lettura.
+    if (locked === 3 || locked === 4) {
         $("#btnOpenUpd").hide();
         $("#boxPulsantiOperazioni").hide();
         $(".text-box-footer").hide();
-        $("#stornaPreventivo").show();
+        // Storna solo se l'offerta e' nel trimestre corrente (non alterare statistiche pipeline gia' chiuse)
+        if (preventivo && preventivo.data && moment(preventivo.data).isSame(moment(), 'quarter')) {
+            $("#stornaPreventivo").show();
+        }
     } else {
         switch (locked) {
             case 1:
