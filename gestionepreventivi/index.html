@@ -1182,8 +1182,7 @@
                                     <button class="btn btn-block btn-primary btn-flat" id="btIntegrazioneCommessa"
                                         onclick="integrazioneCommessa()"><strong>Integrazione Commessa</strong></button>
                                     <button class="btn btn-block btn-danger btn-flat nonBlock" id="btScaduto"
-                                        onclick="scadutoProtocollo()"><strong>Offerta Scaduta/Non a buon
-                                            fine</strong></button>
+                                        onclick="scadutoProtocollo()"><strong>Non a buon fine</strong></button>
                                 </div>
                                 <div class="box-footer">
                                     <i class="fa fa-print"></i> <a href="#" onclick="stampaPreventivoNew()"><small
@@ -1294,17 +1293,10 @@
         <div class="sModal-content">
             <div class="sModal-body">
                 <div style="margin-bottom: 10px;">
-                    <label style="display: inline-block; margin-right: 20px;">
-                        <input class="campi-modale-scaduto" id="stato-scaduto" name="statoOfferta" type="radio" />
-                        Scaduto
-                    </label>
-                    <label style="display: inline-block;">
-                        <input class="campi-modale-scaduto" id="stato-rifiutato" name="statoOfferta" type="radio" /> Non
-                        a buon fine
-                    </label>
+                    <strong>Segna l'offerta come "Non a buon fine"</strong>
                 </div>
                 <div style="margin-bottom: 10px;">
-                    <label>Causa (per "Non a buon fine")</label>
+                    <label>Causa</label>
                     <select id="causaMorteModal" class="form-control input-sm"></select>
                 </div>
             </div>
@@ -2417,7 +2409,7 @@ function toLoadPreventivo(idPreventivo, idTipoPreventivo, actualPreventivo){
         badgeLista = '<span class="label label-danger">' + (actualPreventivo.causaMorte || 'Non a buon fine') + '</span>';
     } else if (_scadPassata) {
         badgeLista = '<span class="label label-warning">Scaduta</span>';
-    } else if (_st === 2) {
+    } else if (_st === 2 || _st === 3) {
         badgeLista = '<span class="label label-success">Consolidata</span>';
     } else {
         badgeLista = '<span class="label label-default">Provvisoria</span>';
@@ -2491,24 +2483,18 @@ function dettagliPreventivo(idPreventivo) {
         $('#email_hidden').hide();
         
         locked = response.status;
-        switch (locked) {
-            case 1:
-               $('#lockPreventivo').attr('class', 'btn btn-block btn-xs btn-warning').html('<i class="fa fa-unlock" aria-hidden="true"></i>&nbsp; Provvisorio');
-
-                break;
-            case 3:
-                $('#lockPreventivo').attr('class', 'btn btn-block btn-xs btn-danger').html('<i class="fa fa-times" aria-hidden="true"></i>&nbsp; Scaduto');
-
-                break;
-            case 4:
-                $('#lockPreventivo').attr('class', 'btn btn-block btn-xs btn-danger').html('<i class="fa fa-times" aria-hidden="true"></i>&nbsp; Non a buon fine');
-
-                break;
-            default:
-                $('#lockPreventivo').attr('class', 'btn btn-block btn-xs btn-success').html('<i class="fa fa-lock" aria-hidden="true"></i>&nbsp; Consolidato');
-                if(!isPme){
-                    $('#email_hidden').show();
-                }
+        // CS-288: badge stato coerente con la lista. Non a buon fine (4)=rosso; oltre scadenza=arancione; consolidata (2/3)=verde; provvisoria (1)=grigio.
+        var _scadPassataDet = response.scadenza && moment(response.scadenza).isBefore(moment().startOf('day'));
+        if (locked === 4) {
+            $('#lockPreventivo').attr('class', 'btn btn-block btn-xs btn-danger').html('<i class="fa fa-times" aria-hidden="true"></i>&nbsp; Non a buon fine');
+        } else if (_scadPassataDet) {
+            $('#lockPreventivo').attr('class', 'btn btn-block btn-xs btn-warning').html('<i class="fa fa-clock-o" aria-hidden="true"></i>&nbsp; Scaduta');
+            if(!isPme){ $('#email_hidden').show(); }
+        } else if (locked === 2 || locked === 3) {
+            $('#lockPreventivo').attr('class', 'btn btn-block btn-xs btn-success').html('<i class="fa fa-lock" aria-hidden="true"></i>&nbsp; Consolidata');
+            if(!isPme){ $('#email_hidden').show(); }
+        } else {
+            $('#lockPreventivo').attr('class', 'btn btn-block btn-xs btn-default').html('<i class="fa fa-unlock" aria-hidden="true"></i>&nbsp; Provvisoria');
         }
         // CS-288: mostra la Causa morte quando l'offerta e' "Non a buon fine" (Status 4)
         $('#causaMorteInfo').hide().text('');
@@ -3277,12 +3263,11 @@ function setupVisualizzazione(){
     $(".text-unlocked").hide();
     $("#consolidaPreventivo").hide();
     $("#stornaPreventivo").hide();
-    // CS-288: stato chiuso = Scaduto (3) o Non a buon fine (4). Offerta in sola lettura.
-    if (locked === 3 || locked === 4) {
+    // CS-288: stato chiuso = solo Non a buon fine (4). Sola lettura + Storna (se stesso trimestre).
+    if (locked === 4) {
         $("#btnOpenUpd").hide();
         $("#boxPulsantiOperazioni").hide();
         $(".text-box-footer").hide();
-        // Storna solo se l'offerta e' nel trimestre corrente (non alterare statistiche pipeline gia' chiuse)
         if (preventivo && preventivo.data && moment(preventivo.data).isSame(moment(), 'quarter')) {
             $("#stornaPreventivo").show();
         }
@@ -3293,13 +3278,10 @@ function setupVisualizzazione(){
                 $(".text-unlocked").show();
                 $("#consolidaPreventivo").show();
                 break;
-            case 2:
+            default:
+                // Consolidata (2) e legacy scaduto (3): operabile, incluso il pulsante "Non a buon fine"
                 $("#btScaduto").show();
                 $(".text-locked").show();
-                break;
-            default:
-                $("#boxPulsantiOperazioni").hide();
-                $(".text-box-footer").hide();
         }
     }
 
@@ -4562,20 +4544,12 @@ function chiudiModalScaduto() {
 }
 
 function salvaModalScaduto() {
-    var valore = $('input[name="statoOfferta"]:checked').attr('id');
     var data = {
-        id: idGlobale
+        id: idGlobale,
+        idCausaMorte: parseInt($('#causaMorteModal').val()) || null
     };
-
-    if (valore === 'stato-scaduto') {
-        var cambiaPrev = $.post(server + 'secure/preventivi/preventivo/scaduto', JSON.stringify(data));
-    } else if (valore === 'stato-rifiutato') {
-        data.idCausaMorte = parseInt($('#causaMorteModal').val()) || null; // CS-279: causa Persa
-        var cambiaPrev = $.post(server + 'secure/preventivi/preventivo/rifiutato', JSON.stringify(data));
-    }
+    var cambiaPrev = $.post(server + 'secure/preventivi/preventivo/rifiutato', JSON.stringify(data));
     cambiaPrev.success(function (r) {
-        $('input[name="statoOfferta"]').prop('checked', false);
-        
         $('#offertaScaduta').fadeOut();
         refreshPreventivi();
         dettagliPreventivo(idGlobale);
