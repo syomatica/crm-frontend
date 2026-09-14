@@ -383,6 +383,7 @@
                                                 <th style="text-align:left;">Scadenza</th>
                                                 <th style="text-align:left;">-ActualPreventivo-</th>
                                                 <th style="text-align:left;">Stato</th>
+                                                <th style="text-align:left;">% chiusura</th>
                                                 <th class="confCategoria1" style="text-align:left;"></th>
                                                 <th class="confCategoria2" style="text-align:left;"></th>
                                                 <th style="text-align:left;">-data numerica-</th>
@@ -1505,10 +1506,16 @@ $(document).ready(function () {
 		"columnDefs" : [{
 			"searchable": false,
 			"orderable": false, 
-			"targets" : [6,10,11]  ,
+			"targets" : [6,11,12]  , // PC-259: +1 dopo l'inserimento di "% chiusura" (indice 8)
             "visible": false
+		}, {
+			// PC-259: "% chiusura" numerica e ordinabile; vuota se non valorizzata
+			"targets" : [8],
+			"type" : "num",
+			"className" : "text-right",
+			"render" : function (d, type) { return (type === 'display' && d !== '' && d != null) ? d + ' %' : d; }
 		}],
-        order: [[10, 'desc']]
+        order: [[11, 'desc']]
 	});
 	tabella.on( 'page.dt', function () {
 	    fillNewPage();
@@ -1636,7 +1643,7 @@ $(document).ready(function () {
         if(res.valore!=null && res.valore!=''){
 
         }else{
-            let column1 = tabella.column(8);
+            let column1 = tabella.column(9); // PC-259: era 8
             column1.visible(false);
         }
     });
@@ -1646,7 +1653,7 @@ $(document).ready(function () {
         if(res.valore!=null && res.valore!=''){
 
         }else{
-            let column2 = tabella.column(9);
+            let column2 = tabella.column(10); // PC-259: era 9
             column2.visible(false);
         }
     });
@@ -2063,7 +2070,8 @@ function refreshPreventivi() {
                     "luogoIntervento" :  res.LuogoIntervento,
                     "tipologiaAttivita" :  res.TipologiaAttivita,
                     "status" :  res.Status,
-                    "causaMorte" : res.CausaMorte
+                    "causaMorte" : res.CausaMorte,
+                    "percentualeSuccesso" : res.PercentualeSuccesso // PC-259
                 }
 
                 return preventivo;
@@ -2430,7 +2438,8 @@ function toLoadPreventivo(idPreventivo, idTipoPreventivo, actualPreventivo){
     var _scadPassata = actualPreventivo.scadenza && moment(actualPreventivo.scadenza).isBefore(moment().startOf('day'));
     var badgeLista;
     if (_st === 4) {
-        badgeLista = '<span class="label label-danger">' + (actualPreventivo.causaMorte || 'Non a buon fine') + '</span>';
+        // PC-259: stessa etichetta del dettaglio ("Non a buon fine"); la causa resta nel tooltip
+        badgeLista = '<span class="label label-danger" title="' + (actualPreventivo.causaMorte || '') + '">Non a buon fine</span>';
     } else if (_scadPassata) {
         badgeLista = '<span class="label label-warning">Scaduta</span>';
     } else if (_st === 2 || _st === 3) {
@@ -2448,6 +2457,7 @@ function toLoadPreventivo(idPreventivo, idTipoPreventivo, actualPreventivo){
 		(actualPreventivo.scadenza ? moment(actualPreventivo.scadenza).format('DD MMM YYYY') : ''), // CS-279
         actualPreventivoString,
         badgeLista,
+        (actualPreventivo.percentualeSuccesso != null ? Number(actualPreventivo.percentualeSuccesso) : ''), // PC-259
         actualPreventivo.luogoIntervento,
         actualPreventivo.tipologiaAttivita,
         moment(actualPreventivo.data).format('x'),
