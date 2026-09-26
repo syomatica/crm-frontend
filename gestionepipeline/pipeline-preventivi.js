@@ -79,6 +79,15 @@
     return { start: start, end: end };
   }
 
+  // PC-194: "in pipeline" = offerta ancora in gioco (Provvisoria o Aperta), anche se oltre
+  // scadenza (la probabilita' e' gia' abbassata in normalizeOffer). Vinte, Perse e Scadute
+  // (status 3 legacy) sono chiuse: NON entrano in "Pipeline (totale/pesata)" ne' nel trend;
+  // le Vinte contano solo in "Vinto", le chiuse solo nel win rate. Stesso criterio gia' usato
+  // da "Top offerte aperte" e dal conteggio Open del tooltip.
+  function isInPipeline(o) {
+    return o && (o.status === 'OPEN' || o.status === 'PROV');
+  }
+
   function uniqPush(map, key, label) {
     if (key == null || key === '') return;
     if (!map[key]) map[key] = label;
@@ -346,8 +355,12 @@
 
     var total = 0, weighted = 0, won = 0;
     for (var i = 0; i < list.length; i++) {
-      total += list[i].amount;
-      weighted += list[i].weighted;
+      // PC-194: totale e pesato solo per le offerte ancora in pipeline; una Vinta stava
+      // sia nel totale/pesato sia in "Vinto" (doppio conteggio), una Persa pesava ancora alla sua %.
+      if (isInPipeline(list[i])) {
+        total += list[i].amount;
+        weighted += list[i].weighted;
+      }
       if (list[i].status === 'WON') won += list[i].amount;
     }
 
@@ -426,7 +439,9 @@
   var stages = { PROV: 0, OPEN: 0, WON: 0, LOST: 0, EXPIRED: 0 };
   for (var i = 0; i < list.length; i++) {
     var k = list[i].stage;
-    stages[k] = (stages[k] || 0) + list[i].weighted;
+    // PC-194: valore per stato coerente con i KPI: pesato per le offerte in pipeline,
+    // importo pieno per le chiuse (Vinte = valore vinto, Perse/Scadute = valore perso).
+    stages[k] = (stages[k] || 0) + (isInPipeline(list[i]) ? list[i].weighted : list[i].amount);
   }
 
   var keys = ['PROV', 'OPEN', 'WON', 'LOST', 'EXPIRED'];
@@ -449,7 +464,7 @@
   var data = {
     labels: labels,
     datasets: [{
-      label: 'Pipeline pesata',
+      label: 'Valore per stato (pesato per le aperte)',
       fillColor: 'rgba(54, 162, 235, 0.5)',
       strokeColor: 'rgba(54, 162, 235, 0.9)',
       highlightFill: 'rgba(54, 162, 235, 0.75)',
@@ -546,6 +561,7 @@
   for (var i = 0; i < App.all.length; i++) {
     var o = App.all[i];
     if (!o.quarter || o.quarter === 'N/A') continue;
+    if (!isInPipeline(o)) continue; // PC-194: stesso perimetro dei KPI Pipeline (totale/pesata)
     if (!byQuarter[o.quarter]) byQuarter[o.quarter] = { total: 0, weighted: 0 };
     byQuarter[o.quarter].total += o.amount;
     byQuarter[o.quarter].weighted += o.weighted;
@@ -665,7 +681,7 @@
       var name = view === 'total' ? 'Totale' : (o[labelField] || '(N/D)');
 
       if (!agg[key]) agg[key] = { name: name, weighted: 0, won: 0 };
-      agg[key].weighted += o.weighted;
+      if (isInPipeline(o)) agg[key].weighted += o.weighted; // PC-194: pesata solo per le aperte
       if (o.status === 'WON') agg[key].won += o.amount;
     }
 
