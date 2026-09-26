@@ -288,18 +288,7 @@
             to { -webkit-transform: rotate(360deg); }
         }
 
-        /* DataTables scrollX: evita doppio header (thead duplicato nella scrollBody) */
-        div.dataTables_scrollBody thead {
-            visibility: collapse !important;
-        }
-
-        div.dataTables_scrollBody thead th,
-        div.dataTables_scrollBody thead td {
-            padding: 0 !important;
-            border: 0 !important;
-            height: 0 !important;
-            line-height: 0 !important;
-        }
+        /* PC-283: rimosso il workaround "doppio header" legato a scrollX (scrollX non piu' usato) */
 
 
     </style>
@@ -1502,12 +1491,40 @@ $(document).ready(function () {
 				$(row).addClass("rowPointer");
 			},
 		"language": {url: 'https://cdn.datatables.net/plug-ins/1.10.12/i18n/Italian.json'},
-		"scrollX": true,
+		// PC-283: niente scrollX. Con scrollX DataTables sposta il <thead> originale (quello con i
+		// listener di ordinamento) in un div separato e lascia nella tabella una copia inerte:
+		// l'intestazione che si vedeva non era cliccabile. Stesso impianto dell'elenco Commesse.
 		"columnDefs" : [{
 			"searchable": false,
-			"orderable": false, 
+			"orderable": false,
 			"targets" : [6,11,12]  , // PC-259: +1 dopo l'inserimento di "% chiusura" (indice 8)
             "visible": false
+		}, {
+			// PC-283: la cella "Data" contiene la data grezza (ISO) e viene formattata solo in
+			// visualizzazione; ordinamento e tipo usano il timestamp. Cosi' l'ordinamento iniziale
+			// e per click e' sulla colonna visibile, non piu' sulla nascosta "-data numerica-".
+			"targets" : [0],
+			"type" : "num",
+			"render" : function (d, type) {
+				if (!d) return (type === 'display' || type === 'filter') ? '' : 0;
+				return (type === 'display' || type === 'filter') ? moment(d).format('DD MMM YYYY') : moment(d).valueOf();
+			}
+		}, {
+			// PC-283: importo numerico grezzo, formattato in visualizzazione, ordinato come numero
+			"targets" : [4],
+			"type" : "num",
+			"className" : "text-right",
+			"render" : function (d, type) {
+				return (type === 'display' || type === 'filter') ? numeral(d).format('$ 0,0.00') : (Number(d) || 0);
+			}
+		}, {
+			// PC-283 (CS-279): scadenza grezza (ISO), formattata in visualizzazione, ordinata per data
+			"targets" : [5],
+			"type" : "num",
+			"render" : function (d, type) {
+				if (!d) return (type === 'display' || type === 'filter') ? '' : 0;
+				return (type === 'display' || type === 'filter') ? moment(d).format('DD MMM YYYY') : moment(d).valueOf();
+			}
 		}, {
 			// PC-259: "% chiusura" numerica e ordinabile; vuota se non valorizzata
 			"targets" : [8],
@@ -1515,7 +1532,7 @@ $(document).ready(function () {
 			"className" : "text-right",
 			"render" : function (d, type) { return (type === 'display' && d !== '' && d != null) ? d + ' %' : d; }
 		}],
-        order: [[11, 'desc']]
+        order: [[0, 'desc']] // PC-283: piu' recenti in alto, sulla colonna Data visibile
 	});
 	tabella.on( 'page.dt', function () {
 	    fillNewPage();
@@ -1523,9 +1540,8 @@ $(document).ready(function () {
     tabella.on( 'length.dt', function ( e, settings, len ) {
 	    fillNewPage();
     } );
-    $('#tabella th').click(function(e) {
-    		fillNewPageFromSorting(); 
-    });
+    // PC-283: rimosso il vecchio handler $('#tabella th').click(fillNewPageFromSorting): leggeva le
+    // colonne 37/38 del layout CVI a 39 colonne, inesistenti in questo elenco (13 colonne).
     $('#tabella tbody').on('click', 'tr', function (evt) {
     	var cell=$(evt.target).closest('td').index();
         if(cell>0){
@@ -2448,13 +2464,15 @@ function toLoadPreventivo(idPreventivo, idTipoPreventivo, actualPreventivo){
         badgeLista = '<span class="label label-default">Provvisoria</span>';
     }
 	var newRow;
+    // PC-283: Data, Importo e Scadenza entrano GREZZI (ISO / numero); la formattazione la fa il
+    // render della colonna (columnDefs), cosi' l'ordinamento per click e' per data/numero reale.
     newRow = tabella.row.add( [
-		moment(actualPreventivo.data).format('DD MMM YYYY'),
+		actualPreventivo.data || '',
 		actualPreventivo.code,
 		actualPreventivo.tipoPreventivo,
 		actualPreventivo.societa,
-        numeral(actualPreventivo.totale).format('$ 0,0.00'),
-		(actualPreventivo.scadenza ? moment(actualPreventivo.scadenza).format('DD MMM YYYY') : ''), // CS-279
+        (actualPreventivo.totale != null ? Number(actualPreventivo.totale) : 0),
+		actualPreventivo.scadenza || '', // CS-279
         actualPreventivoString,
         badgeLista,
         (actualPreventivo.percentualeSuccesso != null ? Number(actualPreventivo.percentualeSuccesso) : ''), // PC-259
