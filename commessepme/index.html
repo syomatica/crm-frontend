@@ -60,6 +60,8 @@
     <script src="../assets/js/jquery.noty.packaged.min.js" type="text/javascript"></script>
     <script src="../assets/js/sweetalert.min.js" type="text/javascript"></script>
     <script src="../assets/js/mustache.js" type="text/javascript"></script>
+    <!-- PC-282: preaut.js fornisce eventMenu(), che applica il filtro dei moduli disabilitati per tenant (CS-280) -->
+    <script src="../assets/js/preaut.js" type="text/javascript"></script>
 </head>
 
 <body class="hold-transition skin-blue sidebar-mini">
@@ -110,7 +112,9 @@
             active: { gpme: true },
             pme: sessionStorage['pme'] == 'true' ? true : false
         }));
-        //eventMenu();
+        // PC-282: senza questa chiamata il menu veniva reso "grezzo" e lo Scadenzario
+        // ricompariva per il tenant Schindler entrando in Commesse.
+        eventMenu();
     });
 </script>
 
