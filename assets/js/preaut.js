@@ -10,16 +10,28 @@ function eventMenu(){
                 if(m) $('#themenu a[href*="'+m+'"]').closest('li').hide();
             });
         }
-        try {
-            var dm = sessionStorage.getItem('disabledModules');
-            if (dm !== null) { applyHide(dm); }
-            else if (typeof server !== 'undefined') {
+        function fetchAndApply(){
+            // PC-282: la variabile globale `server` e' definita da ../server.js, incluso in FONDO
+            // alle pagine via document.write. Il callback di $.get("menu.mst") puo' scattare PRIMA
+            // che server.js sia stato eseguito (su localhost quasi sempre, in prod a intermittenza):
+            // in quel caso `server` e' undefined, la chiamata a /features saltava in silenzio e il
+            // menu restava senza filtro. Rinviando a DOM ready tutti gli script sincroni della pagina
+            // sono stati eseguiti e `server` esiste.
+            $(function(){
+                if (typeof server === 'undefined') return;
                 $.get(server + 'secure/crm/features').done(function(r){
                     var list = (r && r.disabledModules) ? r.disabledModules.join(',') : '';
                     sessionStorage.setItem('disabledModules', list);
                     applyHide(list);
                 });
-            }
+            });
+        }
+        try {
+            var dm = sessionStorage.getItem('disabledModules');
+            if (dm) { applyHide(dm); }
+            // cache assente o vuota ('' = lista vuota oppure risposta ottenuta senza tenant risolto):
+            // si rilegge dal backend, la chiamata e' leggera e cosi' un '' anomalo non resta appiccicato.
+            else { fetchAndApply(); }
         } catch(e){}
     })();
 
@@ -70,35 +82,40 @@ function eventMenu(){
 
 
 
-Pace.on('start', function(){
-    $.blockUI({
-        message: '<h1>Caricamento...</h1>',
-        css: {
-            border: 'none',
-            padding: '15px',
-            backgroundColor: '#000',
-            '-webkit-border-radius': '10px',
-            '-moz-border-radius': '10px',
-            opacity: .5,
-            color: '#fff'
-        } });
-});
-Pace.on('restart', function(){
-    $.blockUI({
-        message: '<h1>Caricamento...</h1>',
-        css: {
-            border: 'none',
-            padding: '15px',
-            backgroundColor: '#000',
-            '-webkit-border-radius': '10px',
-            '-moz-border-radius': '10px',
-            opacity: .5,
-            color: '#fff'
-        } });
-});
-Pace.on('done', function(){
-    $.unblockUI();
-});
+// PC-282: la progress bar (Pace + blockUI) e' opzionale. Le pagine che non la caricano
+// (es. commessepme) devono comunque poter includere preaut.js per usare eventMenu(),
+// altrimenti il filtro dei moduli disabilitati per tenant (CS-280) non viene applicato.
+if (typeof Pace !== 'undefined' && typeof $.blockUI === 'function') {
+    Pace.on('start', function(){
+        $.blockUI({
+            message: '<h1>Caricamento...</h1>',
+            css: {
+                border: 'none',
+                padding: '15px',
+                backgroundColor: '#000',
+                '-webkit-border-radius': '10px',
+                '-moz-border-radius': '10px',
+                opacity: .5,
+                color: '#fff'
+            } });
+    });
+    Pace.on('restart', function(){
+        $.blockUI({
+            message: '<h1>Caricamento...</h1>',
+            css: {
+                border: 'none',
+                padding: '15px',
+                backgroundColor: '#000',
+                '-webkit-border-radius': '10px',
+                '-moz-border-radius': '10px',
+                opacity: .5,
+                color: '#fff'
+            } });
+    });
+    Pace.on('done', function(){
+        $.unblockUI();
+    });
+}
 
 
 
