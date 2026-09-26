@@ -3579,7 +3579,7 @@ function generaCommessa(){
 
     var importo_totale = numeral($('#totale_offerta').val()) * 1.0;
     if(importo_totale<=0){
-        swal("", "Offerta Economica non definta", "error");
+        avvisoImportoZero("generare la commessa da"); // PC-285
         return;
     }
 
@@ -4486,6 +4486,35 @@ function stampaPreventivoNew() {
 
 }
 
+// PC-285: messaggio informativo (non errore di sistema) quando il totale dell'offerta e' zero.
+// Il blocco e' voluto: un'offerta a importo zero non puo' diventare una commessa. Il vecchio testo
+// ("Offerta Economica non definta", tipo error) veniva letto come anomalia perche' non spiegava
+// la causa piu' frequente, lo sconto del 100%, ne' cosa fare.
+function avvisoImportoZero(azione) {
+    var tipoSconto = $('#tiposconto').val();
+    var scontoPerc = numeral($('#sconto_percentuale').val()) * 1.0;
+    var scontoImp  = numeral($('#sconto_importo').val()) * 1.0;
+    var righe = (typeof tabConf !== 'undefined' && tabConf && tabConf.data) ? tabConf.data.length : 0;
+
+    var causa;
+    if (tipoSconto == 'P' && scontoPerc >= 100) {
+        causa = "e' applicato uno sconto del " + numeral(scontoPerc).format('0.[00]') + " %, che azzera l'importo.";
+    } else if (tipoSconto == 'I' && scontoImp > 0) {
+        causa = "lo sconto a importo (" + numeral(scontoImp).format('$ 0,0.00') + ") copre l'intero valore delle voci.";
+    } else if (righe === 0) {
+        causa = "non sono state inserite voci economiche.";
+    } else {
+        causa = "le voci inserite hanno importo complessivo pari a zero.";
+    }
+
+    swal({
+        title: "Totale offerta pari a zero",
+        text: "Non e' possibile " + azione + " un'offerta con totale " + numeral(0).format('$ 0,0.00') + ": " + causa +
+              "\n\nVerificare le voci e lo sconto applicato e riprovare: il totale deve essere maggiore di zero.",
+        type: "warning"
+    });
+}
+
 function consolidaPreventivo() {
     if (!idGlobale || isNaN(idGlobale)) {
         swal({
@@ -4504,7 +4533,7 @@ function consolidaPreventivo() {
 
     var importo_totale = numeral($('#totale_offerta').val()) * 1.0;
     if(importo_totale<=0){
-        swal("", "Offerta Economica non definta", "error");
+        avvisoImportoZero("consolidare"); // PC-285
         return;
     }
     if(!isPme){
