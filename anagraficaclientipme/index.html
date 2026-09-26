@@ -503,6 +503,16 @@ $(document).ready(function() {
     initPartnerCombo();
     updateSettoriUiState();
 
+    // PC-284: il tab "Settori" (enti/norme di certificazione) e' pertinente solo per il tenant CVI.
+    // Per i tenant che lo hanno in crm.tenant.disabled-modules (Schindler) il tab non deve comparire.
+    // Si riusa il meccanismo CS-280 (crmDisabledModules in preaut.js): solo UI, nessun dato toccato.
+    crmDisabledModules(function(list){
+        if (list.indexOf('settori') >= 0) {
+            $('#tabsettoriLink').closest('li').hide();
+            $('#settori').removeClass('active');
+        }
+    });
+
     Waves.attach('.btn', ['waves-float']);
     Waves.init();
     new WOW().init();
